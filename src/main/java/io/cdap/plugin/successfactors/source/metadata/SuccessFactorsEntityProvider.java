@@ -25,7 +25,6 @@ import org.apache.olingo.odata2.api.edm.EdmException;
 import org.apache.olingo.odata2.core.edm.provider.EdmNavigationPropertyImplProv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -188,5 +187,9 @@ public class SuccessFactorsEntityProvider {
   public EdmEntityType getNavigationPropertyEntityType(String entityName, String navPath) throws EdmException {
     EdmNavigationPropertyImplProv navProp = getNavigationProperty(entityName, navPath);
     return extractEntitySetFromNavigationProperty(navProp);
+  }
+
+  public Edm getEdmMetadata() {
+    return edmMetadata;
   }
 }

@@ -27,7 +27,6 @@ import io.cdap.plugin.successfactors.common.exception.proto.SuccessFactorsError;
 
 public class SuccessFactorsServiceException extends Exception {
 
-  public static final int INVALID_SERVICE = 0;
   private final SuccessFactorsError successFactorsError;
   private final Integer errorCode;
 

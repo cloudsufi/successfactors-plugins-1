@@ -45,14 +45,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
-
 /**
  * This {@code SuccessFactorsSchemaGenerator} contains all the logic to generate the different set of schemas.
  * e.g.
  * - schema with default (non-navigation) properties
  * - schema with default and given expanded navigation properties
  * - schema with given selective properties
- *
+ * <p>
+ *   
  * Note:
  *  - Default Property: A statically declared Property on an Entity. The value of a default property is a primitive or
  *                      complex type.
@@ -65,6 +65,9 @@ public class SuccessFactorsSchemaGenerator {
   private static final Map<String, Schema> SCHEMA_TYPE_MAPPING;
   private static final Integer DEFAULT_PRECISION = 15;
   private static final Integer DEFAULT_SCALE = 2;
+  private static final String DEFAULT_PROPERTY = "Default property";
+  private static final String NAV_PROPERTY_SEPARATOR = "/";
+  private static final String PROPERTY_SEPARATOR = ",";
 
   static {
     Map<String, Schema> dataTypeMap = new HashMap<>();
@@ -77,10 +80,11 @@ public class SuccessFactorsSchemaGenerator {
     dataTypeMap.put(SuccessFactorsDataTypes.FLOAT, Schema.of(Schema.Type.FLOAT));
     // These are default values for precision and scale - these values are used if precision, scale are not provided.
     dataTypeMap.put(SuccessFactorsDataTypes.DECIMAL, Schema.decimalOf(DEFAULT_PRECISION, DEFAULT_SCALE));
+
     dataTypeMap.put(SuccessFactorsDataTypes.STRING, Schema.of(Schema.Type.STRING));
 
     dataTypeMap.put(SuccessFactorsDataTypes.BINARY, Schema.of(Schema.Type.BYTES));
-
+    
     dataTypeMap.put(SuccessFactorsDataTypes.BOOLEAN, Schema.of(Schema.Type.BOOLEAN));
 
     dataTypeMap.put(SuccessFactorsDataTypes.DATETIME, Schema.of(Schema.LogicalType.DATETIME));
@@ -89,12 +93,7 @@ public class SuccessFactorsSchemaGenerator {
 
     SCHEMA_TYPE_MAPPING = Collections.unmodifiableMap(dataTypeMap);
   }
-
-  private static final String DEFAULT_PROPERTY = "Default property";
-
-  private static final String NAV_PROPERTY_SEPARATOR = "/";
-  private static final String PROPERTY_SEPARATOR = ",";
-
+  
   private final SuccessFactorsEntityProvider successFactorsServiceHelper;
 
   public SuccessFactorsSchemaGenerator(SuccessFactorsEntityProvider successFactorsServiceHelper) {
@@ -135,7 +134,7 @@ public class SuccessFactorsSchemaGenerator {
    * @return list of {@code SuccessFactorsColumnMetadata} or empty list in case of invalid entity name.
    * @throws EdmException any apache olingo processing exception
    */
-  private List<SuccessFactorsColumnMetadata> buildDefaultColumns(String entityName) throws EdmException {
+  public List<SuccessFactorsColumnMetadata> buildDefaultColumns(String entityName) throws EdmException {
 
     EdmEntityType entityType = successFactorsServiceHelper.getEntityType(entityName);
     List<String> propList = successFactorsServiceHelper.getEntityPropertyList(entityType);
@@ -174,7 +173,7 @@ public class SuccessFactorsSchemaGenerator {
       if (type instanceof EdmProperty) {
         EdmProperty edmProperty = (EdmProperty) type;
         successFactorsColumnDetailList.add(buildSuccessFactorsColumnMetadata(namespace, edmProperty));
-
+        
       } else if (type instanceof EdmNavigationPropertyImplProv) {     // check for navigation property
 
         EdmNavigationPropertyImplProv navProperty = (EdmNavigationPropertyImplProv) type;
@@ -196,6 +195,30 @@ public class SuccessFactorsSchemaGenerator {
       }
     }
 
+    return successFactorsColumnDetailList;
+  }
+
+  /**
+   * @param entityName SAP SuccessFactors entity Name to fetch the non-navigational properties
+   * @return list of non-navigational properties
+   * @throws EdmException any apache olingo processing exception
+   */
+  public List<String> getNonNavigationalProperties(String entityName) throws EdmException {
+    EdmEntityType entityType = successFactorsServiceHelper.getEntityType(entityName);
+    List<String> propList = successFactorsServiceHelper.getEntityPropertyList(entityType);
+    List<String> successFactorsColumnDetailList = new ArrayList<>();
+    for (String prop : propList) {
+      EdmTyped type = entityType.getProperty(prop);
+      if (type instanceof EdmProperty) {
+        EdmProperty edmProperty = (EdmProperty) type;
+        List<EdmAnnotationAttribute> edmAnnotationAttributes = edmProperty.getAnnotations().getAnnotationAttributes();
+        for (EdmAnnotationAttribute edmAnnotationAttribute : edmAnnotationAttributes) {
+          if (edmAnnotationAttribute.getName().equals("visible") && edmAnnotationAttribute.getText().equals("true")) {
+            successFactorsColumnDetailList.add(prop);
+          }
+        }
+      }
+    }
     return successFactorsColumnDetailList;
   }
 
@@ -239,6 +262,9 @@ public class SuccessFactorsSchemaGenerator {
           case SapAttributes.DISPLAY_FORMAT:
             successFactorsColumnDetailBuilder.displayFormat(sapAttributeText);
             break;
+          case SapAttributes.VISIBLE:
+            successFactorsColumnDetailBuilder.isVisible(Boolean.parseBoolean(sapAttributeText));
+            break;
           case SapAttributes.FILTER_RESTRICTION:
             successFactorsColumnDetailBuilder.filterRestrictions(sapAttributeText);
             break;
@@ -248,6 +274,7 @@ public class SuccessFactorsSchemaGenerator {
           case SapAttributes.LABEL:
             successFactorsColumnDetailBuilder.label(sapAttributeText);
             break;
+
         }
       });
     }
@@ -285,7 +312,8 @@ public class SuccessFactorsSchemaGenerator {
       List<SuccessFactorsColumnMetadata> expandColumnDetailList = buildExpandedEntity(entityName, expandOption);
       if (expandColumnDetailList.isEmpty()) {
         throw new SuccessFactorsServiceException(ResourceConstants.ERR_NO_COLUMN_FOUND.getMsgForKey(expandOption,
-                                                                                                    entityName));
+
+          entityName));
       }
 
       columnDetailList.addAll(expandColumnDetailList);
@@ -719,7 +747,7 @@ public class SuccessFactorsSchemaGenerator {
    */
   private Schema buildRequiredSchemaType(SuccessFactorsColumnMetadata successFactorsColumnDetail) {
     Schema schemaType = SCHEMA_TYPE_MAPPING.get(successFactorsColumnDetail.getType());
-
+    
     if (!SCHEMA_TYPE_MAPPING.containsKey(successFactorsColumnDetail.getType())) {
       schemaType = Schema.of(Schema.Type.STRING);
     }

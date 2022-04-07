@@ -85,6 +85,33 @@
           "widget-attributes": {
             "placeholder": "Eg. Products,Products/Suppliers"
           }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Associated Entity Name",
+          "name": "associatedEntityName",
+          "widget-attributes": {
+            "placeholder": "SAP SuccessFactors Associated Entity name. Eg: EmpCompensationCalculated"
+          }
+        },
+        {
+          "widget-type": "radio-group",
+          "label": "Pagination Type",
+          "name": "paginationType",
+          "widget-attributes": {
+            "layout": "inline",
+            "default": "serverSide",
+            "options": [
+              {
+                "id": "serverSide",
+                "label": "Server-Side Pagination"
+              },
+              {
+                "id": "clientSide",
+                "label": "Client-Side Pagination"
+              }
+            ]
+          }
         }
       ]
     }

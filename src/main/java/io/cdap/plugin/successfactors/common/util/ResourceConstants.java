@@ -46,7 +46,16 @@ public enum ResourceConstants {
   DEBUG_NAVIGATION_NOT_FOUND(null, "debug.navigation.not.found"),
   DEBUG_NAV_PROP_NOT_FOUND(null, "debug.nav.prop.not.found"),
   DEBUG_ENTITY_NOT_FOUND(null, "debug.entity.not.found"),
-  ERR_READING_METADATA(null, "err.reading.metadata");
+  ERR_READING_METADATA(null, "err.reading.metadata"),
+  ERR_MACRO_INPUT("CDF_SAP_SUCCESSFACTORS_01505", "err.macro.input"),
+  ERR_NO_RECORD_FOUND("CDF_SAP_SUCCESSFACTORS_01506", "err.no.record.found"),
+  DEBUG_DATA_COUNT_ENDPOINT(null, "debug.data.count.endpoint"),
+  ERR_FETCH_RECORD_COUNT("CDF_SAP_SUCCESSFACTORS_01503", "err.fetch.record.count"),
+  ERR_METADATA_ENCODED_STRING("CDF_SAP_SUCCESSFACTORS_01504", "err.metadata.encoded.string"),
+  ERR_METADATA_DECODE("CDF_SAP_SUCCESSFACTORS_01533", "err.metadata.decode"),
+  ERR_RECORD_PULL("CDF_SAP_SUCCESSFACTORS_01536", "err.record.pull"),
+  ERR_RECORD_PROCESSING("CDF_SAP_SUCCESSFACTORS_01537", "err.record.processing"),
+  DEBUG_DATA_ENDPOINT(null, "debug.data.endpoint");
 
   private final String code;
   private final String key;

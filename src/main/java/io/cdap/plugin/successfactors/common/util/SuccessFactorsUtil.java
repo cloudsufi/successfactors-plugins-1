@@ -17,9 +17,8 @@ package io.cdap.plugin.successfactors.common.util;
 
 import javax.annotation.Nullable;
 
-
 /**
- * Utility Class
+ * SuccessFactors Utility Class
  */
 public class SuccessFactorsUtil {
 
@@ -68,7 +67,7 @@ public class SuccessFactorsUtil {
    * @return refactored String or null
    */
   public static String removeWhitespace(String rawString) {
-    if (SuccessFactorsUtil.isNotNullOrEmpty(rawString)) {
+    if (isNotNullOrEmpty(rawString)) {
       return rawString.replaceAll("\\s", "");
     }
     return rawString;

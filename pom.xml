@@ -18,9 +18,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.google.cloud.datafusion.plugin.successfactors</groupId>
+  <groupId>io.cdap.plugin.successfactors</groupId>
   <artifactId>successfactors-plugins</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.8-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <properties>
@@ -351,7 +351,7 @@
         <configuration>
           <instructions>
             <_exportcontents>
-              com.google.cloud.datafusion.plugin.successfactors.source.*;
+              io.cdap.plugin.successfactors.source.*;
             </_exportcontents>
             <Embed-Dependency>*;inline=false;scope=compile</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>

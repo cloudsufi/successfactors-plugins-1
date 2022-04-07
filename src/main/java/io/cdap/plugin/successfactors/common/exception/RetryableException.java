@@ -13,18 +13,18 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.cdap.plugin.successfactors.common.util;
+
+package io.cdap.plugin.successfactors.common.exception;
 
 /**
- *  SAP SuccessFactors Attributes Constants
+ * Custom Exception Class for handling retrying API calls
  */
-public class SapAttributes {
+public class RetryableException extends RuntimeException {
 
-  public static final String DISPLAY_FORMAT = "display-format";
-  public static final String VISIBLE = "visible";
-  public static final String FILTER_RESTRICTION = "filter-restriction";
-  public static final String REQUIRED_IN_FILTER = "required-in-filter";
-  public static final String LABEL = "label";
+  private static final long serialVersionUID = 1L;
 
+  public RetryableException() {
+         super();
+  }
+  
 }
-

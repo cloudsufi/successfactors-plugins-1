@@ -16,16 +16,21 @@
 
 package io.cdap.plugin.successfactors.source.config;
 
+import com.google.common.base.Strings;
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Macro;
 import io.cdap.cdap.api.annotation.Name;
+import io.cdap.cdap.api.data.schema.Schema;
 import io.cdap.cdap.api.plugin.PluginConfig;
 import io.cdap.cdap.etl.api.FailureCollector;
 import io.cdap.plugin.common.IdUtils;
 import io.cdap.plugin.successfactors.common.util.ResourceConstants;
 import io.cdap.plugin.successfactors.common.util.SuccessFactorsUtil;
 import okhttp3.HttpUrl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
@@ -42,7 +47,11 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     "for lineage, annotating metadata, etc.";
   private static final String COMMON_ACTION = ResourceConstants.ERR_MISSING_PARAM_OR_MACRO_ACTION.getMsgForKey();
   private static final Pattern PATTERN = Pattern.compile("\\(.*\\)");
-
+  public static final String ASSOCIATED_ENTITY_NAME = "associatedEntityName";
+  public static final String NAME_SCHEMA = "schema";
+  public static final String PAGINATION_TYPE = "paginationType";
+  private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsPluginConfig.class);
+  
   @Macro
   @Name(BASE_URL)
   @Description("SuccessFactors Base URL.")
@@ -52,7 +61,13 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   @Name(ENTITY_NAME)
   @Description("Name of the Entity which is being extracted.")
   private final String entityName;
-
+  
+  @Macro
+  @Nullable
+  @Name(ASSOCIATED_ENTITY_NAME)
+  @Description("Name of the Associated Entity which is being extracted.")
+  private final String associateEntityName;
+  
   /**
    * Credentials parameters
    */
@@ -90,24 +105,40 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   @Name(REFERENCE_NAME)
   @Description(REFERENCE_NAME_DESCRIPTION)
   public String referenceName;
+  
+  @Name(NAME_SCHEMA)
+  @Macro
+  @Nullable
+  @Description("The schema of the table to read.")
+  private String schema;
+
+  @Name(PAGINATION_TYPE)
+  @Macro
+  @Description("The type of pagination to be used. Server-Side Pagination (serverSide) OR Client-Side Pagination " +
+    "(clientSide)")
+  private String paginationType;
 
   SuccessFactorsPluginConfig(String referenceName,
                              String baseURL,
                              String entityName,
+                             String associateEntityName,
                              @Nullable String username,
                              @Nullable String password,
                              @Nullable String filterOption,
                              @Nullable String selectOption,
-                             @Nullable String expandOption) {
+                             @Nullable String expandOption,
+                             String paginationType) {
 
     this.referenceName = referenceName;
     this.baseURL = baseURL;
     this.entityName = entityName;
+    this.associateEntityName = associateEntityName;
     this.username = username;
     this.password = password;
     this.filterOption = filterOption;
     this.selectOption = selectOption;
     this.expandOption = expandOption;
+    this.paginationType = paginationType;
   }
 
   public static Builder builder() {
@@ -126,6 +157,10 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     return SuccessFactorsUtil.trim(this.entityName);
   }
 
+  public String getAssociatedEntityName() {
+    return SuccessFactorsUtil.trim(this.associateEntityName);
+  }
+  
   @Nullable
   public String getUsername() {
     return SuccessFactorsUtil.trim(this.username);
@@ -163,6 +198,10 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     return SuccessFactorsUtil.removeWhitespace(this.expandOption);
   }
 
+  public String getPaginationType() {
+    return this.paginationType;
+  }
+
   /**
    * Checks if the call to SuccessFactors service is required for metadata creation.
    * condition parameters: ['host' | 'serviceName' | 'entityName' | 'username' | 'password']
@@ -174,9 +213,25 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     return !(containsMacro(UNAME) || containsMacro(PASSWORD) || containsMacro(BASE_URL) || containsMacro(ENTITY_NAME));
   }
 
+  /**
+   * @return the schema of the dataset
+   */
+  @Nullable
+  public Schema getSchema(FailureCollector collector) {
+    try {
+      return Strings.isNullOrEmpty(schema) ? null : Schema.parseJson(schema);
+    } catch (IOException e) {
+      collector.addFailure("Invalid schema: " + e.getMessage(), null)
+        .withConfigProperty(NAME_SCHEMA);
+    }
+    // if there was an error that was added, it will throw an exception, otherwise, this statement will not be executed
+    throw collector.getOrThrowException();
+  }
+
   public void validatePluginParameters(FailureCollector failureCollector) {
     validateMandatoryParameters(failureCollector);
     validateBasicCredentials(failureCollector);
+    LOG.debug("Validating the advanced parameters.");
     validateEntityParameter(failureCollector);
     failureCollector.getOrThrowException();
   }
@@ -244,11 +299,13 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     private String referenceName;
     private String baseURL;
     private String entityName;
+    private String associateEntityName;
     private String username;
     private String password;
     private String filterOption;
     private String selectOption;
     private String expandOption;
+    private String paginationType;
 
     public Builder referenceName(String referenceName) {
       this.referenceName = referenceName;
@@ -262,6 +319,11 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
 
     public Builder entityName(String entityName) {
       this.entityName = entityName;
+      return this;
+    }
+
+    public Builder associateEntityName(String associateEntityName) {
+      this.associateEntityName = associateEntityName;
       return this;
     }
 
@@ -289,10 +351,15 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
       this.expandOption = expandOption;
       return this;
     }
+    
+    public Builder paginationType(@Nullable String paginationType) {
+      this.paginationType = paginationType;
+      return this;
+    }
 
     public SuccessFactorsPluginConfig build() {
-      return new SuccessFactorsPluginConfig(referenceName, baseURL, entityName, username, password, filterOption,
-                                            selectOption, expandOption);
+      return new SuccessFactorsPluginConfig(referenceName, baseURL, entityName, associateEntityName, username, password,
+                                            filterOption, selectOption, expandOption, paginationType);
     }
   }
 }

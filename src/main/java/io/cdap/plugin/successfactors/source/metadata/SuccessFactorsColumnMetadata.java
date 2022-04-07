@@ -33,7 +33,6 @@ public class SuccessFactorsColumnMetadata {
    * The value of this attribute specifies a collation sequence that can be used for comparison and ordering operations.
    */
   private final String collation;
-
   /**
    * The value of this attribute indicates how concurrency should be handled for the property. The value of the
    * concurrency mode attribute MUST be None or Fixed. If no value is specified, the value defaults to None
@@ -44,6 +43,7 @@ public class SuccessFactorsColumnMetadata {
   private final Integer precision;
   private final Integer scale;
   private final boolean isNullable;
+  private final boolean isVisible;
   private final boolean isFixedLength;
   private final boolean isUnicode;
   private final String kindName;
@@ -66,6 +66,7 @@ public class SuccessFactorsColumnMetadata {
                                        @Nullable Integer precision,
                                        @Nullable Integer scale,
                                        @Nullable Boolean isNullable,
+                                       @Nullable Boolean isVisible,
                                        @Nullable Boolean isFixedLength,
                                        @Nullable Boolean isUnicode,
                                        @Nullable String kindName,
@@ -90,6 +91,7 @@ public class SuccessFactorsColumnMetadata {
     this.requiredInFilter = requiredInFilter;
     this.label = label;
     this.isNullable = isNullable == null || isNullable;
+    this.isVisible = isVisible == null || isVisible;
     this.isFixedLength = isFixedLength != null && isFixedLength;
     this.isUnicode = isUnicode != null && isUnicode;
     this.childList = childList == null ? new ArrayList<>() : childList;
@@ -152,6 +154,10 @@ public class SuccessFactorsColumnMetadata {
 
   public boolean isNullable() {
     return isNullable;
+  }
+
+  public boolean isVisible() {
+    return isVisible;
   }
 
   public boolean isFixedLength() {
@@ -245,6 +251,7 @@ public class SuccessFactorsColumnMetadata {
     private Integer precision;
     private Integer scale;
     private Boolean isNullable;
+    private Boolean isVisible;
     private Boolean isFixedLength;
     private Boolean isUnicode;
     private String kindName;
@@ -300,6 +307,11 @@ public class SuccessFactorsColumnMetadata {
       return this;
     }
 
+    public Builder isVisible(@Nullable Boolean isVisible) {
+      this.isVisible = isVisible;
+      return this;
+    }
+
     public Builder isFixedLength(@Nullable Boolean isFixedLength) {
       this.isFixedLength = isFixedLength;
       return this;
@@ -348,9 +360,10 @@ public class SuccessFactorsColumnMetadata {
     public SuccessFactorsColumnMetadata build() {
       return new SuccessFactorsColumnMetadata(this.name, this.type, this.collation, this.concurrencyModeName,
                                               this.defaultValue, this.maxLength, this.precision, this.scale,
-                                              this.isNullable, this.isFixedLength, this.isUnicode, this.kindName,
-                                              this.multiplicityOrdinal, this.displayFormat, this.filterRestrictions,
-                                              this.requiredInFilter, this.label, this.childList);
+                                              this.isNullable, this.isVisible, this.isFixedLength, this.isUnicode,
+                                              this.kindName, this.multiplicityOrdinal, this.displayFormat,
+                                              this.filterRestrictions, this.requiredInFilter, this.label,
+                                              this.childList);
     }
   }
 }

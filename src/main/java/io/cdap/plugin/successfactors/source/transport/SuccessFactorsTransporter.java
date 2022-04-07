@@ -51,10 +51,11 @@ public class SuccessFactorsTransporter {
   private static final long CONNECTION_TIMEOUT = 300;
   private static final long WAIT_TIME = 5;
   private static final long MAX_NUMBER_OF_RETRY_ATTEMPTS = 5;
+  
   private final String username;
   private final String password;
   private Response response;
-
+  
   public SuccessFactorsTransporter(String username, String password) {
     this.username = username;
     this.password = password;
@@ -92,14 +93,15 @@ public class SuccessFactorsTransporter {
    * Calls the Successfactors entity to fetch the records with subsequent retries in case of failure.
    * Retry modes are:
    * - any HTTP code equal or above 500
-   * - max retry is 3 times
+   * - max retry is 5 times
    *
    * @param endpoint record fetch URL
    * @return {@code SuccessFactorsResponseContainer}
-   * @throws TransportException   any http client exceptions are wrapped under it
+   * @throws IOException        any http client exceptions
+   * @throws TransportException any error while preparing the {@code OkHttpClient}
    */
   public SuccessFactorsResponseContainer callSuccessFactorsWithRetry(URL endpoint)
-    throws TransportException, IOException {
+    throws IOException, TransportException {
 
     LOG.debug(ResourceConstants.DEBUG_CALL_SERVICE_START.getMsgForKey(SuccessFactorsService.DATA));
     Response res = retrySapTransportCall(endpoint, MediaType.APPLICATION_JSON);
@@ -124,7 +126,7 @@ public class SuccessFactorsTransporter {
   public Response retrySapTransportCall(URL endpoint, String mediaType) throws IOException {
     Callable<Boolean> fetchRecords = () -> {
       response = transport(endpoint, mediaType);
-      if (response != null  && response.code() >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
+      if (response != null && response.code() >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
         throw new RetryableException();
       }
       return true;
@@ -227,5 +229,32 @@ public class SuccessFactorsTransporter {
                         .concat(password)
                         .getBytes(StandardCharsets.UTF_8)
       );
+  }
+
+  /**
+   * Calls the SuccessFactors entity for the given URL and returns the respective response.
+   * Supported calls are:
+   * - testing the URL correctness
+   * - fetching the SuccessFactors entity metadata
+   * - fetching the total available records count
+   *
+   * @param endpoint  type of URL
+   * @param mediaType mediaType for Accept header property, supported types are 'application/json' & 'application/xml'
+   * @param fetchType type of call i.e. TEST / METADATA / COUNT, used for logging purpose.
+   * @return {@code SuccessFactorsResponseContainer}
+   * @throws TransportException any http client exceptions are wrapped under it
+   */
+  public SuccessFactorsResponseContainer callSuccessFactors(URL endpoint, String mediaType, String fetchType)
+    throws TransportException {
+
+    try {
+      LOG.debug(ResourceConstants.DEBUG_CALL_SERVICE_START.getMsgForKey(fetchType));
+      Response res = transport(endpoint, mediaType);
+      LOG.debug(ResourceConstants.DEBUG_CALL_SERVICE_END.getMsgForKey(fetchType));
+
+      return prepareResponseContainer(res);
+    } catch (IOException ioe) {
+      throw new TransportException(ResourceConstants.ERR_CALL_SERVICE_FAILURE.getMsgForKey(), ioe);
+    }
   }
 }

@@ -16,6 +16,8 @@
 
 package io.cdap.plugin.successfactors.source.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cdap.cdap.api.data.schema.Schema;
 import io.cdap.plugin.successfactors.common.exception.SuccessFactorsServiceException;
 import io.cdap.plugin.successfactors.common.exception.TransportException;
@@ -25,15 +27,39 @@ import io.cdap.plugin.successfactors.common.util.SuccessFactorsUtil;
 import io.cdap.plugin.successfactors.source.config.SuccessFactorsPluginConfig;
 import io.cdap.plugin.successfactors.source.metadata.SuccessFactorsEntityProvider;
 import io.cdap.plugin.successfactors.source.metadata.SuccessFactorsSchemaGenerator;
+import io.cdap.plugin.successfactors.source.transform.SuccessFactorsRecordReader;
 import io.cdap.plugin.successfactors.source.transport.SuccessFactorsResponseContainer;
 import io.cdap.plugin.successfactors.source.transport.SuccessFactorsTransporter;
 import io.cdap.plugin.successfactors.source.transport.SuccessFactorsUrlContainer;
+import okhttp3.HttpUrl;
 import org.apache.olingo.odata2.api.edm.Edm;
+import org.apache.olingo.odata2.api.edm.EdmEntitySet;
+import org.apache.olingo.odata2.api.edm.EdmException;
 import org.apache.olingo.odata2.api.ep.EntityProvider;
 import org.apache.olingo.odata2.api.ep.EntityProviderException;
+import org.apache.olingo.odata2.api.ep.EntityProviderReadProperties;
+import org.apache.olingo.odata2.api.ep.entry.ODataEntry;
+import org.apache.olingo.odata2.api.ep.feed.ODataFeed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -45,12 +71,16 @@ import javax.ws.rs.core.MediaType;
  */
 public class SuccessFactorsService {
 
+  private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsService.class);
   public static final String TEST = "TEST";
   public static final String METADATA = "METADATA";
   public static final String DATA = "DATA";
+  public static final String COUNT = "COUNT";
+  public static final String SERVER_SIDE = "serverSide";
   private final SuccessFactorsPluginConfig pluginConfig;
   private final SuccessFactorsTransporter successFactorsHttpClient;
   private final SuccessFactorsUrlContainer urlContainer;
+  private String nextUrl;
 
   public SuccessFactorsService(SuccessFactorsPluginConfig pluginConfig,
                                SuccessFactorsTransporter successFactorsHttpClient) {
@@ -130,5 +160,196 @@ public class SuccessFactorsService {
     SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient
       .callSuccessFactorsEntity(urlContainer.getMetadataURL(), MediaType.APPLICATION_XML, METADATA);
     return responseContainer.getResponseStream();
+  }
+
+  /**
+   * Fetch the total available record count from the SAP OData service
+   *
+   * @return count of total available records
+   * @throws TransportException    any http client exceptions are wrapped under it.
+   * @throws SuccessFactorsServiceException any OData service based exception is wrapped under it.
+   * @throws IOException
+   */
+  public long getTotalAvailableRowCount() throws TransportException, SuccessFactorsServiceException, IOException {
+    try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
+      callEntityDataCount(), StandardCharsets.UTF_8))) {
+      String raw = bufferedReader.lines().collect(Collectors.joining(""));
+      return Long.parseLong(raw);
+    }
+  }
+
+  /**
+   * Calls the SAP SuccessFactors service entity to fetch the total number of available records
+   *
+   * @return
+   * @throws TransportException    any http client exceptions are wrapped under it.
+   * @throws SuccessFactorsServiceException any OData service based exception is wrapped under it.
+   */
+  private InputStream callEntityDataCount() throws SuccessFactorsServiceException, TransportException {
+    SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient
+      .callSuccessFactors(urlContainer.getTotalRecordCountURL(), MediaType.TEXT_PLAIN, COUNT);
+
+    String errMsg = ResourceConstants.ERR_FETCH_RECORD_COUNT.getMsgForKeyWithCode(pluginConfig.getEntityName());
+    ExceptionParser.checkAndThrowException(errMsg, responseContainer);
+    return responseContainer.getResponseStream();
+  }
+
+  /**
+   * @throws TransportException    any http client exceptions are wrapped under it.
+   * @throws SuccessFactorsServiceException any OData service based exception is wrapped under it.
+   */
+  public String getEncodedServiceMetadata() throws TransportException, SuccessFactorsServiceException {
+    byte[] buffer = new byte[1024];
+    ByteArrayOutputStream output = new ByteArrayOutputStream();
+    int numRead = 0;
+    try (InputStream metaDataStream = callEntityMetadata()) {
+      while ((numRead = metaDataStream.read(buffer)) > -1) {
+        output.write(buffer, 0, numRead);
+      }
+
+      return Base64.getEncoder().encodeToString(output.toByteArray());
+    } catch (IOException ioe) {
+      throw new SuccessFactorsServiceException(ResourceConstants.ERR_METADATA_ENCODED_STRING
+                                                 .getMsgForKeyWithCode(pluginConfig.getEntityName()), ioe);
+
+    }
+  }
+
+  /**
+   * Converts the base64 encoded SuccessFactors entity metadata string to actual 'Edm' type.
+   * This method will be used in the runtime.
+   *
+   * @param encodedMetadata base64 encoded SuccessFactors entity metadata string
+   * @return {@code Edm}
+   * @throws SuccessFactorsServiceException any SuccessFactors based exception is wrapped under it.
+   */
+  public Edm getSuccessFactorsServiceEdm(String encodedMetadata) throws SuccessFactorsServiceException {
+    try {
+      byte[] bytes = Base64.getDecoder().decode(encodedMetadata);
+      try (ByteArrayInputStream metadataStream = new ByteArrayInputStream(bytes)) {
+        return fetchServiceMetadata(metadataStream).getEdmMetadata();
+      }
+    } catch (IOException | IllegalArgumentException e) {
+      throw new SuccessFactorsServiceException(
+        ResourceConstants.ERR_METADATA_DECODE.getMsgForKeyWithCode(pluginConfig.getEntityName()), e);
+    }
+  }
+
+  /**
+   * Calls the SAP SuccessFactors service to fetch records and convert it into list of {@code ODataEntry}.
+   *
+   * @param edm  SuccessFactors service entity metadata
+   * @param skip number of rows to skip
+   * @param top  number of rows to fetch
+   * @return list of {@code SuccessFactorsEntry}
+   * @throws TransportException    any http client exceptions are wrapped under it.
+   * @throws SuccessFactorsServiceException any OData service based exception is wrapped under it.
+   */
+  public List<ODataEntry> readServiceEntityData(Edm edm, Long skip, Long top)
+    throws SuccessFactorsServiceException, TransportException {
+
+    SuccessFactorsEntityProvider serviceHelper = new SuccessFactorsEntityProvider(edm);
+    try (InputStream dataStream = callEntityData(skip, top)) {
+
+      EdmEntitySet entity = serviceHelper.getEntitySet(pluginConfig.getEntityName());
+      // compile raw data to ODataFeed type
+      ODataFeed dataFeed;
+      if (pluginConfig.getExpandOption() != null) {
+        dataFeed = EntityProvider
+          .readFeed(MediaType.APPLICATION_JSON, entity, filterExpandedEntityData(dataStream),
+                    EntityProviderReadProperties.init().build());
+      } else {
+        dataFeed = EntityProvider
+          .readFeed(MediaType.APPLICATION_JSON, entity, dataStream, EntityProviderReadProperties
+            .init().build());
+      }
+
+      if (dataFeed != null) {
+        if (pluginConfig.getPaginationType().equals(SERVER_SIDE)) {
+          String nextLink = dataFeed.getFeedMetadata().getNextLink();
+          if (nextLink != null) {
+            nextUrl = nextLink;
+            LOG.info("Next page url: {}", nextLink);
+          } else {
+            SuccessFactorsRecordReader.nextCallRequired = false;
+            LOG.info("No more pages left, setting nextCallRequired to: {}",
+                     false);
+          }
+        }
+        return dataFeed.getEntries();
+      }
+      
+    } catch (EdmException | EntityProviderException | IOException ex) {
+      String errMsg = ResourceConstants.ERR_RECORD_PROCESSING.getMsgForKeyWithCode(pluginConfig.getEntityName());
+      throw new SuccessFactorsServiceException(errMsg, ex);
+    } catch (TransportException te) {
+      String errMsg = ResourceConstants.ERR_RECORD_PULL.getMsgForKeyWithCode(pluginConfig.getEntityName());
+      errMsg += ExceptionParser.buildTransportError(te);
+      throw new TransportException(errMsg, te);
+    } catch (SuccessFactorsServiceException ose) {
+      String errMsg = ResourceConstants.ERR_RECORD_PULL.getMsgForKeyWithCode(pluginConfig.getEntityName());
+      errMsg += ExceptionParser.buildSuccessFactorsServiceError(ose);
+      throw new SuccessFactorsServiceException(errMsg, ose);
+    }
+    return Collections.emptyList();
+  }
+
+  /**
+   * Calls the SAP SuccessFactors service entity to fetch the data from the given range
+   *
+   * @param skip number to rows to skip
+   * @param top  number to rows to fetch
+   * @return {@code InputStream}
+   * @throws TransportException    any http client exceptions are wrapped under it.
+   * @throws SuccessFactorsServiceException any OData service based exception is wrapped under it.
+   */
+  private InputStream callEntityData(Long skip, Long top)
+    throws SuccessFactorsServiceException, TransportException, IOException {
+    URL dataURL;
+    if (nextUrl != null) {
+      dataURL = Objects.requireNonNull(HttpUrl.parse(nextUrl)).newBuilder().build().url();
+    } else {
+      dataURL = urlContainer.getDataFetchURL(skip, top);
+    }
+    SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient.callSuccessFactorsWithRetry(dataURL);
+    
+    ExceptionParser.checkAndThrowException("", responseContainer);
+    return responseContainer.getResponseStream();
+  }
+
+  public List<String> getNonNavigationalProperties() throws TransportException, SuccessFactorsServiceException,
+    EdmException {
+    SuccessFactorsEntityProvider edmData = fetchServiceMetadata(callEntityMetadata());
+    SuccessFactorsSchemaGenerator successFactorsSchemaGenerator = new SuccessFactorsSchemaGenerator(edmData);
+    List<String> columnDetailList = successFactorsSchemaGenerator.getNonNavigationalProperties
+      (pluginConfig.getEntityName());
+    return columnDetailList;
+  }
+  private InputStream filterExpandedEntityData(InputStream dataStream) throws IOException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    List<String> expandFieldList = new ArrayList<>();
+    JsonNode root = objectMapper.readTree(dataStream);
+    JsonNode arrayNode = root.get("d").get("results");
+    for (JsonNode objectNode : arrayNode) {
+      String expandOption = pluginConfig.getExpandOption();
+      if (expandOption.contains(",")) {
+        expandFieldList = Arrays.asList(pluginConfig.getExpandOption().split(","));
+      } else {
+        expandFieldList.add(pluginConfig.getExpandOption());
+      }
+      for (String expandField : expandFieldList) {
+        JsonNode expandedNode = objectNode.get(expandField);
+        Iterator<Map.Entry<String, JsonNode>> iterator = expandedNode.fields();
+        while (iterator.hasNext()) {
+          if (iterator.next().getValue().isContainerNode()) {
+            //((ObjectNode) expandedNode).remove(iterator.next().getKey());
+            iterator.remove();
+          }
+        }
+
+      }
+    }
+    InputStream filteredDataStream = new ByteArrayInputStream(objectMapper.writeValueAsBytes(root));
+    return filteredDataStream;
   }
 }
