@@ -43,7 +43,7 @@
       "properties": [
         {
           "widget-type": "textbox",
-          "label": "SAP Logon Username",
+          "label": "SAP SuccessFactors Logon Username",
           "name": "username",
           "widget-attributes": {
             "placeholder": ""
@@ -51,7 +51,7 @@
         },
         {
           "widget-type": "password",
-          "label": "SAP Logon Password",
+          "label": "SAP SuccessFactors Logon Password",
           "name": "password",
           "widget-attributes": {
             "placeholder": ""
@@ -63,7 +63,7 @@
       "label": "Advanced",
       "properties": [
         {
-            "widget-type": "textarea",
+          "widget-type": "textarea",
           "label": "Filter Options",
           "name": "filterOption",
           "widget-attributes": {
@@ -87,6 +87,14 @@
           }
         },
         {
+          "widget-type": "textbox",
+          "label": "Associated Entity Name",
+          "name": "associatedEntityName",
+          "widget-attributes": {
+            "placeholder": "SAP SuccessFactors Associated Entity name. Ex: EmpCompensationCalculated"
+          }
+        },
+        {
           "widget-type": "number",
           "label": "Number of Rows to Skip",
           "name": "skipRowCount",
@@ -107,7 +115,8 @@
           "label": "Number of Splits to Generate",
           "name": "splitCount",
           "widget-attributes": {
-            "min": "0"
+            "min": "0",
+            "max": "10"
           }
         },
         {
@@ -115,10 +124,29 @@
           "label": "Batch Size",
           "name": "batchSize",
           "widget-attributes": {
-            "min": "0"
+            "min": "0",
+            "max": "5000"
           }
         }
       ]
+    }
+  ],
+  "outputs": [
+    {
+      "name": "schema",
+      "label": "schema",
+      "widget-type": "schema",
+      "widget-attributes": {
+        "schema-types": [
+          "boolean",
+          "long",
+          "double",
+          "bytes",
+          "string",
+          "array"
+        ],
+        "schema-default-type": "string"
+      }
     }
   ]
 }

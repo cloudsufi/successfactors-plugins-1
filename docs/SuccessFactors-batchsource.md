@@ -122,7 +122,9 @@ Supported operation are as follows:
 **Select Fields (M, O)**: Fields to be preserved in the extracted data. e.g.: Category, Price, Name, Address. In case of empty all the non-navigation fields will be preserved in the extracted data.
 All the fields must be comma (,) separated.  
 **Expand Fields (M, O)**: List of navigation fields to be expanded in the extracted output data
-e.g.: customManager  
+e.g.: customManager
+**Associated Entity Name (M, O)**: Name of the Associated Entity which is being extracted
+e.g.: EmpCompensationCalculated
 **Number of Rows to Skip (M, O)**: Number of rows to skip e.g.: 10.  
 **Number of Rows to Fetch (M, O)**: Total number of rows to be extracted (accounts for conditions specified
 in Filter Options).     
@@ -131,4 +133,25 @@ defaulted splits.
 **Batch Size (M, O)**: Number of rows to fetch in each network call to SAP SuccessFactors. Smaller size will cause frequent
 network calls repeating the associated overhead. A large size may slow down data retrieval & cause
 excessive resource usage in SAP SuccessFactors. If this value is set to 0, default value is set to 2500 and max limit on
-rows to fetch in each batch is 5000.   
+rows to fetch in each batch is 5000.
+
+Data Type Mappings from SuccessFactors to CDAP
+----------
+The following table lists out different successFactors data types, as well as their corresponding CDAP data types
+
+| SuccessFactors type | CDAP type |
+|----------------|---------------|
+| Binary         | Bytes         |
+| Boolean        | Boolean       |
+| Byte           | Bytes         |
+| DateTime       | DateTime      |
+| DateTimeOffset | Timestamp_Micros|
+| Decimal        | Decimal       |
+| Double         | Double        |
+| Float          | Float         |
+| Int16          | Integer       |
+| Int32          | Integer       |
+| Int64          | Long          |
+| SByte          | Integer       |
+| String         | String        |
+| Time           | Time_Micros   |
