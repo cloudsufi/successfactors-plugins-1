@@ -141,7 +141,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   @Description("The schema of the table to read.")
   private String schema;
 
-  SuccessFactorsPluginConfig(String referenceName,
+  public SuccessFactorsPluginConfig(String referenceName,
                              String baseURL,
                              String entityName,
                              String associateEntityName,
