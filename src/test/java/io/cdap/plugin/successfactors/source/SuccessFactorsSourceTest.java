@@ -13,24 +13,25 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.cdap.plugin.successfactors.source.transport;
+package io.cdap.plugin.successfactors.source;
 
 import io.cdap.cdap.api.data.schema.Schema;
 import io.cdap.cdap.etl.api.batch.BatchSourceContext;
 import io.cdap.cdap.etl.api.validation.ValidationException;
 import io.cdap.cdap.etl.api.validation.ValidationFailure;
 import io.cdap.cdap.etl.mock.common.MockPipelineConfigurer;
-import io.cdap.cdap.etl.mock.validation.MockFailureCollector;
 import io.cdap.plugin.successfactors.common.exception.SuccessFactorsServiceException;
 import io.cdap.plugin.successfactors.common.exception.TransportException;
 import io.cdap.plugin.successfactors.common.util.ResourceConstants;
-import io.cdap.plugin.successfactors.source.SuccessFactorsSource;
 import io.cdap.plugin.successfactors.source.config.SuccessFactorsPluginConfig;
 import io.cdap.plugin.successfactors.source.input.SuccessFactorsInputSplit;
 import io.cdap.plugin.successfactors.source.input.SuccessFactorsPartitionBuilder;
 import io.cdap.plugin.successfactors.source.metadata.SuccessFactorsEntityProvider;
 import io.cdap.plugin.successfactors.source.metadata.SuccessFactorsSchemaGenerator;
 import io.cdap.plugin.successfactors.source.service.SuccessFactorsService;
+import io.cdap.plugin.successfactors.source.transport.SuccessFactorsResponseContainer;
+import io.cdap.plugin.successfactors.source.transport.SuccessFactorsTransporter;
+import io.cdap.plugin.successfactors.source.transport.SuccessFactorsUrlContainer;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Tested;
@@ -51,7 +52,6 @@ import java.util.Map;
 public class SuccessFactorsSourceTest {
 
   @Tested
-  private MockFailureCollector failureCollector;
   private SuccessFactorsPluginConfig.Builder pluginConfigBuilder;
   private SuccessFactorsSource successFactorsSource;
   private SuccessFactorsPluginConfig pluginConfig;
