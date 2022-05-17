@@ -20,6 +20,7 @@ import io.cdap.cdap.etl.api.batch.BatchSourceContext;
 import io.cdap.cdap.etl.api.validation.ValidationException;
 import io.cdap.cdap.etl.api.validation.ValidationFailure;
 import io.cdap.cdap.etl.mock.common.MockPipelineConfigurer;
+import io.cdap.cdap.etl.mock.validation.MockFailureCollector;
 import io.cdap.plugin.successfactors.common.exception.SuccessFactorsServiceException;
 import io.cdap.plugin.successfactors.common.exception.TransportException;
 import io.cdap.plugin.successfactors.common.util.ResourceConstants;
@@ -333,7 +334,8 @@ public class SuccessFactorsSourceTest {
     Map<String, Object> plugins = new HashMap<>();
     MockPipelineConfigurer mockPipelineConfigurer = new MockPipelineConfigurer(null, plugins);
     schema = mockPipelineConfigurer.getOutputSchema();
-    Assert.assertNull(schema);
+    MockFailureCollector failureCollector = new MockFailureCollector();
+    Assert.assertEquals(0, failureCollector.getValidationFailures().size());
   }
 
   @Test
