@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nullable;
 
 public class SuccessFactorsColumnMetaDataTest {
   private static final String FIELD_NAME = "fieldName";
