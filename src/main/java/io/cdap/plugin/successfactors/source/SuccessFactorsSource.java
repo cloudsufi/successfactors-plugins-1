@@ -80,7 +80,7 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
       if (schema != null) {
         stageConfigurer.setOutputSchema(schema);
       } else {
-        stageConfigurer.setOutputSchema(getOutputSchema(failureCollector, false));
+        stageConfigurer.setOutputSchema(getOutputSchema(failureCollector));
       }
     } else {
       stageConfigurer.setOutputSchema(null);
@@ -91,7 +91,7 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
   public void prepareRun(BatchSourceContext context) throws Exception {
     Schema outputSchema = context.getOutputSchema();
     if (outputSchema == null) {
-      outputSchema = getOutputSchema(context.getFailureCollector(), true);
+      outputSchema = getOutputSchema(context.getFailureCollector());
     }
 
     if (outputSchema == null) {
@@ -118,7 +118,7 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
    * @return {@code Schema}
    */
   @Nullable
-  private Schema getOutputSchema(FailureCollector failureCollector, boolean isRuntimeError) {
+  private Schema getOutputSchema(FailureCollector failureCollector) {
     SuccessFactorsTransporter transporter = new SuccessFactorsTransporter(config.getUsername(), config.getPassword());
     SuccessFactorsService successFactorsServices = new SuccessFactorsService(config, transporter);
     try {
@@ -127,19 +127,17 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
       return successFactorsServices.buildOutputSchema();
     } catch (TransportException te) {
       String errorMsg = ExceptionParser.buildTransportError(te);
-      errorMsg = isRuntimeError ? ResourceConstants.ERR_ODATA_SERVICE_CALL.getMsgForKeyWithCode(errorMsg) : errorMsg;
+      errorMsg = ResourceConstants.ERR_ODATA_SERVICE_CALL.getMsgForKeyWithCode(errorMsg);
       switch (te.getErrorType()) {
         case TransportException.IO_ERROR:
           failureCollector.addFailure(errorMsg, null)
             .withConfigProperty(SuccessFactorsPluginConfig.BASE_URL);
           break;
         default:
-          errorMsg =
-            isRuntimeError ? errorMsg : ResourceConstants.ERR_ODATA_SERVICE_CALL.getMsgForKeyWithCode(errorMsg);
           failureCollector.addFailure(errorMsg, null);
       }
     } catch (SuccessFactorsServiceException ose) {
-      attachFieldWithError(ose, failureCollector, isRuntimeError);
+      attachFieldWithError(ose, failureCollector);
     }
     failureCollector.getOrThrowException();
     return null;
@@ -150,16 +148,11 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
    *
    * @param ose              {@code SuccessFactorsServiceException}
    * @param failureCollector {@code FailureCollector}
-   * @param isRuntimeError   this flag is used to attach error codes to any inline UI error message during runtime.
-   *                         As there could be cases where macro values are not correct which only get processed at the
-   *                         runtime, so this flag acts as an indicator to the plugin to add the error code to
-   *                         any UI inline errors such as invalid SAP credentials and so on.
    */
-  private void attachFieldWithError(SuccessFactorsServiceException ose, FailureCollector failureCollector,
-                                    boolean isRuntimeError) {
+  private void attachFieldWithError(SuccessFactorsServiceException ose, FailureCollector failureCollector) {
 
     String errMsg = ExceptionParser.buildSuccessFactorsServiceError(ose);
-    errMsg = isRuntimeError ? ResourceConstants.ERR_ODATA_ENTITY_FAILURE.getMsgForKeyWithCode(errMsg) : errMsg;
+    errMsg = ResourceConstants.ERR_ODATA_ENTITY_FAILURE.getMsgForKeyWithCode(errMsg);
     switch (ose.getErrorCode()) {
       case HttpURLConnection.HTTP_UNAUTHORIZED:
         failureCollector.addFailure(errMsg, null).withConfigProperty(SuccessFactorsPluginConfig.UNAME);
@@ -171,16 +164,13 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
         failureCollector.addFailure(errMsg, null).withConfigProperty(SuccessFactorsPluginConfig.ENTITY_NAME);
         break;
       case HttpURLConnection.HTTP_NOT_FOUND:
-        errMsg = isRuntimeError ? errMsg : ResourceConstants.ERR_ODATA_ENTITY_FAILURE.getMsgForKeyWithCode(errMsg);
         failureCollector.addFailure(errMsg, ResourceConstants.ERR_NOT_FOUND.getMsgForKey());
         break;
       case HttpURLConnection.HTTP_BAD_REQUEST:
-        errMsg = isRuntimeError ? errMsg : ResourceConstants.ERR_ODATA_ENTITY_FAILURE.getMsgForKeyWithCode(errMsg);
         failureCollector.addFailure(errMsg, ResourceConstants.ERR_CHECK_ADVANCED_PARAM.getMsgForKey());
         break;
 
       default:
-        errMsg = isRuntimeError ? errMsg : ResourceConstants.ERR_ODATA_ENTITY_FAILURE.getMsgForKeyWithCode(errMsg);
         failureCollector.addFailure(errMsg, null);
     }
   }
