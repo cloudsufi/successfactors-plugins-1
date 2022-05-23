@@ -95,6 +95,25 @@
           }
         },
         {
+          "widget-type": "radio-group",
+          "label": "Pagination Type",
+          "name": "paginationType",
+          "widget-attributes": {
+            "layout": "inline",
+            "default": "serverside",
+            "options": [
+              {
+                "id": "clientSide",
+                "label": "Client-Side Pagination"
+              },
+              {
+                "id": "serverSide",
+                "label": "Server-Side Pagination"
+              }
+            ]
+          }
+        },
+        {
           "widget-type": "number",
           "label": "Number of Rows to Skip",
           "name": "skipRowCount",

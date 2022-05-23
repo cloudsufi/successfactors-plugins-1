@@ -56,7 +56,8 @@ public class SuccessFactorsInputFormatTest {
                                                               null,
                                                               null,
                                                               null,
-                                                              null));
+                                                              null,
+                                                              "serverside"));
   }
 
   @Test

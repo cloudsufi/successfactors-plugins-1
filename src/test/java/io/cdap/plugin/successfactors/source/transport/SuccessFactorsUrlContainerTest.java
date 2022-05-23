@@ -39,7 +39,8 @@ public class SuccessFactorsUrlContainerTest {
                                                               null,
                                                               null,
                                                               null,
-                                                              null));
+                                                              null,
+                                                              "serverside"));
   }
   @Test
   public void testGetTesterURL() {

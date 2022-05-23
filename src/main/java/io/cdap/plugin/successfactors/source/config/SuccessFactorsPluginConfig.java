@@ -47,6 +47,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   public static final String SPLIT_COUNT = "splitCount";
   public static final String BATCH_SIZE = "batchSize";
   public static final String NAME_SCHEMA = "schema";
+  public static final String PAGINATION_TYPE = "paginationType";
   public static final String REFERENCE_NAME = "referenceName";
   public static final String REFERENCE_NAME_DESCRIPTION = "This will be used to uniquely identify this source/sink " +
     "for lineage, annotating metadata, etc.";
@@ -141,6 +142,11 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   @Description("The schema of the table to read.")
   private String schema;
 
+  @Name(PAGINATION_TYPE)
+  @Macro
+  @Description("The type of pagination to be used.")
+  private String paginationType;
+  
   public SuccessFactorsPluginConfig(String referenceName,
                              String baseURL,
                              String entityName,
@@ -153,7 +159,8 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
                              @Nullable Long skipRowCount,
                              @Nullable Long numRowsToFetch,
                              @Nullable Integer splitCount,
-                             @Nullable Long batchSize) {
+                             @Nullable Long batchSize,
+                             String paginationType) {
 
     this.referenceName = referenceName;
     this.baseURL = baseURL;
@@ -168,6 +175,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     this.numRowsToFetch = numRowsToFetch;
     this.splitCount = splitCount;
     this.batchSize = batchSize;
+    this.paginationType = paginationType;
   }
 
   public static Builder builder() {
@@ -241,6 +249,10 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
 
   public long getBatchSize() {
     return this.batchSize == null ? 0 : this.batchSize;
+  }
+
+  public String getPaginationType() {
+    return this.paginationType;
   }
 
   /**
@@ -388,6 +400,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     private Long numRowsToFetch;
     private Integer splitCount;
     private Long batchSize;
+    private String paginationType;
 
     public Builder referenceName(String referenceName) {
       this.referenceName = referenceName;
@@ -454,10 +467,15 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
       return this;
     }
 
+    public Builder paginationType(@Nullable String paginationType) {
+      this.paginationType = paginationType;
+      return this;
+    }
+
     public SuccessFactorsPluginConfig build() {
       return new SuccessFactorsPluginConfig(referenceName, baseURL, entityName, associateEntityName, username, password,
                                             filterOption, selectOption, expandOption, skipRowCount, numRowsToFetch,
-                                            splitCount, batchSize);
+                                            splitCount, batchSize, paginationType);
     }
   }
 }
