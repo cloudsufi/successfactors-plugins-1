@@ -239,10 +239,9 @@ public class SuccessFactorsService {
    * @return list of {@code SuccessFactorsEntry}
    * @throws TransportException    any http client exceptions are wrapped under it.
    * @throws SuccessFactorsServiceException any OData service based exception is wrapped under it.
-   * @throws InterruptedException  any error in case of retry suspension state.
    */
   public List<ODataEntry> readServiceEntityData(Edm edm, long skip, long top)
-    throws SuccessFactorsServiceException, TransportException, InterruptedException {
+    throws SuccessFactorsServiceException, TransportException {
 
     SuccessFactorsEntityProvider serviceHelper = new SuccessFactorsEntityProvider(edm);
     try (InputStream dataStream = callEntityData(skip, top)) {
@@ -286,10 +285,9 @@ public class SuccessFactorsService {
    * @return {@code InputStream}
    * @throws TransportException    any http client exceptions are wrapped under it.
    * @throws SuccessFactorsServiceException any OData service based exception is wrapped under it.
-   * @throws InterruptedException  any error in case of retry suspension state.
    */
   private InputStream callEntityData(long skip, long top)
-    throws SuccessFactorsServiceException, TransportException, InterruptedException {
+    throws SuccessFactorsServiceException, TransportException, IOException {
 
     URL dataURL = urlContainer.getDataFetchURL(skip, top);
     SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient.callSuccessFactorsWithRetry(dataURL);

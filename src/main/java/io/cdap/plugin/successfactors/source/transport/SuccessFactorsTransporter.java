@@ -16,6 +16,12 @@
 
 package io.cdap.plugin.successfactors.source.transport;
 
+import com.github.rholder.retry.RetryException;
+import com.github.rholder.retry.Retryer;
+import com.github.rholder.retry.RetryerBuilder;
+import com.github.rholder.retry.StopStrategies;
+import com.github.rholder.retry.WaitStrategies;
+import io.cdap.plugin.successfactors.common.exception.RetryableException;
 import io.cdap.plugin.successfactors.common.exception.TransportException;
 import io.cdap.plugin.successfactors.common.util.ResourceConstants;
 import io.cdap.plugin.successfactors.source.service.SuccessFactorsService;
@@ -29,8 +35,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.ws.rs.core.MediaType;
+
+import static io.netty.channel.rxtx.RxtxChannelOption.WAIT_TIME;
 
 
 /**
@@ -40,6 +50,10 @@ import javax.ws.rs.core.MediaType;
 public class SuccessFactorsTransporter {
   public static final String SERVICE_VERSION = "dataserviceversion";
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsTransporter.class);
+  private static final long WAIT_TIME = 5;
+  private static final long MAX_NUMBER_OF_RETRY_ATTEMPTS = 5;
+
+
   private final String username;
   private final String password;
 
@@ -85,10 +99,9 @@ public class SuccessFactorsTransporter {
    * @param endpoint record fetch URL
    * @return {@code SuccessFactorsResponseContainer}
    * @throws TransportException   any http client exceptions are wrapped under it
-   * @throws InterruptedException any error in case of retry suspension state
    */
   public SuccessFactorsResponseContainer callSuccessFactorsWithRetry(URL endpoint)
-    throws TransportException, InterruptedException {
+    throws TransportException, IOException {
 
     LOG.debug(ResourceConstants.DEBUG_CALL_SERVICE_START.getMsgForKey(SuccessFactorsService.DATA));
     Response res = retrySapTransportCall(endpoint, MediaType.APPLICATION_JSON);
@@ -111,7 +124,7 @@ public class SuccessFactorsTransporter {
    * @throws TransportException   any http client exceptions are wrapped under it
    * @throws InterruptedException any error in case of retry suspension state
    */
-  private Response retrySapTransportCall(URL endpoint, String mediaType)
+  private Response retrySapTransportCallOld(URL endpoint, String mediaType)
     throws TransportException, InterruptedException {
 
     // Maximum amount of retries.
@@ -148,6 +161,32 @@ public class SuccessFactorsTransporter {
 
       retryCount++;
     }
+  }
+
+  public Response retrySapTransportCall(URL endpoint, String mediaType) throws IOException {
+    final Response[] res = new Response[1];
+    Callable<Boolean> fetchRecords = () -> {
+      res[0] = transport(endpoint, mediaType);
+      if (res != null && res[0] != null && res[0].code() >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
+        throw new RetryableException();
+      }
+      return true;
+    };
+
+    Retryer<Boolean> retryer = RetryerBuilder.<Boolean>newBuilder()
+      .retryIfExceptionOfType(RetryableException.class)
+      .withWaitStrategy(WaitStrategies.exponentialWait(WAIT_TIME, TimeUnit.SECONDS))
+      .withStopStrategy(StopStrategies.stopAfterAttempt((int) MAX_NUMBER_OF_RETRY_ATTEMPTS))
+      .build();
+
+    try {
+      retryer.call(fetchRecords);
+    } catch (RetryException | ExecutionException e) {
+      LOG.error("Data Recovery failed for URL {}.", endpoint);
+      throw new IOException();
+    }
+
+    return res[0];
   }
 
   /**
