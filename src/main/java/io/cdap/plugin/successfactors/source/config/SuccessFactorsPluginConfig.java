@@ -42,11 +42,8 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   public static final String ASSOCIATED_ENTITY_NAME = "associatedEntityName";
   public static final String UNAME = "username";
   public static final String PASSWORD = "password";
-  public static final String SKIP_ROW_COUNT = "skipRowCount";
-  public static final String NUM_ROWS_TO_FETCH = "numRowsToFetch";
-  public static final String SPLIT_COUNT = "splitCount";
-  public static final String BATCH_SIZE = "batchSize";
   public static final String NAME_SCHEMA = "schema";
+  public static final String PAGINATION_TYPE = "paginationType";
   public static final String REFERENCE_NAME = "referenceName";
   public static final String REFERENCE_NAME_DESCRIPTION = "This will be used to uniquely identify this source/sink " +
     "for lineage, annotating metadata, etc.";
@@ -99,34 +96,6 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   @Macro
   @Description("List of navigation fields to be expanded in the extracted output data e.g.: State/City")
   private final String expandOption;
-
-  @Name(SKIP_ROW_COUNT)
-  @Nullable
-  @Macro
-  @Description("Number of rows to skip e.g.: 10")
-  private final Long skipRowCount;
-
-  @Name(NUM_ROWS_TO_FETCH)
-  @Nullable
-  @Macro
-  @Description("Total number of rows to be extracted (accounts for conditions specified in Filter Options).")
-  private final Long numRowsToFetch;
-
-  @Name(SPLIT_COUNT)
-  @Nullable
-  @Macro
-  @Description("The number of splits used to partition the input data. More partitions will increase the level of " +
-    "parallelism, but will require more resources and overhead.")
-  private final Integer splitCount;
-
-  @Name(BATCH_SIZE)
-  @Nullable
-  @Macro
-  @Description("Number of rows to fetch in each network call to SAP SussecssFactors. Smaller size will cause frequent "
-    +
-    "network calls repeating the associated overhead. A large size may slow down data retrieval & cause " +
-    "excessive resource usage in SAP SuccessFactors.")
-  private final Long batchSize;
   
   /**
    * Basic parameters.
@@ -141,6 +110,11 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   @Description("The schema of the table to read.")
   private String schema;
 
+  @Name(PAGINATION_TYPE)
+  @Macro
+  @Description("The type of pagination to be used.")
+  private String paginationType;
+
   SuccessFactorsPluginConfig(String referenceName,
                              String baseURL,
                              String entityName,
@@ -150,10 +124,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
                              @Nullable String filterOption,
                              @Nullable String selectOption,
                              @Nullable String expandOption,
-                             @Nullable Long skipRowCount,
-                             @Nullable Long numRowsToFetch,
-                             @Nullable Integer splitCount,
-                             @Nullable Long batchSize) {
+                             String paginationType) {
 
     this.referenceName = referenceName;
     this.baseURL = baseURL;
@@ -164,10 +135,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     this.filterOption = filterOption;
     this.selectOption = selectOption;
     this.expandOption = expandOption;
-    this.skipRowCount = skipRowCount;
-    this.numRowsToFetch = numRowsToFetch;
-    this.splitCount = splitCount;
-    this.batchSize = batchSize;
+    this.paginationType = paginationType;
   }
 
   public static Builder builder() {
@@ -227,20 +195,8 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     return SuccessFactorsUtil.removeWhitespace(this.expandOption);
   }
 
-  public long getSkipRowCount() {
-    return this.skipRowCount == null ? 0 : this.skipRowCount;
-  }
-
-  public long getNumRowsToFetch() {
-    return this.numRowsToFetch == null ? 0 : this.numRowsToFetch;
-  }
-
-  public int getSplitCount() {
-    return this.splitCount == null ? 0 : this.splitCount;
-  }
-
-  public long getBatchSize() {
-    return this.batchSize == null ? 0 : this.batchSize;
+  public String getPaginationType() {
+    return this.paginationType;
   }
 
   /**
@@ -280,7 +236,6 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     LOG.debug("Validating the Basic Security Type parameters.");
     validateBasicCredentials(failureCollector);
     LOG.debug("Validating the advanced parameters.");
-    validateAdvanceParameters(failureCollector);
     validateEntityParameter(failureCollector);
     failureCollector.getOrThrowException();
   }
@@ -327,35 +282,6 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   }
 
   /**
-   * Validates the advance parameters.
-   *
-   * @param failureCollector {@code FailureCollector}
-   */
-  private void validateAdvanceParameters(FailureCollector failureCollector) {
-
-    String action = ResourceConstants.ERR_NEGATIVE_PARAM_ACTION.getMsgForKey();
-
-    if (!containsMacro(SKIP_ROW_COUNT) && getSkipRowCount() < 0) {
-      String errMsg = ResourceConstants.ERR_NEGATIVE_PARAM_PREFIX.getMsgForKey("Number of Rows to Skip");
-      failureCollector.addFailure(errMsg, action).withConfigProperty(SKIP_ROW_COUNT);
-    }
-
-    if (!containsMacro(NUM_ROWS_TO_FETCH) && getNumRowsToFetch() < 0) {
-      String errMsg = ResourceConstants.ERR_NEGATIVE_PARAM_PREFIX.getMsgForKey("Number of Rows to Fetch");
-      failureCollector.addFailure(errMsg, action).withConfigProperty(NUM_ROWS_TO_FETCH);
-    }
-
-    if (!containsMacro(SPLIT_COUNT) && getSplitCount() < 0) {
-      String errMsg = ResourceConstants.ERR_NEGATIVE_PARAM_PREFIX.getMsgForKey("Number of Splits to Generate");
-      failureCollector.addFailure(errMsg, action).withConfigProperty(SPLIT_COUNT);
-    }
-    if (!containsMacro(BATCH_SIZE) && (getBatchSize() < 0 || getBatchSize() > 5000)) {
-      String errMsg = ResourceConstants.ERR_NEGATIVE_PARAM_PREFIX.getMsgForKey("Batch Size");
-      failureCollector.addFailure(errMsg, action).withConfigProperty(BATCH_SIZE);
-    }
-  }
-
-  /**
    * Checks if the Entity field contains any 'Key' values e.g Products(2). Then throws the error as this is not
    * supported.
    *
@@ -384,10 +310,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     private String filterOption;
     private String selectOption;
     private String expandOption;
-    private Long skipRowCount;
-    private Long numRowsToFetch;
-    private Integer splitCount;
-    private Long batchSize;
+    private String paginationType;
 
     public Builder referenceName(String referenceName) {
       this.referenceName = referenceName;
@@ -433,31 +356,16 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
       this.expandOption = expandOption;
       return this;
     }
-
-    public Builder skipRowCount(@Nullable Long skipRowCount) {
-      this.skipRowCount = skipRowCount;
+    
+    public Builder paginationType(@Nullable String paginationType) {
+      this.paginationType = paginationType;
       return this;
     }
-
-    public Builder numRowsToFetch(@Nullable Long numRowsToFetch) {
-      this.numRowsToFetch = numRowsToFetch;
-      return this;
-    }
-
-    public Builder splitCount(@Nullable Integer splitCount) {
-      this.splitCount = splitCount;
-      return this;
-    }
-
-    public Builder batchSize(@Nullable Long batchSize) {
-      this.batchSize = batchSize;
-      return this;
-    }
+    
 
     public SuccessFactorsPluginConfig build() {
       return new SuccessFactorsPluginConfig(referenceName, baseURL, entityName, associateEntityName, username, password,
-                                            filterOption, selectOption, expandOption, skipRowCount, numRowsToFetch,
-                                            splitCount, batchSize);
+                                            filterOption, selectOption, expandOption, paginationType);
     }
   }
 }

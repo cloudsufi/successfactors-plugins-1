@@ -22,15 +22,9 @@ package io.cdap.plugin.successfactors.common.exception;
  * i.e. invalid host, retry error or any IOException
  */
 public class TransportException extends Exception {
-
-  public static final int IO_ERROR = 0;
-  private static final int errorType = IO_ERROR;
-
+  
   public TransportException(String message, Throwable cause) {
     super(message, cause);
   }
 
-  public int getErrorType() {
-    return errorType;
-  }
 }

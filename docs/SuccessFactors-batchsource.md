@@ -125,15 +125,9 @@ All the fields must be comma (,) separated.
 e.g.: customManager
 **Associated Entity Name (M, O)**: Name of the Associated Entity which is being extracted
 e.g.: EmpCompensationCalculated
-**Number of Rows to Skip (M, O)**: Number of rows to skip e.g.: 10.  
-**Number of Rows to Fetch (M, O)**: Total number of rows to be extracted (accounts for conditions specified
-in Filter Options).     
-**Number of Splits to Generate (M, O)**: The number of splits is used to partition the input data. If not specified at UI, by default it is 8 splits. Otherwise, the user-provided splits at UI prevail over
-defaulted splits.    
-**Batch Size (M, O)**: Number of rows to fetch in each network call to SAP SuccessFactors. Smaller size will cause frequent
-network calls repeating the associated overhead. A large size may slow down data retrieval & cause
-excessive resource usage in SAP SuccessFactors. If this value is set to 0, default value is set to 2500 and max limit on
-rows to fetch in each batch is 5000.
+**Pagination Type (M, O)** : The type of pagination to be used. Server side pagination is chosen by default. 
+Server Side Pagination uses Snapshot based pagination. If snapshot-based pagination is attempted on an entity that 
+doesn’t support the feature, the server automatically forces client offset pagination on the query.
 
 Data Type Mappings from SuccessFactors to CDAP
 ----------

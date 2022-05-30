@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -128,14 +129,7 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
     } catch (TransportException te) {
       String errorMsg = ExceptionParser.buildTransportError(te);
       errorMsg = ResourceConstants.ERR_ODATA_SERVICE_CALL.getMsgForKeyWithCode(errorMsg);
-      switch (te.getErrorType()) {
-        case TransportException.IO_ERROR:
-          failureCollector.addFailure(errorMsg, null)
-            .withConfigProperty(SuccessFactorsPluginConfig.BASE_URL);
-          break;
-        default:
-          failureCollector.addFailure(errorMsg, null);
-      }
+      failureCollector.addFailure(errorMsg, null).withConfigProperty(SuccessFactorsPluginConfig.BASE_URL);
     } catch (SuccessFactorsServiceException ose) {
       attachFieldWithError(ose, failureCollector);
     }
@@ -191,11 +185,8 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
     SuccessFactorsTransporter transporter = new SuccessFactorsTransporter(config.getUsername(), config.getPassword());
 
     SuccessFactorsService successFactorsService = new SuccessFactorsService(config, transporter);
-
-    long skipRowCount = config.getSkipRowCount();
-    long fetchRowCount = config.getNumRowsToFetch();
-    int splitCount = config.getSplitCount();
-    long packageSize = config.getBatchSize();
+    
+    long fetchRowCount = 0;
 
     long availableRowCount = successFactorsService.getTotalAvailableRowCount();
 
@@ -212,9 +203,13 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
     }
 
     SuccessFactorsPartitionBuilder partitionBuilder = new SuccessFactorsPartitionBuilder();
-    List<SuccessFactorsInputSplit> partitions = partitionBuilder.buildSplit(availableRowCount,
-                                                                            fetchRowCount, skipRowCount, splitCount,
-                                                                            packageSize);
+    List<SuccessFactorsInputSplit> partitions;
+    if (config.getPaginationType().equals("serverSide")) {
+      partitions = new ArrayList<>();
+      partitions.add(new SuccessFactorsInputSplit());
+    } else {
+      partitions = partitionBuilder.buildSplit(availableRowCount, fetchRowCount);
+    }
 
     setJobForDataRead(context, outputSchema, partitions, successFactorsService);
   }

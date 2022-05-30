@@ -95,37 +95,22 @@
           }
         },
         {
-          "widget-type": "number",
-          "label": "Number of Rows to Skip",
-          "name": "skipRowCount",
+          "widget-type": "radio-group",
+          "label": "Pagination Type",
+          "name": "paginationType",
           "widget-attributes": {
-            "min": "0"
-          }
-        },
-        {
-          "widget-type": "number",
-            "label": "Number of Rows to Fetch",
-          "name": "numRowsToFetch",
-          "widget-attributes": {
-            "min": "0"
-          }
-        },
-        {
-          "widget-type": "number",
-          "label": "Number of Splits to Generate",
-          "name": "splitCount",
-          "widget-attributes": {
-            "min": "0",
-            "max": "10"
-          }
-        },
-        {
-          "widget-type": "number",
-          "label": "Batch Size",
-          "name": "batchSize",
-          "widget-attributes": {
-            "min": "0",
-            "max": "5000"
+            "layout": "inline",
+            "default": "serverSide",
+            "options": [
+              {
+                "id": "serverSide",
+                "label": "Server-Side Pagination"
+              },
+              {
+                "id": "clientSide",
+                "label": "Client-Side Pagination"
+              }
+            ]
           }
         }
       ]

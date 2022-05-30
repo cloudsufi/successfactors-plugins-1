@@ -40,6 +40,7 @@ public class SuccessFactorsUrlContainer {
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsUrlContainer.class);
   private static final String TOP_OPTION = "$top";
   private static final String SKIP_OPTION = "$skip";
+  private static final String METADATA = "$metadata";
   private static final String PROPERTY_SEPARATOR = ",";
   private final SuccessFactorsPluginConfig pluginConfig;
 
@@ -76,7 +77,7 @@ public class SuccessFactorsUrlContainer {
     URL metadataURL = HttpUrl.parse(pluginConfig.getBaseURL())
       .newBuilder()
       .addPathSegments(pluginConfig.getEntityName())
-      .addPathSegment("$metadata")
+      .addPathSegment(METADATA)
       .build()
       .url();
     
@@ -86,7 +87,7 @@ public class SuccessFactorsUrlContainer {
         .addPathSegments(pluginConfig.getEntityName()
         .concat(PROPERTY_SEPARATOR)
         .concat(pluginConfig.getAssociatedEntityName()))
-        .addPathSegment("$metadata")
+        .addPathSegment(METADATA)
         .build()
         .url();
     }
@@ -175,6 +176,9 @@ public class SuccessFactorsUrlContainer {
     }
     if (top != null) {
       builder.addQueryParameter(TOP_OPTION, String.valueOf(top));
+    }
+    if (skip == null && top == null) {
+      builder.addQueryParameter("paging", "snapshot");
     }
     URL dataURL = builder.build().url();
 

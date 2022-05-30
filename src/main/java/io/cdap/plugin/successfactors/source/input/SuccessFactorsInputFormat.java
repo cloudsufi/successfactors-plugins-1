@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This {@code SuccessFactorsInputFormat} defines the InputFormat implementation for SuccessFactors.
@@ -89,9 +90,13 @@ public class SuccessFactorsInputFormat extends InputFormat<LongWritable, Structu
 
     try {
       Edm edmData = successFactorsService.getSuccessFactorsServiceEdm(encodedMetadataString);
-      return new SuccessFactorsRecordReader(successFactorsService, edmData, outputSchema, inputSplit.getStart(),
-                                            inputSplit.getEnd(),
-                                            inputSplit.getPackageSize());
+      if (!Objects.equals(pluginConfig.getPaginationType(), "serverSide")) {
+        return new SuccessFactorsRecordReader(successFactorsService, edmData, outputSchema, inputSplit.getStart(),
+                                              inputSplit.getEnd(), inputSplit.getPackageSize());
+      } else {
+        return new SuccessFactorsRecordReader
+          (successFactorsService, edmData, outputSchema, null, null, null);
+      }
     } catch (SuccessFactorsServiceException e) {
       throw new IOException(e.getMessage(), e);
     }

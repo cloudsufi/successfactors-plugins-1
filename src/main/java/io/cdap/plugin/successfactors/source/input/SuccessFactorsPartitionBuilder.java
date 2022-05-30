@@ -38,10 +38,8 @@ public class SuccessFactorsPartitionBuilder {
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsPartitionBuilder.class);
 
   public static final int DEFAULT_SPLIT_COUNT = 8;
-  public static final long DEFAULT_PACKAGE_SIZE = 2500L;
-
+  public static final long MAX_ALLOWED_PACKAGE_SIZE = 1000L;
   public static final int MAX_ALLOWED_SPLIT_COUNT = 10;
-  public static final long MAX_ALLOWED_BATCH_SIZE = 5000L;
 
   /**
    * builds the list of {@code SuccessFactorsInputSplit}
@@ -49,47 +47,32 @@ public class SuccessFactorsPartitionBuilder {
    * @param availableRecordCount available row count
    * @param fetchRowCount        plugin property, number of rows to extract. 0 (zero) means the total record to fetch
    *                             will be same as total number of available records.
-   * @param skipRowCount         plugin property, number of rows to skip
-   * @param splitCount           plugin property, number of splits required. 0 (zero) means system calculated split
-   *                             count will be used.
-   * @param packageSize          plugin property, number of records to extract in each package
    * @return list of {@code SuccessFactorsInputSplit}
    */
-  public List<SuccessFactorsInputSplit> buildSplit(long availableRecordCount, long fetchRowCount,
-                                                   long skipRowCount,
-                                                   int splitCount, long packageSize) {
+  public List<SuccessFactorsInputSplit> buildSplit(long availableRecordCount, long fetchRowCount) {
 
     List<SuccessFactorsInputSplit> list = new ArrayList<>();
 
-    long recordReadStartIndex = (skipRowCount == 0 ? 1 : (skipRowCount + 1));
-    long actualRecordToExtract = (fetchRowCount == 0 ? availableRecordCount - skipRowCount : fetchRowCount);
-    long totalCount = actualRecordToExtract + skipRowCount;
+    long recordReadStartIndex = 1;
+    long actualRecordToExtract = (fetchRowCount == 0 ? availableRecordCount : fetchRowCount);
+    long totalCount = actualRecordToExtract;
     long recordReadEndIndex = Math.min(totalCount, availableRecordCount);
     if (totalCount > availableRecordCount) {
-      actualRecordToExtract = availableRecordCount - skipRowCount;
+      actualRecordToExtract = availableRecordCount;
       if (actualRecordToExtract <= 0) {
         String msg = String.format("As per the provided configuration no records were found for extraction. " +
           "Please check the 'Advanced properties' i.e. 'Number of rows to skip' and 'Number of rows to fetch'.");
         throw new IllegalArgumentException(msg);
       }
     }
+    
+    // setting up the optimal package size values
+    long packageSize = Math.min(actualRecordToExtract, MAX_ALLOWED_PACKAGE_SIZE);
 
-    if (packageSize == 0) {
-      // defaulting the package size
-      packageSize = DEFAULT_PACKAGE_SIZE;
-    }
+    int splitCount = DEFAULT_SPLIT_COUNT;
 
-    // setting up the optimal values based on max allowed values
-    packageSize = Math.min(packageSize, actualRecordToExtract);
-    packageSize = Math.min(packageSize, MAX_ALLOWED_BATCH_SIZE);
-
-    if (splitCount == 0) {
-      // defaulting the split size
-      splitCount = DEFAULT_SPLIT_COUNT;
-    }
-
-    // in case total fetch record count is less then DEFAULT_PACKAGE_SIZE then Split count will be defaulted to 1.
-    if (packageSize <= DEFAULT_PACKAGE_SIZE && actualRecordToExtract <= DEFAULT_PACKAGE_SIZE) {
+    // in case total fetch record count is less than the DEFAULT_PACKAGE_SIZE then Split count will be defaulted to 1.
+    if (actualRecordToExtract <= MAX_ALLOWED_PACKAGE_SIZE) {
       splitCount = 1;
     }
 
@@ -102,7 +85,6 @@ public class SuccessFactorsPartitionBuilder {
     long leftoverLoadCount = actualRecordToExtract % splitCount;
 
     LOG.info("Total number to available record: {}", availableRecordCount);
-    LOG.info("Total number to records to skip: {}", skipRowCount);
     LOG.info("Total number of record to extract: {}", actualRecordToExtract);
     LOG.info("Record extraction to begin at index: {}", recordReadStartIndex);
     LOG.info("Record extraction to end at index: {}", recordReadEndIndex);

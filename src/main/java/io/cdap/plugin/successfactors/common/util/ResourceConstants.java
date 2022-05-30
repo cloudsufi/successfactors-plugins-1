@@ -25,7 +25,6 @@ public enum ResourceConstants {
   ERR_MISSING_PARAM_PREFIX(null, "err.missing.param.prefix"),
   ERR_MISSING_PARAM_OR_MACRO_ACTION(null, "err.missing.param.or.macro.action"),
   ERR_NEGATIVE_PARAM_PREFIX(null, "err.negative.param.prefix"),
-  ERR_NEGATIVE_PARAM_ACTION(null, "err.negative.param.action"),
   ERR_INVALID_BASE_URL(null, "err.invalid.base.url"),
   ERR_FEATURE_NOT_SUPPORTED("CDF_SAP_SUCCESSFACTORS_01500", "err.feature.not.supported"),
   ROOT_CAUSE_LOG(null, "root.cause.log"),

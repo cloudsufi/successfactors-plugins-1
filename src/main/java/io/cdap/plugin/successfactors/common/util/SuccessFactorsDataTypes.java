@@ -28,7 +28,6 @@ public final class SuccessFactorsDataTypes {
   public static final String DOUBLE = "Double";
   public static final String FLOAT = "Float";
   public static final String DECIMAL = "Decimal";
-  public static final String GUID = "Guid";
   public static final String STRING = "String";
   public static final String BINARY = "Binary";
   public static final String BOLLEAN = "Boolean";

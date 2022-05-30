@@ -46,6 +46,7 @@ public class ExceptionParser {
   public static final int INVALID_VERSION_FOUND = 2;
 
   private static final Gson GSON = new Gson();
+  private static final String SUPPORTED_DATASERVICE_VERSION = "2.0";
 
   private ExceptionParser() {
   }
@@ -86,11 +87,13 @@ public class ExceptionParser {
           new InputStreamReader(rawStream, StandardCharsets.UTF_8))) {
 
           rawResponseString = bufferedReader.lines().collect(Collectors.joining(" "));
+          // For handling broken hyperlinks to SAP docs in error messages returned by SAP SuccessFactors OData v2 API
           if (rawResponseString.contains("Refer to https")) {
             rawResponseString = rawResponseString.substring(0, rawResponseString.indexOf("Refer to https"));
           }
         } catch (IOException ioe) {
           // no-ops
+          LOG.error("Exception thrown while reading input stream ", ioe);
         }
       }
 
@@ -103,7 +106,7 @@ public class ExceptionParser {
         // html errors are only found in case of invalid SuccessFactors service namespace
         if (rawResponseString.startsWith("<html>")) {
           failureMessage += ResourceConstants.ERR_INVALID_ENTITY_NAME.getMsgForKey();
-          throw new SuccessFactorsServiceException(failureMessage, SuccessFactorsServiceException.INVALID_SERVICE);
+          throw new SuccessFactorsServiceException(failureMessage, responseContainer.getHttpStatusCode());
         }
 
         // this exception may occur when the rawResponseString contains non-json format such as text | html and in
@@ -118,9 +121,9 @@ public class ExceptionParser {
       throw new SuccessFactorsServiceException(failureMessage, NO_VERSION_FOUND);
     }
 
-    if (!responseContainer.getDataServiceVersion().equals("2.0")) {
+    if (!responseContainer.getDataServiceVersion().equals(SUPPORTED_DATASERVICE_VERSION)) {
       failureMessage += ResourceConstants.ERR_UNSUPPORTED_VERSION
-        .getMsgForKey(responseContainer.getDataServiceVersion(), "2.0");
+        .getMsgForKey(responseContainer.getDataServiceVersion(), SUPPORTED_DATASERVICE_VERSION);
 
       throw new SuccessFactorsServiceException(failureMessage, INVALID_VERSION_FOUND);
     }
