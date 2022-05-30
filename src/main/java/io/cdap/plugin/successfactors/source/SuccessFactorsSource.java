@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -222,9 +223,14 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
     }
 
     SuccessFactorsPartitionBuilder partitionBuilder = new SuccessFactorsPartitionBuilder();
-    List<SuccessFactorsInputSplit> partitions = partitionBuilder.buildSplit(availableRowCount,
-                                                                            fetchRowCount, skipRowCount, splitCount,
-                                                                            packageSize);
+    List<SuccessFactorsInputSplit> partitions;
+    if (config.getPaginationType().equals("serverSide")) {
+      partitions = new ArrayList<>();
+      partitions.add(new SuccessFactorsInputSplit());
+    } else {
+      partitions = partitionBuilder
+        .buildSplit(availableRowCount, fetchRowCount, skipRowCount, splitCount, packageSize);
+    }
 
     setJobForDataRead(context, outputSchema, partitions, successFactorsService);
   }

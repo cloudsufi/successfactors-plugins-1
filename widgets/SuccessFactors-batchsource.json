@@ -100,15 +100,15 @@
           "name": "paginationType",
           "widget-attributes": {
             "layout": "inline",
-            "default": "serverside",
+            "default": "serverSide",
             "options": [
-              {
-                "id": "clientSide",
-                "label": "Client-Side Pagination"
-              },
               {
                 "id": "serverSide",
                 "label": "Server-Side Pagination"
+              },
+              {
+                "id": "clientSide",
+                "label": "Client-Side Pagination"
               }
             ]
           }

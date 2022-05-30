@@ -176,6 +176,9 @@ public class SuccessFactorsUrlContainer {
     if (top != null) {
       builder.addQueryParameter(TOP_OPTION, String.valueOf(top));
     }
+    if (skip == null && top == null) {
+      builder.addQueryParameter("paging", "snapshot");
+    }
     URL dataURL = builder.build().url();
 
     LOG.debug(ResourceConstants.DEBUG_DATA_ENDPOINT.getMsgForKey(dataURL));

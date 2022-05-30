@@ -80,6 +80,7 @@ public class SuccessFactorsSourceTest {
       .entityName("entity name")
       .username("username")
       .password("password")
+      .paginationType("serverSide")
       .selectOption("col1,col2,   \n  parent/col1,\r       col3     ");
   }
 
@@ -297,6 +298,7 @@ public class SuccessFactorsSourceTest {
       .entityName("entity name")
       .username("username")
       .password("password")
+      .paginationType("serverSide")
       .selectOption("col1,col2,   \n  parent/col1,\r       col3     ")
       .filterOption("$topeq2")
       .splitCount(5)

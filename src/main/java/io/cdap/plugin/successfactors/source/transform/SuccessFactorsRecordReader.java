@@ -41,20 +41,21 @@ public class SuccessFactorsRecordReader extends RecordReader<LongWritable, Struc
   private final SuccessFactorsService successFactorsService;
   private final Edm edmData;
   private final SuccessFactorsTransformer valueConverter;
-  private final long start;
-  private final long end;
-  private final long packageSize;
-  private long skipCount;
-  private long fetchCount;
+  private final Long start;
+  private final Long end;
+  private final Long packageSize;
+  private Long skipCount;
+  private Long fetchCount;
   private long numRowsProcessed;
   private LongWritable key;
   private List<ODataEntry> oDataEntryList;
   private Iterator<ODataEntry> dataEntryIterator;
   private StructuredRecord dataRecord;
+  public static boolean nextCallRequired = true;
 
   public SuccessFactorsRecordReader(SuccessFactorsService successFactorsService, Edm edmData, Schema pluginSchema,
-                                    long start, long end,
-                                    long packageSize) {
+                                    Long start, Long end,
+                                    Long packageSize) {
 
     this.successFactorsService = successFactorsService;
     this.edmData = edmData;
@@ -78,7 +79,9 @@ public class SuccessFactorsRecordReader extends RecordReader<LongWritable, Struc
       if (!isCallRequired()) {
         return false;
       }
-      calculateSkipAndFetchCount();
+      if (start != null && end != null && packageSize != null) {
+        calculateSkipAndFetchCount();
+      }
 
       try {
         // Pulls the data from the SuccessFactors entity for the given range via 'rows to skip' and 'rows to fetch'.
@@ -120,7 +123,11 @@ public class SuccessFactorsRecordReader extends RecordReader<LongWritable, Struc
   }
 
   private boolean isCallRequired() {
-    return getLength() - numRowsProcessed > 0;
+    if (start == null && end == null && packageSize == null) {
+      return nextCallRequired;
+    } else {
+      return getLength() - numRowsProcessed > 0;
+    }
   }
 
   private void calculateSkipAndFetchCount() {
