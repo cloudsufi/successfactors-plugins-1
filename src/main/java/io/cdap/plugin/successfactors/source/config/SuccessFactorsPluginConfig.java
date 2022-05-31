@@ -112,7 +112,8 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
 
   @Name(PAGINATION_TYPE)
   @Macro
-  @Description("The type of pagination to be used.")
+  @Description("The type of pagination to be used. Server-Side Pagination (serverSide) OR Client-Side Pagination " +
+    "(clientSide)")
   private String paginationType;
 
   SuccessFactorsPluginConfig(String referenceName,

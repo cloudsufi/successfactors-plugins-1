@@ -119,12 +119,16 @@ Supported operation are as follows:
 </tbody>
 </table>   
 
+
 **Select Fields (M, O)**: Fields to be preserved in the extracted data. e.g.: Category, Price, Name, Address. In case of empty all the non-navigation fields will be preserved in the extracted data.
-All the fields must be comma (,) separated.  
+All the fields must be comma (,) separated.
+
 **Expand Fields (M, O)**: List of navigation fields to be expanded in the extracted output data
 e.g.: customManager
+
 **Associated Entity Name (M, O)**: Name of the Associated Entity which is being extracted
 e.g.: EmpCompensationCalculated
+
 **Pagination Type (M, O)** : The type of pagination to be used. Server side pagination is chosen by default. 
 Server Side Pagination uses Snapshot based pagination. If snapshot-based pagination is attempted on an entity that 
 doesn’t support the feature, the server automatically forces client offset pagination on the query.
