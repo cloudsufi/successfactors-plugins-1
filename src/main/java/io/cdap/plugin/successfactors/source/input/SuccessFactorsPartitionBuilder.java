@@ -60,8 +60,7 @@ public class SuccessFactorsPartitionBuilder {
     if (totalCount > availableRecordCount) {
       actualRecordToExtract = availableRecordCount;
       if (actualRecordToExtract <= 0) {
-        String msg = String.format("As per the provided configuration no records were found for extraction. " +
-          "Please check the 'Advanced properties' i.e. 'Number of rows to skip' and 'Number of rows to fetch'.");
+        String msg = String.format("As per the provided configuration no records were found for extraction.");
         throw new IllegalArgumentException(msg);
       }
     }
