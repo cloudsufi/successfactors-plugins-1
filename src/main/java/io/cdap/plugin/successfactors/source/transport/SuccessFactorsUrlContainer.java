@@ -181,7 +181,7 @@ public class SuccessFactorsUrlContainer {
     }
     URL dataURL = builder.build().url();
 
-    LOG.debug(ResourceConstants.DEBUG_DATA_ENDPOINT.getMsgForKey(dataURL));
+    LOG.info(ResourceConstants.DEBUG_DATA_ENDPOINT.getMsgForKey(dataURL));
 
     return dataURL;
   }

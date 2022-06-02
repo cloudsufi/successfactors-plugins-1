@@ -265,16 +265,17 @@ public class SuccessFactorsService {
       }
 
       if (dataFeed != null) {
-        String nextLink = dataFeed.getFeedMetadata().getNextLink();
-        if (nextLink != null) {
-          nextUrl = nextLink;
-          LOG.info("Next page url: {}", nextLink);
-        } else {
-          SuccessFactorsRecordReader.nextCallRequired = false;
-          LOG.info("No more pages left, setting nextCallRequired to: {}",
-                    false);
+        if (pluginConfig.getPaginationType().equals("serverSide")) {
+          String nextLink = dataFeed.getFeedMetadata().getNextLink();
+          if (nextLink != null) {
+            nextUrl = nextLink;
+            LOG.info("Next page url: {}", nextLink);
+          } else {
+            SuccessFactorsRecordReader.nextCallRequired = false;
+            LOG.info("No more pages left, setting nextCallRequired to: {}",
+                     false);
+          }
         }
-
         return dataFeed.getEntries();
       }
     } catch (EdmException | EntityProviderException | IOException ex) {
