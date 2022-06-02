@@ -58,8 +58,6 @@ Feature: SuccessFactors Source - Design time scenarios (macros)
     And Click on the Macro button of Property: "filterOption" and set the value in textarea: "filterOption"
     And Click on the Macro button of Property: "selectOption" and set the value in textarea: "selectOption"
     And Click on the Macro button of Property: "expandOption" and set the value to: "expandOption"
-    And Click on the Macro button of Property: "skipRowCount" and set the value to: "skipRowCount"
-    And Click on the Macro button of Property: "numRowsToFetch" and set the value to: "numRowsToFetch"
-    And Click on the Macro button of Property: "splitCount" and set the value to: "splitCount"
-    And Click on the Macro button of Property: "batchSize" and set the value to: "batchSize"
+    And Click on the Macro button of Property: "associatedEntityName" and set the value to: "associatedEntityName"
+    And Click on the Macro button of Property: "paginationType" and set the value to: "paginationType"
     Then Validate "SAP SuccessFactors" plugin properties

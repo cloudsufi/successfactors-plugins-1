@@ -90,7 +90,7 @@ Feature: SuccessFactors Source - Design time scenarios
       | EmpCompensation | filter.empcomp.selectedfields | filter.empcomp.schema |
 
   @BATCH-TS-SCFA-DSGN-04
-  Scenario Outline: Verify user should be able to validate the plugin with Advanced properties
+  Scenario: Verify user should be able to validate the plugin with Advanced properties
     When Open Datafusion Project to configure pipeline
     And Select data pipeline type as: "Batch"
     And Select plugin: "SAP SuccessFactors" from the plugins list as: "Source"
@@ -101,15 +101,8 @@ Feature: SuccessFactors Source - Design time scenarios
     And Enter input plugin property: "username" with value: "admin.username"
     And Enter input plugin property: "password" with value: "admin.password"
     And Enter textarea plugin property: "selectOption" with value: "eligibileAmount"
-    And Enter input plugin property: "skipRowCount" with value: "<SkipRowCount>"
-    And Enter input plugin property: "numRowsToFetch" with value: "<NumRowsToFetch>"
-    And Enter input plugin property: "splitCount" with value: "<SplitCount>"
-    And Enter input plugin property: "batchSize" with value: "<BatchSize>"
+    And Select radio button plugin property: "paginationType" with value: "paginationtype.client"
     Then Validate "SAP SuccessFactors" plugin properties
-    Examples:
-      | SkipRowCount | NumRowsToFetch | SplitCount | BatchSize   |
-      | 2            | 5              | 5          | 500         |
-      | 10           | 10             | 5          | 10000       |
 
   @BATCH-TS-SCFA-DSGN-05
   Scenario: Verify user should be able to validate the plugin with Expand Fields Property
@@ -123,7 +116,26 @@ Feature: SuccessFactors Source - Design time scenarios
     And Enter input plugin property: "password" with value: "admin.password"
     And Enter textarea plugin property: "selectOption" with value: "customManager,customReports"
     And Enter input plugin property: "expandOption" with value: "customManager,customReports"
+    And Select radio button plugin property: "paginationType" with value: "paginationtype.client"
+    And Validate "SAP SuccessFactors" plugin properties
     Then Verify the Output Schema matches the Expected Schema for listed Hierarchical fields:
     | customManager | filter.expand.schema |
+
+  @BATCH-TS-SCFA-DSGN-06
+  Scenario: Verify user should be able to validate the plugin with Pagination Type Property
+    When Open Datafusion Project to configure pipeline
+    And Select plugin: "SAP SuccessFactors" from the plugins list as: "Source"
+    And Navigate to the properties page of plugin: "SAP SuccessFactors"
+    And Enter input plugin property: "referenceName" with value: "referenceName"
+    And Enter input plugin property: "baseURL" with value: "admin.baseurl"
+    And Enter input plugin property: "entityName" with value: "Advance"
+    And Enter input plugin property: "username" with value: "admin.username"
+    And Enter input plugin property: "password" with value: "admin.password"
+    And Enter textarea plugin property: "selectOption" with value: "eligibileAmount"
+    And Select radio button plugin property: "paginationType" with value: "paginationtype.server"
+    And Validate "SAP SuccessFactors" plugin properties
+    And Override Service account details if set in environment variables
+    
+    
 
 

@@ -82,9 +82,7 @@ Feature: SuccessFactors Source - Run time scenarios
     And Enter input plugin property: "password" with value: "admin.password"
     And Enter textarea plugin property: "filterOption" with value: "filteoption.rntm.greaterthan"
     And Enter textarea plugin property: "selectOption" with value: "filter.rntm.selectedfields"
-    And Enter input plugin property: "skipRowCount" with value: "10"
-    And Enter input plugin property: "splitCount" with value: "2"
-    And Enter input plugin property: "batchSize" with value: "1000"
+    And Select radio button plugin property: "paginationType" with value: "paginationtype.client"
     And Click on the Validate button
     And Capture the generated Output Schema
     And Close the Plugin Properties page
@@ -112,9 +110,7 @@ Feature: SuccessFactors Source - Run time scenarios
     And Enter input plugin property: "password" with value: "admin.password"
     And Enter textarea plugin property: "filterOption" with value: "filteoption.rntm.greaterthan"
     And Enter textarea plugin property: "selectOption" with value: "filter.rntm.selectedfields"
-    And Enter input plugin property: "skipRowCount" with value: "10"
-    And Enter input plugin property: "splitCount" with value: "2"
-    And Enter input plugin property: "batchSize" with value: "1000"
+    And Select radio button plugin property: "paginationType" with value: "paginationtype.client"
     And Click on the Validate button
     And Capture the generated Output Schema
     And Close the Plugin Properties page
@@ -130,3 +126,31 @@ Feature: SuccessFactors Source - Run time scenarios
     And Verify the pipeline status is "Succeeded"
     Then Verify count of no of records transferred to the target BigQuery Table
 
+  @BATCH-TS-SCFA-RNTM-05 @BQ_SINK_TEST
+  Scenario: Verify user should be able to deploy and run the pipeline when plugin is configured with Server side Pagination Type
+    When Open Datafusion Project to configure pipeline
+    And Select data pipeline type as: "Batch"
+    And Select plugin: "SAP SuccessFactors" from the plugins list as: "Source"
+    And Navigate to the properties page of plugin: "SAP SuccessFactors"
+    And Enter input plugin property: "referenceName" with value: "Referencename"
+    And Enter input plugin property: "baseURL" with value: "admin.baseurl"
+    And Enter input plugin property: "entityName" with value: "AdvancesAccumulation"
+    And Enter input plugin property: "username" with value: "admin.username"
+    And Enter input plugin property: "password" with value: "admin.password"
+    And Enter textarea plugin property: "filterOption" with value: "filteoption.rntm.greaterthan"
+    And Enter textarea plugin property: "selectOption" with value: "filter.rntm.selectedfields"
+    And Select radio button plugin property: "paginationType" with value: "paginationtype.server"
+    And Click on the Validate button
+    And Capture the generated Output Schema
+    And Close the Plugin Properties page
+    And Select Sink plugin: "BigQueryTable" from the plugins list
+    And Navigate to the properties page of plugin: "BigQuery"
+    And Configure BigQuery sink plugin for Dataset and Table
+    And Validate "BigQuery" plugin properties
+    And Close the Plugin Properties page
+    And Connect source as "SAP-SuccessFactors" and sink as "BigQueryTable" to establish connection
+    And Save and Deploy Pipeline
+    And Run the Pipeline in Runtime
+    And Wait till pipeline is in running state
+    And Verify the pipeline status is "Succeeded"
+    Then Verify count of no of records transferred to the target BigQuery Table
