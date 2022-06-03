@@ -65,6 +65,8 @@ public class SuccessFactorsSchemaGenerator {
   private static final String DEFAULT_PROPERTY = "Default property";
   private static final String NAV_PROPERTY_SEPARATOR = "/";
   private static final String PROPERTY_SEPARATOR = ",";
+  private static final Integer DEFAULT_PRECISION = 15;
+  private static final Integer DEFAULT_SCALE = 2;
 
   static {
     Map<String, Schema> dataTypeMap = new HashMap<>();
@@ -75,9 +77,8 @@ public class SuccessFactorsSchemaGenerator {
     dataTypeMap.put(SuccessFactorsDataTypes.INT64, Schema.of(Schema.Type.LONG));
     dataTypeMap.put(SuccessFactorsDataTypes.DOUBLE, Schema.of(Schema.Type.DOUBLE));
     dataTypeMap.put(SuccessFactorsDataTypes.FLOAT, Schema.of(Schema.Type.FLOAT));
-    // precision and scale are dummy here actual values are set while creating the 'Schema.Field'
-    // from the 'SuccessFactorsColumnMetadata'
-    dataTypeMap.put(SuccessFactorsDataTypes.DECIMAL, Schema.decimalOf(15, 2));
+    // These are default values for precision and scale - these values are used if precision, scale are not provided.
+    dataTypeMap.put(SuccessFactorsDataTypes.DECIMAL, Schema.decimalOf(DEFAULT_PRECISION, DEFAULT_SCALE));
     dataTypeMap.put(SuccessFactorsDataTypes.STRING, Schema.of(Schema.Type.STRING));
 
     dataTypeMap.put(SuccessFactorsDataTypes.BINARY, Schema.of(Schema.Type.BYTES));
@@ -748,7 +749,11 @@ public class SuccessFactorsSchemaGenerator {
   private Schema buildRequiredSchemaType(SuccessFactorsColumnMetadata successFactorsColumnDetail) {
     Schema schemaType = SCHEMA_TYPE_MAPPING.get(successFactorsColumnDetail.getType());
 
-    if (schemaType.getLogicalType() == Schema.LogicalType.DECIMAL
+    if (!SCHEMA_TYPE_MAPPING.containsKey(successFactorsColumnDetail.getType())) {
+      schemaType = Schema.of(Schema.Type.STRING);
+    }
+
+    if (schemaType != null && schemaType.getLogicalType() == Schema.LogicalType.DECIMAL
       && successFactorsColumnDetail.getPrecision() != null
       && successFactorsColumnDetail.getScale() != null) {
 
@@ -759,7 +764,7 @@ public class SuccessFactorsSchemaGenerator {
     // Reason: in SuccessFactors catalog service any DATE or TIME field which is mandatory can hold '00000000' in case
     // of null and SuccessFactors service returns 'null' on data extraction for such fields so, to accordance this
     // behaviour inside the plugin any DATE or TIME related Schema type are hardcoded to NULLABLE type.
-    if (schemaType.getLogicalType() == Schema.LogicalType.TIMESTAMP_MICROS ||
+    if (schemaType != null && schemaType.getLogicalType() == Schema.LogicalType.TIMESTAMP_MICROS ||
       schemaType.getLogicalType() == Schema.LogicalType.TIME_MICROS) {
 
       return Schema.nullableOf(schemaType);

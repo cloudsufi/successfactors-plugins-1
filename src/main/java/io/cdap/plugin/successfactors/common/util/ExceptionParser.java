@@ -142,7 +142,7 @@ public class ExceptionParser {
       .append(ResourceConstants.ROOT_CAUSE_LOG.getMsgForKey());
 
     if (te.getCause() instanceof SocketTimeoutException) {
-      errorDetails.append("Connection timeout. Please verify that the given base URL is up and running.");
+      errorDetails.append("Connection timeout. Please verify that the given base URL is reachable.");
     } else {
       errorDetails.append(te.getCause().getMessage());
     }

@@ -49,6 +49,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     "for lineage, annotating metadata, etc.";
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsPluginConfig.class);
   private static final String COMMON_ACTION = ResourceConstants.ERR_MISSING_PARAM_OR_MACRO_ACTION.getMsgForKey();
+  private static final Pattern PATTERN = Pattern.compile("\\(.*\\)");
 
   @Macro
   @Name(BASE_URL)
@@ -290,8 +291,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
    */
   private void validateEntityParameter(FailureCollector failureCollector) {
     if (SuccessFactorsUtil.isNotNullOrEmpty(getEntityName()) && !containsMacro(getEntityName())) {
-      Pattern pattern = Pattern.compile("\\(.*\\)");
-      if (pattern.matcher(getEntityName()).find()) {
+      if (PATTERN.matcher(getEntityName()).find()) {
         failureCollector.addFailure(ResourceConstants.ERR_FEATURE_NOT_SUPPORTED.getMsgForKey(), null)
           .withConfigProperty(ENTITY_NAME);
       }
