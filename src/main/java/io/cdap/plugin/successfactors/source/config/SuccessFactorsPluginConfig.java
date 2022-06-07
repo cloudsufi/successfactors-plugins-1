@@ -116,8 +116,8 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   @Description("The type of pagination to be used. Server-Side Pagination (serverSide) OR Client-Side Pagination " +
     "(clientSide)")
   private String paginationType;
-
-  SuccessFactorsPluginConfig(String referenceName,
+  
+  public SuccessFactorsPluginConfig(String referenceName,
                              String baseURL,
                              String entityName,
                              String associateEntityName,

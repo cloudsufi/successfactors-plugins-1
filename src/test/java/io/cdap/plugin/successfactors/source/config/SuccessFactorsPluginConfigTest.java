@@ -51,6 +51,7 @@ public class SuccessFactorsPluginConfigTest {
   public void testValidatePluginParametersWithEmptyEntityName() {
     SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder
       .entityName(null)
+      .associateEntityName("associatedEntity")
       .username("username")
       .password("password")
       .build();
@@ -154,8 +155,12 @@ public class SuccessFactorsPluginConfigTest {
     SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder
       .baseURL(" http://localhost:5000 ")
       .entityName("entity-name")
+      .filterOption("amount le 20 and amount gt 4")
+      .expandOption("col1")
       .selectOption("col1,col2,   \n  parent/col1,\r       col3     ")
       .build();
+    Assert.assertEquals("col1", pluginConfig.getExpandOption());
+    Assert.assertEquals("amount le 20 and amount gt 4", pluginConfig.getFilterOption());
     Assert.assertEquals("Base URL not trimmed", "http://localhost:5000", pluginConfig.getBaseURL());
     Assert.assertEquals("Entity name not trimmed", "entity-name", pluginConfig.getEntityName());
     Assert.assertEquals("Select option not trimmed", "col1,col2,parent/col1,col3", pluginConfig.getSelectOption());
