@@ -65,6 +65,7 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
   private final SuccessFactorsPluginConfig config;
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsSource.class);
   public static final String OUTPUT_SCHEMA = "outputSchema";
+  public static final String SERVER_SIDE = "serverSide";
 
   public SuccessFactorsSource(SuccessFactorsPluginConfig config) {
     this.config = config;
@@ -102,6 +103,8 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
     FailureCollector collector = context.getFailureCollector();
 
     configureJob(context, outputSchema);
+
+    emitLineage(context, outputSchema, config.getEntityName());
 
     collector.getOrThrowException();
 
@@ -200,11 +203,11 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
 
     SuccessFactorsPartitionBuilder partitionBuilder = new SuccessFactorsPartitionBuilder();
     List<SuccessFactorsInputSplit> partitions;
-    if (config.getPaginationType().equals("serverSide")) {
+    if (config.getPaginationType().equals(SERVER_SIDE)) {
       partitions = new ArrayList<>();
       partitions.add(new SuccessFactorsInputSplit());
     } else {
-      partitions = partitionBuilder.buildSplit(availableRowCount, fetchRowCount);
+      partitions = partitionBuilder.buildSplits(availableRowCount, fetchRowCount);
     }
 
     setJobForDataRead(context, outputSchema, partitions, successFactorsService);
@@ -243,8 +246,6 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
     // Serialize the SuccessFactors metadata to save in Hadoop Configuration
     String metadataString = successFactorsService.getEncodedServiceMetadata();
     jobConfiguration.set(SuccessFactorsInputFormat.ENCODED_ENTITY_METADATA_STRING, metadataString);
-
-    emitLineage(context, outputSchema, config.getEntityName());
 
     SourceInputFormatProvider inputFormat = new SourceInputFormatProvider(SuccessFactorsInputFormat.class,
                                                                           jobConfiguration);

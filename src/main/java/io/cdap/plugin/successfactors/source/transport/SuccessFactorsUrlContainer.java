@@ -40,6 +40,11 @@ public class SuccessFactorsUrlContainer {
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsUrlContainer.class);
   private static final String TOP_OPTION = "$top";
   private static final String SKIP_OPTION = "$skip";
+  private static final String FILTER_OPTION = "$filter";
+  private static final String SELECT_OPTION = "$select";
+  private static final String EXPAND_OPTION = "$expand";
+  private static final String PAGING = "paging";
+  private static final String SNAPSHOT = "snapshot";
   private static final String METADATA = "$metadata";
   private static final String PROPERTY_SEPARATOR = ",";
   private final SuccessFactorsPluginConfig pluginConfig;
@@ -110,10 +115,10 @@ public class SuccessFactorsUrlContainer {
    */
   private HttpUrl.Builder buildQueryOptions(HttpUrl.Builder urlBuilder, Boolean isDataFetch) {
     if (SuccessFactorsUtil.isNotNullOrEmpty(pluginConfig.getFilterOption())) {
-      urlBuilder.addQueryParameter("$filter", pluginConfig.getFilterOption());
+      urlBuilder.addQueryParameter(FILTER_OPTION, pluginConfig.getFilterOption());
     }
     if (SuccessFactorsUtil.isNotNullOrEmpty(pluginConfig.getSelectOption())) {
-      urlBuilder.addQueryParameter("$select", pluginConfig.getSelectOption());
+      urlBuilder.addQueryParameter(SELECT_OPTION, pluginConfig.getSelectOption());
     } else if (isDataFetch) {
       SuccessFactorsTransporter transporter = new SuccessFactorsTransporter(pluginConfig.getUsername(),
                                                                             pluginConfig.getPassword());
@@ -124,14 +129,14 @@ public class SuccessFactorsUrlContainer {
         if (SuccessFactorsUtil.isNotNullOrEmpty(pluginConfig.getExpandOption())) {
           selectFieldValue.append(PROPERTY_SEPARATOR).append(pluginConfig.getExpandOption());
         }
-        urlBuilder.addQueryParameter("$select", selectFieldValue.toString());
+        urlBuilder.addQueryParameter(SELECT_OPTION, selectFieldValue.toString());
 
       } catch (TransportException | SuccessFactorsServiceException | EdmException e) {
         e.printStackTrace();
       }
     }
     if (SuccessFactorsUtil.isNotNullOrEmpty(pluginConfig.getExpandOption())) {
-      urlBuilder.addQueryParameter("$expand", pluginConfig.getExpandOption());
+      urlBuilder.addQueryParameter(EXPAND_OPTION, pluginConfig.getExpandOption());
     }
 
     return urlBuilder;
@@ -149,7 +154,7 @@ public class SuccessFactorsUrlContainer {
       .addPathSegment("$count");
 
     if (SuccessFactorsUtil.isNotNullOrEmpty(pluginConfig.getFilterOption())) {
-      builder.addQueryParameter("$filter", pluginConfig.getFilterOption());
+      builder.addQueryParameter(FILTER_OPTION, pluginConfig.getFilterOption());
     }
     URL recordCountURL = builder.build().url();
 
@@ -178,7 +183,7 @@ public class SuccessFactorsUrlContainer {
       builder.addQueryParameter(TOP_OPTION, String.valueOf(top));
     }
     if (skip == null && top == null) {
-      builder.addQueryParameter("paging", "snapshot");
+      builder.addQueryParameter(PAGING, SNAPSHOT);
     }
     URL dataURL = builder.build().url();
 

@@ -27,7 +27,6 @@ import io.cdap.plugin.successfactors.common.util.SuccessFactorsUtil;
 import io.cdap.plugin.successfactors.source.config.SuccessFactorsPluginConfig;
 import io.cdap.plugin.successfactors.source.metadata.SuccessFactorsEntityProvider;
 import io.cdap.plugin.successfactors.source.metadata.SuccessFactorsSchemaGenerator;
-import io.cdap.plugin.successfactors.source.transform.SuccessFactorsRecordReader;
 import io.cdap.plugin.successfactors.source.transport.SuccessFactorsResponseContainer;
 import io.cdap.plugin.successfactors.source.transport.SuccessFactorsTransporter;
 import io.cdap.plugin.successfactors.source.transport.SuccessFactorsUrlContainer;
@@ -38,7 +37,6 @@ import org.apache.olingo.odata2.api.edm.EdmException;
 import org.apache.olingo.odata2.api.ep.EntityProvider;
 import org.apache.olingo.odata2.api.ep.EntityProviderException;
 import org.apache.olingo.odata2.api.ep.EntityProviderReadProperties;
-import org.apache.olingo.odata2.api.ep.entry.ODataEntry;
 import org.apache.olingo.odata2.api.ep.feed.ODataFeed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +52,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -241,11 +238,11 @@ public class SuccessFactorsService {
    * @param edm  SuccessFactors service entity metadata
    * @param skip number of rows to skip
    * @param top  number of rows to fetch
-   * @return list of {@code SuccessFactorsEntry}
+   * @return {@code ODataFeed}
    * @throws TransportException    any http client exceptions are wrapped under it.
    * @throws SuccessFactorsServiceException any OData service based exception is wrapped under it.
    */
-  public List<ODataEntry> readServiceEntityData(Edm edm, Long skip, Long top)
+  public ODataFeed readServiceEntityData(Edm edm, Long skip, Long top)
     throws SuccessFactorsServiceException, TransportException {
 
     SuccessFactorsEntityProvider serviceHelper = new SuccessFactorsEntityProvider(edm);
@@ -270,13 +267,9 @@ public class SuccessFactorsService {
           if (nextLink != null) {
             nextUrl = nextLink;
             LOG.info("Next page url: {}", nextLink);
-          } else {
-            SuccessFactorsRecordReader.nextCallRequired = false;
-            LOG.info("No more pages left, setting nextCallRequired to: {}",
-                     false);
           }
         }
-        return dataFeed.getEntries();
+        return dataFeed;
       }
       
     } catch (EdmException | EntityProviderException | IOException ex) {
@@ -291,7 +284,7 @@ public class SuccessFactorsService {
       errMsg += ExceptionParser.buildSuccessFactorsServiceError(ose);
       throw new SuccessFactorsServiceException(errMsg, ose);
     }
-    return Collections.emptyList();
+    return null;
   }
 
   /**

@@ -27,7 +27,7 @@ import java.util.List;
  *
  * Default Split count is 8
  * Max allowed Split count is 10
- * Max allowed Package size is 5000
+ * Max allowed Package size is 1000
  *
  * If the total fetch record count is less then equal to 2500 then only 1 split will be created.
  *
@@ -48,15 +48,14 @@ public class SuccessFactorsPartitionBuilder {
    *                             will be same as total number of available records.
    * @return list of {@code SuccessFactorsInputSplit}
    */
-  public List<SuccessFactorsInputSplit> buildSplit(long availableRecordCount, long fetchRowCount) {
+  public List<SuccessFactorsInputSplit> buildSplits(long availableRecordCount, long fetchRowCount) {
 
     List<SuccessFactorsInputSplit> list = new ArrayList<>();
 
     long recordReadStartIndex = 1;
     long actualRecordToExtract = (fetchRowCount == 0 ? availableRecordCount : fetchRowCount);
-    long totalCount = actualRecordToExtract;
-    long recordReadEndIndex = Math.min(totalCount, availableRecordCount);
-    if (totalCount > availableRecordCount) {
+    long recordReadEndIndex = Math.min(actualRecordToExtract, availableRecordCount);
+    if (actualRecordToExtract > availableRecordCount) {
       actualRecordToExtract = availableRecordCount;
       if (actualRecordToExtract <= 0) {
         String msg = String.format("As per the provided configuration no records were found for extraction.");

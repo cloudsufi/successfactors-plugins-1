@@ -27,11 +27,14 @@ import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.olingo.odata2.api.edm.Edm;
 import org.apache.olingo.odata2.api.ep.entry.ODataEntry;
+import org.apache.olingo.odata2.api.ep.feed.ODataFeed;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * This {@code SuccessFactorsRecordReader} contains Hadoop Job RecordReader implementation
@@ -41,21 +44,26 @@ public class SuccessFactorsRecordReader extends RecordReader<LongWritable, Struc
   private final SuccessFactorsService successFactorsService;
   private final Edm edmData;
   private final SuccessFactorsTransformer valueConverter;
+
+  @Nullable
   private final Long start;
+
+  @Nullable
   private final Long end;
+
+  @Nullable
   private final Long packageSize;
   private Long skipCount;
   private Long fetchCount;
   private long numRowsProcessed;
   private LongWritable key;
   private List<ODataEntry> oDataEntryList;
+  private ODataFeed oDataFeed;
   private Iterator<ODataEntry> dataEntryIterator;
   private StructuredRecord dataRecord;
-  public static boolean nextCallRequired = true;
 
   public SuccessFactorsRecordReader(SuccessFactorsService successFactorsService, Edm edmData, Schema pluginSchema,
-                                    Long start, Long end,
-                                    Long packageSize) {
+                                    @Nullable Long start, @Nullable Long end, @Nullable Long packageSize) {
 
     this.successFactorsService = successFactorsService;
     this.edmData = edmData;
@@ -85,7 +93,9 @@ public class SuccessFactorsRecordReader extends RecordReader<LongWritable, Struc
 
       try {
         // Pulls the data from the SuccessFactors entity for the given range via 'rows to skip' and 'rows to fetch'.
-        oDataEntryList = successFactorsService.readServiceEntityData(edmData, skipCount, fetchCount);
+        oDataFeed = successFactorsService.readServiceEntityData(edmData, skipCount, fetchCount);
+        oDataEntryList = oDataFeed != null ? oDataFeed.getEntries() : Collections.emptyList();
+
         if (oDataEntryList.isEmpty()) {
           return false;
         }
@@ -124,7 +134,7 @@ public class SuccessFactorsRecordReader extends RecordReader<LongWritable, Struc
 
   private boolean isCallRequired() {
     if (start == null && end == null && packageSize == null) {
-      return nextCallRequired;
+      return oDataFeed == null || oDataFeed.getFeedMetadata().getNextLink() != null;
     } else {
       return getLength() - numRowsProcessed > 0;
     }

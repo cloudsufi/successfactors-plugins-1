@@ -94,8 +94,8 @@ public class SuccessFactorsInputFormat extends InputFormat<LongWritable, Structu
         return new SuccessFactorsRecordReader(successFactorsService, edmData, outputSchema, inputSplit.getStart(),
                                               inputSplit.getEnd(), inputSplit.getPackageSize());
       } else {
-        return new SuccessFactorsRecordReader
-          (successFactorsService, edmData, outputSchema, null, null, null);
+        return new SuccessFactorsRecordReader(successFactorsService, edmData, outputSchema, null, null,
+                                              null);
       }
     } catch (SuccessFactorsServiceException e) {
       throw new IOException(e.getMessage(), e);
