@@ -38,7 +38,6 @@ public class SuccessFactorsPartitionBuilder {
 
   public static final int DEFAULT_SPLIT_COUNT = 8;
   public static final long MAX_ALLOWED_PACKAGE_SIZE = 1000L;
-  public static final int MAX_ALLOWED_SPLIT_COUNT = 10;
 
   /**
    * builds the list of {@code SuccessFactorsInputSplit}
@@ -58,7 +57,7 @@ public class SuccessFactorsPartitionBuilder {
     if (actualRecordToExtract > availableRecordCount) {
       actualRecordToExtract = availableRecordCount;
       if (actualRecordToExtract <= 0) {
-        String msg = String.format("As per the provided configuration no records were found for extraction.");
+        String msg = "As per the provided configuration no records were found for extraction.";
         throw new IllegalArgumentException(msg);
       }
     }
@@ -72,8 +71,6 @@ public class SuccessFactorsPartitionBuilder {
     if (actualRecordToExtract <= MAX_ALLOWED_PACKAGE_SIZE) {
       splitCount = 1;
     }
-
-    splitCount = Math.min(splitCount, MAX_ALLOWED_SPLIT_COUNT);
 
     long optimalLoadOnSplit =
       (splitCount == 1 ? actualRecordToExtract : (actualRecordToExtract / splitCount));
