@@ -13,13 +13,13 @@ You can configure the following properties for the SuccessFactors.
 ## Basic
 **Reference Name:** Name used to uniquely identify this source for lineage,
 annotating metadata, etc.
-**SAP SuccessFactors Base URL (M)**: SuccessFactors Base URL.
-**Entity Name (M)**: Name of the Entity which is being extracted.
+**SAP SuccessFactors Base URL (M)**: SAP SuccessFactors Base URL.
+**Entity Name (M)**: Name of the Entity to be extracted.
 
 ## Credentials
 
-**SAP SuccessFactors Logon Username (M)**: SuccessFactors Logon user ID.  
-**SAP SuccessFactors Logon Password (M)**: SuccessFactors Logon password for user authentication.
+**SAP SuccessFactors Logon Username (M)**: SAP SuccessFactors Logon Username for user authentication.  
+**SAP SuccessFactors Logon Password (M)**: SAP SuccessFactors Logon password for user authentication.
 
 ## Advance Option:
 
@@ -120,18 +120,24 @@ Supported operation are as follows:
 </table>   
 
 
-**Select Fields (M, O)**: Fields to be preserved in the extracted data. e.g.: Category, Price, Name, Address. In case of empty all the non-navigation fields will be preserved in the extracted data.
+**Select Fields (M, O)**: Fields to be preserved in the extracted data. e.g.: Category, Price, Name, Address. If the 
+field is left blank, then all the non-navigation fields will be preserved in the extracted data.
 All the fields must be comma (,) separated.
 
-**Expand Fields (M, O)**: List of navigation fields to be expanded in the extracted output data
-e.g.: customManager
+**Expand Fields (M, O)**: List of navigation fields to be expanded in the extracted output data. 
+For example: customManager. If an entity has hierarchical records, the source outputs a record for each row in the 
+entity it reads, with each record containing an additional field that holds the value from the navigational property 
+specified in the Expand Fields.
 
-**Associated Entity Name (M, O)**: Name of the Associated Entity which is being extracted
+**Associated Entity Name (M, O)**: Name of the Associated Entity to be extracted
 e.g.: EmpCompensationCalculated
 
-**Pagination Type (M, O)** : The type of pagination to be used. Server side pagination is chosen by default. 
-Server Side Pagination uses Snapshot based pagination. If snapshot-based pagination is attempted on an entity that 
-doesn’t support the feature, the server automatically forces client offset pagination on the query.
+**Pagination Type (M, O)** : The type of pagination to be used. 
+Server-side Pagination uses snapshot-based pagination. If snapshot-based pagination is attempted on an entity that 
+doesn’t support the feature, the server automatically forces client-side pagination on the query. Default is 
+Server-side Pagination. 
+https://help.sap.com/docs/SAP_SUCCESSFACTORS_PLATFORM/d599f15995d348a1b45ba5603e2aba9b/2cd6a3c92f2547c99cfd612c6867582f.html
+
 
 Data Type Mappings from SuccessFactors to CDAP
 ----------

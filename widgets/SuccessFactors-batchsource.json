@@ -20,7 +20,7 @@
           "label": "SAP SuccessFactors Base URL",
           "name": "baseURL",
           "widget-attributes": {
-            "placeholder": "SAP SuccessFactors base url e.g. https://<hostname>/odata/v2"
+            "placeholder": "SAP SuccessFactors base url, for example, https://<hostname>/odata/v2"
           }
         },
         {
@@ -28,7 +28,7 @@
           "label": "Entity Name",
           "name": "entityName",
           "widget-attributes": {
-            "placeholder": "SAP SuccessFactors Entity name. Eg. People"
+            "placeholder": "SAP SuccessFactors Entity name. For example, People"
           },
           "plugin-function": {
             "method": "POST",
@@ -67,7 +67,7 @@
           "label": "Filter Options",
           "name": "filterOption",
           "widget-attributes": {
-            "placeholder": "Eg. Price gt 200"
+            "placeholder": "For example, Price gt 200"
           }
         },
         {
@@ -75,7 +75,7 @@
           "label": "Select Fields",
           "name": "selectOption",
           "widget-attributes": {
-            "placeholder": "Eg. Category,Price,Name,Supplier/Address"
+            "placeholder": "For example, Category,Price,Name,Supplier/Address"
           }
         },
         {
@@ -104,11 +104,11 @@
             "options": [
               {
                 "id": "serverSide",
-                "label": "Server-Side Pagination"
+                "label": "Server-side"
               },
               {
                 "id": "clientSide",
-                "label": "Client-Side Pagination"
+                "label": "Client-side"
               }
             ]
           }

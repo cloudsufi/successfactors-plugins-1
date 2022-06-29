@@ -59,13 +59,13 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
 
   @Macro
   @Name(ENTITY_NAME)
-  @Description("Name of the Entity which is being extracted.")
+  @Description("Name of the Entity to be extracted.")
   private final String entityName;
   
   @Macro
   @Nullable
   @Name(ASSOCIATED_ENTITY_NAME)
-  @Description("Name of the Associated Entity which is being extracted.")
+  @Description("Name of the Associated Entity to be extracted.")
   private final String associateEntityName;
   
   /**
@@ -73,7 +73,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
    */
   @Name(UNAME)
   @Macro
-  @Description("SAP SuccessFactors user ID.")
+  @Description("SAP SuccessFactors Username for user authentication.")
   private final String username;
 
   @Name(PASSWORD)
@@ -91,12 +91,17 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
 
   @Nullable
   @Macro
-  @Description("Fields to be preserved in the extracted data e.g.: Name,Gender,State/City")
+  @Description("Fields to be preserved in the extracted data. e.g.: Category, Price, Name, Address. If the field is " +
+    "left blank, then all the non-navigation fields will be preserved in the extracted data.\n" +
+    "All the fields must be comma (,) separated.\n")
   private final String selectOption;
 
   @Nullable
   @Macro
-  @Description("List of navigation fields to be expanded in the extracted output data e.g.: State/City")
+  @Description("List of navigation fields to be expanded in the extracted output data. For example: customManager. " +
+    "If an entity has hierarchical records, the source outputs a record for each row in the entity it reads, with " +
+    "each record containing an additional field that holds the value from the navigational property specified in " +
+    "the Expand Fields.")
   private final String expandOption;
   
   /**
@@ -114,8 +119,9 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
 
   @Name(PAGINATION_TYPE)
   @Macro
-  @Description("The type of pagination to be used. Server-Side Pagination (serverSide) OR Client-Side Pagination " +
-    "(clientSide)")
+  @Description("The type of pagination to be used. Server-side Pagination uses snapshot-based pagination. " +
+    "If snapshot-based pagination is attempted on an entity that doesn’t support the feature, the server " +
+    "automatically forces client-side pagination on the query. Default is Server-side Pagination.")
   private String paginationType;
 
   SuccessFactorsPluginConfig(String referenceName,
