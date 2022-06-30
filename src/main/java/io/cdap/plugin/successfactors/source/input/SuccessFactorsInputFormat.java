@@ -92,7 +92,7 @@ public class SuccessFactorsInputFormat extends InputFormat<LongWritable, Structu
       Edm edmData = successFactorsService.getSuccessFactorsServiceEdm(encodedMetadataString);
       if (!Objects.equals(pluginConfig.getPaginationType(), "serverSide")) {
         return new SuccessFactorsRecordReader(successFactorsService, edmData, outputSchema, inputSplit.getStart(),
-                                              inputSplit.getEnd(), inputSplit.getPackageSize());
+                                              inputSplit.getEnd(), inputSplit.getBatchSize());
       } else {
         return new SuccessFactorsRecordReader(successFactorsService, edmData, outputSchema, null, null,
                                               null);

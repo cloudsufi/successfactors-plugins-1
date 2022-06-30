@@ -141,7 +141,7 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
    *
    * @param ose              {@code SuccessFactorsServiceException}
    * @param failureCollector {@code FailureCollector}
-  */
+   */
   private void attachFieldWithError(SuccessFactorsServiceException ose, FailureCollector failureCollector) {
 
     String errMsg = ExceptionParser.buildSuccessFactorsServiceError(ose);

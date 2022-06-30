@@ -318,6 +318,13 @@ public class SuccessFactorsService {
       (pluginConfig.getEntityName());
     return columnDetailList;
   }
+
+  /**
+   *
+   * @param dataStream
+   * @return filteredDataStream Filtered Data Stream after removing expanded entity data
+   * @throws IOException
+   */
   private InputStream filterExpandedEntityData(InputStream dataStream) throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
     List<String> expandFieldList = new ArrayList<>();
@@ -335,7 +342,6 @@ public class SuccessFactorsService {
         Iterator<Map.Entry<String, JsonNode>> iterator = expandedNode.fields();
         while (iterator.hasNext()) {
           if (iterator.next().getValue().isContainerNode()) {
-            //((ObjectNode) expandedNode).remove(iterator.next().getKey());
             iterator.remove();
           }
         }

@@ -33,15 +33,15 @@ public class SuccessFactorsInputSplit extends InputSplit implements Writable {
   private long end;
   // Standard package size. A split may need multiple SAP network calls (batches),
   // and last batch may have lesser number of records than this packageSize
-  private long packageSize;
+  private long batchSize;
 
   public SuccessFactorsInputSplit() {
   }
 
-  public SuccessFactorsInputSplit(long start, long end, long packageSize) {
+  public SuccessFactorsInputSplit(long start, long end, long batchSize) {
     this.start = start;
     this.end = end;
-    this.packageSize = packageSize;
+    this.batchSize = batchSize;
   }
 
   @Override
@@ -58,14 +58,14 @@ public class SuccessFactorsInputSplit extends InputSplit implements Writable {
   public void write(DataOutput out) throws IOException {
     out.writeLong(start);
     out.writeLong(end);
-    out.writeLong(packageSize);
+    out.writeLong(batchSize);
   }
 
   @Override
   public void readFields(DataInput in) throws IOException {
     this.start = in.readLong();
     this.end = in.readLong();
-    this.packageSize = in.readLong();
+    this.batchSize = in.readLong();
   }
 
   public long getStart() {
@@ -76,7 +76,7 @@ public class SuccessFactorsInputSplit extends InputSplit implements Writable {
     return end;
   }
 
-  public long getPackageSize() {
-    return packageSize;
+  public long getBatchSize() {
+    return batchSize;
   }
 }

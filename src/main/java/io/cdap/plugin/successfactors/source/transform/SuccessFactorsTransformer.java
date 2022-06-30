@@ -18,6 +18,7 @@ package io.cdap.plugin.successfactors.source.transform;
 
 import io.cdap.cdap.api.data.format.StructuredRecord;
 import io.cdap.cdap.api.data.schema.Schema;
+import io.cdap.plugin.successfactors.source.service.SuccessFactorsService;
 import org.apache.olingo.odata2.api.ep.entry.ODataEntry;
 import org.apache.olingo.odata2.api.ep.feed.ODataDeltaFeed;
 import org.apache.olingo.odata2.core.ep.entry.ODataEntryImpl;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
  */
 public class SuccessFactorsTransformer {
 
+  private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsTransformer.class);
   private final Schema recordSchema;
 
   public SuccessFactorsTransformer(Schema recordSchema) {
@@ -194,7 +196,7 @@ public class SuccessFactorsTransformer {
           .setDecimal(fieldName, new BigDecimal(String.valueOf(fieldValue)).setScale(fieldSchema.getScale(),
                                                                                      BigDecimal.ROUND_HALF_UP));
       } catch (NumberFormatException ne) {
-        ne.printStackTrace();
+        LOG.error("Exception thrown while processing DECIMAL value ", ne);
       }
 
     } else if (logicalType == Schema.LogicalType.DATETIME) {

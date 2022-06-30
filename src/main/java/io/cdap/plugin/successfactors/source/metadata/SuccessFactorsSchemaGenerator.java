@@ -84,7 +84,7 @@ public class SuccessFactorsSchemaGenerator {
     dataTypeMap.put(SuccessFactorsDataTypes.STRING, Schema.of(Schema.Type.STRING));
 
     dataTypeMap.put(SuccessFactorsDataTypes.BINARY, Schema.of(Schema.Type.BYTES));
-    
+
     dataTypeMap.put(SuccessFactorsDataTypes.BOOLEAN, Schema.of(Schema.Type.BOOLEAN));
 
     dataTypeMap.put(SuccessFactorsDataTypes.DATETIME, Schema.of(Schema.LogicalType.DATETIME));
@@ -173,7 +173,7 @@ public class SuccessFactorsSchemaGenerator {
       if (type instanceof EdmProperty) {
         EdmProperty edmProperty = (EdmProperty) type;
         successFactorsColumnDetailList.add(buildSuccessFactorsColumnMetadata(namespace, edmProperty));
-        
+
       } else if (type instanceof EdmNavigationPropertyImplProv) {     // check for navigation property
 
         EdmNavigationPropertyImplProv navProperty = (EdmNavigationPropertyImplProv) type;
@@ -181,7 +181,7 @@ public class SuccessFactorsSchemaGenerator {
         if (navEntityType != null) {
 
           List<SuccessFactorsColumnMetadata> navChild = buildSuccessFactorsColumns(navEntityType,
-                                                                             navEntityType.getPropertyNames());
+                                                                                   navEntityType.getPropertyNames());
 
           SuccessFactorsColumnMetadata navigationColumn = SuccessFactorsColumnMetadata.builder()
             .name(prop)
@@ -213,7 +213,8 @@ public class SuccessFactorsSchemaGenerator {
         EdmProperty edmProperty = (EdmProperty) type;
         List<EdmAnnotationAttribute> edmAnnotationAttributes = edmProperty.getAnnotations().getAnnotationAttributes();
         for (EdmAnnotationAttribute edmAnnotationAttribute : edmAnnotationAttributes) {
-          if (edmAnnotationAttribute.getName().equals("visible") && edmAnnotationAttribute.getText().equals("true")) {
+          if (edmAnnotationAttribute.getName().equals(SapAttributes.VISIBLE) && edmAnnotationAttribute.getText()
+            .equals("true")) {
             successFactorsColumnDetailList.add(prop);
           }
         }
@@ -747,7 +748,7 @@ public class SuccessFactorsSchemaGenerator {
    */
   private Schema buildRequiredSchemaType(SuccessFactorsColumnMetadata successFactorsColumnDetail) {
     Schema schemaType = SCHEMA_TYPE_MAPPING.get(successFactorsColumnDetail.getType());
-    
+
     if (!SCHEMA_TYPE_MAPPING.containsKey(successFactorsColumnDetail.getType())) {
       schemaType = Schema.of(Schema.Type.STRING);
     }

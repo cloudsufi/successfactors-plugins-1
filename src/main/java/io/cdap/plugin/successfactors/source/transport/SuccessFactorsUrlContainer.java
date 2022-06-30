@@ -27,6 +27,7 @@ import org.apache.olingo.odata2.api.edm.EdmException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.net.URL;
+import javax.annotation.Nullable;
 
 /**
  * This {@code SuccessFactorsUrlContainer} contains the implementation of different SuccessFactors url:
@@ -170,7 +171,7 @@ public class SuccessFactorsUrlContainer {
    * @param top  records to fetch.
    * @return data URL with provided '$skip' and '$top' parameters.
    */
-  public URL getDataFetchURL(Long skip, Long top) {
+  public URL getDataFetchURL(@Nullable Long skip, @Nullable Long top) {
     HttpUrl.Builder builder = HttpUrl.parse(pluginConfig.getBaseURL())
       .newBuilder()
       .addPathSegment(pluginConfig.getEntityName());

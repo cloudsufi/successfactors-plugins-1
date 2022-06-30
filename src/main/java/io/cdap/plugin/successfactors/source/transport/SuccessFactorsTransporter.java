@@ -51,11 +51,11 @@ public class SuccessFactorsTransporter {
   private static final long CONNECTION_TIMEOUT = 300;
   private static final long WAIT_TIME = 5;
   private static final long MAX_NUMBER_OF_RETRY_ATTEMPTS = 5;
-  
+
   private final String username;
   private final String password;
   private Response response;
-  
+
   public SuccessFactorsTransporter(String username, String password) {
     this.username = username;
     this.password = password;
