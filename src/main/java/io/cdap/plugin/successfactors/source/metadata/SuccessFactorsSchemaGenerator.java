@@ -52,11 +52,11 @@ import javax.annotation.Nullable;
  * - schema with default and given expanded navigation properties
  * - schema with given selective properties
  * <p>
- *   
+ * <p>
  * Note:
- *  - Default Property: A statically declared Property on an Entity. The value of a default property is a primitive or
- *                      complex type.
- *  - Navigation Property: A property of an Entry that represents a Link from the Entry to one or more related Entries.
+ * - Default Property: A statically declared Property on an Entity. The value of a default property is a primitive or
+ * complex type.
+ * - Navigation Property: A property of an Entry that represents a Link from the Entry to one or more related Entries.
  */
 public class SuccessFactorsSchemaGenerator {
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsSchemaGenerator.class);
@@ -93,7 +93,7 @@ public class SuccessFactorsSchemaGenerator {
 
     SCHEMA_TYPE_MAPPING = Collections.unmodifiableMap(dataTypeMap);
   }
-  
+
   private final SuccessFactorsEntityProvider successFactorsServiceHelper;
 
   public SuccessFactorsSchemaGenerator(SuccessFactorsEntityProvider successFactorsServiceHelper) {
@@ -103,11 +103,11 @@ public class SuccessFactorsSchemaGenerator {
   /**
    * Build schema with all the default (non-navigation) properties for the given entity name.
    *
-   * @param entityName   service entity name
+   * @param entityName service entity name
    * @return {@code Schema}
    * @throws SuccessFactorsServiceException throws in following two cases
-   *        1. if no default property were found in the given entity name,
-   *        2. if fails at apache olingo processing.
+   *                                        1. if no default property were found in the given entity name,
+   *                                        2. if fails at apache olingo processing.
    */
   public Schema buildDefaultOutputSchema(String entityName) throws SuccessFactorsServiceException {
 
@@ -153,7 +153,7 @@ public class SuccessFactorsSchemaGenerator {
    *
    * @param entityType service entity type
    * @param propList   list of required property name for the given entity type.
-   * @return  list of {@code SuccessFactorsColumnMetadata} or empty list in case of invalid entity name.
+   * @return list of {@code SuccessFactorsColumnMetadata} or empty list in case of invalid entity name.
    * @throws EdmException any apache olingo processing exception
    */
   private List<SuccessFactorsColumnMetadata> buildSuccessFactorsColumns(EdmEntityType entityType, List<String> propList)
@@ -299,22 +299,23 @@ public class SuccessFactorsSchemaGenerator {
    * @param expandOption all the selective expanded property names
    * @return {@code Schema}
    * @throws SuccessFactorsServiceException throws in following two cases
-   *        1. if neither default nor expanded property were found in the given entity name,
-   *        2. if fails at apache olingo processing.
+   *                                        1. if neither default nor expanded property were found in the given entity
+   *                                        name,
+   *                                        2. if fails at apache olingo processing.
    */
   public Schema buildExpandOutputSchema(String entityName, String expandOption) throws SuccessFactorsServiceException {
     try {
       List<SuccessFactorsColumnMetadata> columnDetailList = buildDefaultColumns(entityName);
       if (columnDetailList.isEmpty()) {
         throw new SuccessFactorsServiceException(ResourceConstants.ERR_NO_COLUMN_FOUND.getMsgForKey(DEFAULT_PROPERTY,
-          entityName));
+                                                                                                    entityName));
       }
 
       List<SuccessFactorsColumnMetadata> expandColumnDetailList = buildExpandedEntity(entityName, expandOption);
       if (expandColumnDetailList.isEmpty()) {
         throw new SuccessFactorsServiceException(ResourceConstants.ERR_NO_COLUMN_FOUND.getMsgForKey(expandOption,
 
-          entityName));
+                                                                                                    entityName));
       }
 
       columnDetailList.addAll(expandColumnDetailList);
@@ -516,8 +517,8 @@ public class SuccessFactorsSchemaGenerator {
    * @param selectOption all the selective property names
    * @return {@code Schema}
    * @throws SuccessFactorsServiceException throws in following two cases
-   *        1. if no selective property were found in the given entity name,
-   *        2. if fails at apache olingo processing.
+   *                                        1. if no selective property were found in the given entity name,
+   *                                        2. if fails at apache olingo processing.
    */
   public Schema buildSelectOutputSchema(String entityName, String selectOption) throws SuccessFactorsServiceException {
     try {
@@ -643,7 +644,7 @@ public class SuccessFactorsSchemaGenerator {
    * Build {@code SuccessFactorsColumnMetadata} for the provided navigation property.
    *
    * @param entityName service entity name
-   * @param navName can have navigation path
+   * @param navName    can have navigation path
    * @return {@code SuccessFactorsColumnMetadata} or null in case of invalid navigation property name
    * @throws EdmException any apache olingo processing exception.
    */

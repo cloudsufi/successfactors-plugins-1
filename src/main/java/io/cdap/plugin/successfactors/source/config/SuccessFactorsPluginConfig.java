@@ -45,13 +45,13 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   public static final String REFERENCE_NAME = "referenceName";
   public static final String REFERENCE_NAME_DESCRIPTION = "This will be used to uniquely identify this source/sink " +
     "for lineage, annotating metadata, etc.";
-  private static final String COMMON_ACTION = ResourceConstants.ERR_MISSING_PARAM_OR_MACRO_ACTION.getMsgForKey();
-  private static final Pattern PATTERN = Pattern.compile("\\(.*\\)");
   public static final String ASSOCIATED_ENTITY_NAME = "associatedEntityName";
   public static final String NAME_SCHEMA = "schema";
   public static final String PAGINATION_TYPE = "paginationType";
+  private static final String COMMON_ACTION = ResourceConstants.ERR_MISSING_PARAM_OR_MACRO_ACTION.getMsgForKey();
+  private static final Pattern PATTERN = Pattern.compile("\\(.*\\)");
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsPluginConfig.class);
-  
+
   @Macro
   @Name(BASE_URL)
   @Description("SuccessFactors Base URL.")
@@ -61,13 +61,13 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   @Name(ENTITY_NAME)
   @Description("Name of the Entity to be extracted.")
   private final String entityName;
-  
+
   @Macro
   @Nullable
   @Name(ASSOCIATED_ENTITY_NAME)
   @Description("Name of the Associated Entity to be extracted.")
   private final String associateEntityName;
-  
+
   /**
    * Credentials parameters
    */
@@ -103,14 +103,14 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     "each record containing an additional field that holds the value from the navigational property specified in " +
     "the Expand Fields.")
   private final String expandOption;
-  
+
   /**
    * Basic parameters.
    */
   @Name(REFERENCE_NAME)
   @Description(REFERENCE_NAME_DESCRIPTION)
   public String referenceName;
-  
+
   @Name(NAME_SCHEMA)
   @Macro
   @Nullable
@@ -166,7 +166,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   public String getAssociatedEntityName() {
     return SuccessFactorsUtil.trim(this.associateEntityName);
   }
-  
+
   @Nullable
   public String getUsername() {
     return SuccessFactorsUtil.trim(this.username);
@@ -357,7 +357,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
       this.expandOption = expandOption;
       return this;
     }
-    
+
     public Builder paginationType(@Nullable String paginationType) {
       this.paginationType = paginationType;
       return this;

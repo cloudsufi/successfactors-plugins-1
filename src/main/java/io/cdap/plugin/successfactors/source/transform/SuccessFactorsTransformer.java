@@ -89,7 +89,7 @@ public class SuccessFactorsTransformer {
        }*/
       if (childSchema.getType().equals(Schema.Type.ARRAY)) {
         if (value == null) {
-          value =  Collections.emptyList();
+          value = Collections.emptyList();
         } else if (value instanceof ODataEntryImpl) {
           value = readInternalODataEntry(childSchema, (ODataEntryImpl) value);
         } else if (value instanceof ODataDeltaFeed) {

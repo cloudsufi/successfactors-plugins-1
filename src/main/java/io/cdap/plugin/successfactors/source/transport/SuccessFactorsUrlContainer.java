@@ -26,6 +26,7 @@ import okhttp3.HttpUrl;
 import org.apache.olingo.odata2.api.edm.EdmException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.net.URL;
 import javax.annotation.Nullable;
 
@@ -86,7 +87,7 @@ public class SuccessFactorsUrlContainer {
       .addPathSegment(METADATA)
       .build()
       .url();
-    
+
     if (SuccessFactorsUtil.isNotNullOrEmpty(pluginConfig.getAssociatedEntityName())) {
       metadataURL = HttpUrl.parse(pluginConfig.getBaseURL())
         .newBuilder()

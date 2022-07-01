@@ -62,10 +62,10 @@ import javax.annotation.Nullable;
 @Description("Reads the SuccessFactors data which is exposed as OData services from SAP.")
 public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRecord, StructuredRecord> {
   public static final String NAME = "SuccessFactors";
-  private final SuccessFactorsPluginConfig config;
-  private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsSource.class);
   public static final String OUTPUT_SCHEMA = "outputSchema";
   public static final String SERVER_SIDE = "serverSide";
+  private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsSource.class);
+  private final SuccessFactorsPluginConfig config;
 
   public SuccessFactorsSource(SuccessFactorsPluginConfig config) {
     this.config = config;
@@ -173,9 +173,9 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
    *
    * @param context
    * @param outputSchema
-   * @throws TransportException    any http client exceptions are wrapped under it.
+   * @throws TransportException             any http client exceptions are wrapped under it.
    * @throws SuccessFactorsServiceException any SuccessFactors service based exception is wrapped under it.
-   * @throws IOException           any IO exception occurs during the Hadoop Job instance creation.
+   * @throws IOException                    any IO exception occurs during the Hadoop Job instance creation.
    */
   private void configureJob(BatchSourceContext context, Schema outputSchema)
     throws TransportException, SuccessFactorsServiceException, IOException {
@@ -184,7 +184,7 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
     SuccessFactorsTransporter transporter = new SuccessFactorsTransporter(config.getUsername(), config.getPassword());
 
     SuccessFactorsService successFactorsService = new SuccessFactorsService(config, transporter);
-    
+
     long fetchRowCount = 0;
 
     long availableRowCount = successFactorsService.getTotalAvailableRowCount();
@@ -220,9 +220,9 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
    * @param outputSchema
    * @param partitions
    * @param successFactorsService
-   * @throws TransportException    any http client exceptions are wrapped under it.
+   * @throws TransportException             any http client exceptions are wrapped under it.
    * @throws SuccessFactorsServiceException any OData service based exception is wrapped under it.
-   * @throws IOException           any IO exception occurs during the Hadoop Job instance creation.
+   * @throws IOException                    any IO exception occurs during the Hadoop Job instance creation.
    */
   private void setJobForDataRead(BatchSourceContext context, Schema outputSchema, List<SuccessFactorsInputSplit>
     partitions,

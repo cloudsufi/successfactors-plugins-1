@@ -47,6 +47,10 @@ public class SuccessFactorsResponseContainer {
     this.responseStream = responseStream;
   }
 
+  public static Builder builder() {
+    return new Builder();
+  }
+
   public int getHttpStatusCode() {
     return this.httpStatusCode;
   }
@@ -63,10 +67,6 @@ public class SuccessFactorsResponseContainer {
   @Nullable
   public InputStream getResponseStream() {
     return new ByteArrayInputStream(responseStream);
-  }
-
-  public static Builder builder() {
-    return new Builder();
   }
 
   /**

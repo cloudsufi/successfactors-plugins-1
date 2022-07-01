@@ -18,26 +18,26 @@ package io.cdap.plugin.successfactors.source.input;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This {@code SuccessFactorsPartitionBuilder} will prepare the list of optimized splits containing start & end indices
  * for each split including the optimized package size.
- *
+ * <p>
  * Default Split count is 8
  * Max allowed Split count is 10
  * Max allowed Package size is 1000
- *
+ * <p>
  * If the total fetch record count is less then equal to 2500 then only 1 split will be created.
- *
+ * <p>
  * Note: DEFAULT & MAX on split count and package size is for the Customer Preview.
  */
 public class SuccessFactorsPartitionBuilder {
-  private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsPartitionBuilder.class);
-
   public static final int DEFAULT_SPLIT_COUNT = 8;
   public static final long MAX_ALLOWED_PACKAGE_SIZE = 1000L;
+  private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsPartitionBuilder.class);
 
   /**
    * builds the list of {@code SuccessFactorsInputSplit}
@@ -61,7 +61,7 @@ public class SuccessFactorsPartitionBuilder {
         throw new IllegalArgumentException(msg);
       }
     }
-    
+
     // setting up the optimal package size values
     long packageSize = Math.min(actualRecordToExtract, MAX_ALLOWED_PACKAGE_SIZE);
 

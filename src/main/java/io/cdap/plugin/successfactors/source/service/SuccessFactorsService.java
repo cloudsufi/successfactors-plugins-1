@@ -68,12 +68,12 @@ import javax.ws.rs.core.MediaType;
  */
 public class SuccessFactorsService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsService.class);
   public static final String TEST = "TEST";
   public static final String METADATA = "METADATA";
   public static final String DATA = "DATA";
   public static final String COUNT = "COUNT";
   public static final String SERVER_SIDE = "serverSide";
+  private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsService.class);
   private final SuccessFactorsPluginConfig pluginConfig;
   private final SuccessFactorsTransporter successFactorsHttpClient;
   private final SuccessFactorsUrlContainer urlContainer;
@@ -163,7 +163,7 @@ public class SuccessFactorsService {
    * Fetch the total available record count from the SAP OData service
    *
    * @return count of total available records
-   * @throws TransportException    any http client exceptions are wrapped under it.
+   * @throws TransportException             any http client exceptions are wrapped under it.
    * @throws SuccessFactorsServiceException any OData service based exception is wrapped under it.
    * @throws IOException
    */
@@ -179,7 +179,7 @@ public class SuccessFactorsService {
    * Calls the SAP SuccessFactors service entity to fetch the total number of available records
    *
    * @return
-   * @throws TransportException    any http client exceptions are wrapped under it.
+   * @throws TransportException             any http client exceptions are wrapped under it.
    * @throws SuccessFactorsServiceException any OData service based exception is wrapped under it.
    */
   private InputStream callEntityDataCount() throws SuccessFactorsServiceException, TransportException {
@@ -192,7 +192,7 @@ public class SuccessFactorsService {
   }
 
   /**
-   * @throws TransportException    any http client exceptions are wrapped under it.
+   * @throws TransportException             any http client exceptions are wrapped under it.
    * @throws SuccessFactorsServiceException any OData service based exception is wrapped under it.
    */
   public String getEncodedServiceMetadata() throws TransportException, SuccessFactorsServiceException {
@@ -239,7 +239,7 @@ public class SuccessFactorsService {
    * @param skip number of rows to skip
    * @param top  number of rows to fetch
    * @return {@code ODataFeed}
-   * @throws TransportException    any http client exceptions are wrapped under it.
+   * @throws TransportException             any http client exceptions are wrapped under it.
    * @throws SuccessFactorsServiceException any OData service based exception is wrapped under it.
    */
   public ODataFeed readServiceEntityData(Edm edm, Long skip, Long top)
@@ -271,7 +271,7 @@ public class SuccessFactorsService {
         }
         return dataFeed;
       }
-      
+
     } catch (EdmException | EntityProviderException | IOException ex) {
       String errMsg = ResourceConstants.ERR_RECORD_PROCESSING.getMsgForKeyWithCode(pluginConfig.getEntityName());
       throw new SuccessFactorsServiceException(errMsg, ex);
@@ -293,7 +293,7 @@ public class SuccessFactorsService {
    * @param skip number to rows to skip
    * @param top  number to rows to fetch
    * @return {@code InputStream}
-   * @throws TransportException    any http client exceptions are wrapped under it.
+   * @throws TransportException             any http client exceptions are wrapped under it.
    * @throws SuccessFactorsServiceException any OData service based exception is wrapped under it.
    */
   private InputStream callEntityData(Long skip, Long top)
@@ -305,7 +305,7 @@ public class SuccessFactorsService {
       dataURL = urlContainer.getDataFetchURL(skip, top);
     }
     SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient.callSuccessFactorsWithRetry(dataURL);
-    
+
     ExceptionParser.checkAndThrowException("", responseContainer);
     return responseContainer.getResponseStream();
   }
@@ -320,7 +320,6 @@ public class SuccessFactorsService {
   }
 
   /**
-   *
    * @param dataStream
    * @return filteredDataStream Filtered Data Stream after removing expanded entity data
    * @throws IOException
