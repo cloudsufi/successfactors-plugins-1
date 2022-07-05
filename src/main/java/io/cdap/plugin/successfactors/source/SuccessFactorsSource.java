@@ -64,6 +64,7 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
   public static final String NAME = "SuccessFactors";
   public static final String OUTPUT_SCHEMA = "outputSchema";
   public static final String SERVER_SIDE = "serverSide";
+  private static final long DEFAULT_PREVIEW_COUNT = 100L;
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsSource.class);
   private final SuccessFactorsPluginConfig config;
 
@@ -196,7 +197,7 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
     if (context.isPreviewEnabled()) {
       long previewRecordCount = context.getMaxPreviewRecords();
       if (previewRecordCount <= 0) {
-        fetchRowCount = 100L;
+        fetchRowCount = DEFAULT_PREVIEW_COUNT;
       }
       fetchRowCount = Math.min(previewRecordCount, Math.min(fetchRowCount, availableRowCount));
     }

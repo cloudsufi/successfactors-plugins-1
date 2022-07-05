@@ -73,6 +73,8 @@ public class SuccessFactorsService {
   public static final String DATA = "DATA";
   public static final String COUNT = "COUNT";
   public static final String SERVER_SIDE = "serverSide";
+  private static final String ODATA_ROOT_ELEMENT = "d";
+  private static final String ODATA_RESULT_ELEMENT = "results";
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsService.class);
   private final SuccessFactorsPluginConfig pluginConfig;
   private final SuccessFactorsTransporter successFactorsHttpClient;
@@ -328,11 +330,12 @@ public class SuccessFactorsService {
     ObjectMapper objectMapper = new ObjectMapper();
     List<String> expandFieldList = new ArrayList<>();
     JsonNode root = objectMapper.readTree(dataStream);
-    JsonNode arrayNode = root.get("d").get("results");
+    JsonNode arrayNode = root.get(ODATA_ROOT_ELEMENT).get(ODATA_RESULT_ELEMENT);
     for (JsonNode objectNode : arrayNode) {
       String expandOption = pluginConfig.getExpandOption();
-      if (expandOption.contains(",")) {
-        expandFieldList = Arrays.asList(pluginConfig.getExpandOption().split(","));
+      if (expandOption.contains(SuccessFactorsUrlContainer.PROPERTY_SEPARATOR)) {
+        expandFieldList = Arrays.asList(pluginConfig.getExpandOption()
+                                          .split(SuccessFactorsUrlContainer.PROPERTY_SEPARATOR));
       } else {
         expandFieldList.add(pluginConfig.getExpandOption());
       }

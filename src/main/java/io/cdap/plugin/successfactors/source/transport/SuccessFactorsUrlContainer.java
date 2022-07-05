@@ -39,16 +39,19 @@ import javax.annotation.Nullable;
  */
 public class SuccessFactorsUrlContainer {
 
+  public static final String PROPERTY_SEPARATOR = ",";
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsUrlContainer.class);
   private static final String TOP_OPTION = "$top";
   private static final String SKIP_OPTION = "$skip";
   private static final String FILTER_OPTION = "$filter";
   private static final String SELECT_OPTION = "$select";
   private static final String EXPAND_OPTION = "$expand";
+  private static final String COUNT = "$count";
   private static final String PAGING = "paging";
   private static final String SNAPSHOT = "snapshot";
   private static final String METADATA = "$metadata";
-  private static final String PROPERTY_SEPARATOR = ",";
+  private static final String TESTURL_TOP_VALUE = "1";
+
   private final SuccessFactorsPluginConfig pluginConfig;
 
   public SuccessFactorsUrlContainer(SuccessFactorsPluginConfig pluginConfig) {
@@ -66,7 +69,7 @@ public class SuccessFactorsUrlContainer {
       .addPathSegment(pluginConfig.getEntityName());
 
     URL testerURL = buildQueryOptions(builder, Boolean.FALSE)
-      .addQueryParameter(TOP_OPTION, "1")
+      .addQueryParameter(TOP_OPTION, TESTURL_TOP_VALUE)
       .build()
       .url();
 
@@ -153,7 +156,7 @@ public class SuccessFactorsUrlContainer {
     HttpUrl.Builder builder = HttpUrl.parse(pluginConfig.getBaseURL())
       .newBuilder()
       .addPathSegment(pluginConfig.getEntityName())
-      .addPathSegment("$count");
+      .addPathSegment(COUNT);
 
     if (SuccessFactorsUtil.isNotNullOrEmpty(pluginConfig.getFilterOption())) {
       builder.addQueryParameter(FILTER_OPTION, pluginConfig.getFilterOption());
