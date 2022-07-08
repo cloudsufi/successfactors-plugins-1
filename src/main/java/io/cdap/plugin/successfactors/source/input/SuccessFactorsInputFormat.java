@@ -48,6 +48,7 @@ public class SuccessFactorsInputFormat extends InputFormat<LongWritable, Structu
   public static final String SUCCESSFACTORS_PLUGIN_PROPERTIES = "successFactorsPluginProperties";
   public static final String PARTITIONS_PROPERTY = "partitionProperty";
   public static final String ENCODED_ENTITY_METADATA_STRING = "encodedMetadataString";
+  public static final String SERVER_SIDE = "serverSide";
   private static final Gson GSON = new Gson();
   private static final Type INPUT_SPLIT_TYPE = new TypeToken<List<SuccessFactorsInputSplit>>() {
 
@@ -90,7 +91,7 @@ public class SuccessFactorsInputFormat extends InputFormat<LongWritable, Structu
 
     try {
       Edm edmData = successFactorsService.getSuccessFactorsServiceEdm(encodedMetadataString);
-      if (!Objects.equals(pluginConfig.getPaginationType(), "serverSide")) {
+      if (!Objects.equals(pluginConfig.getPaginationType(), SERVER_SIDE)) {
         return new SuccessFactorsRecordReader(successFactorsService, edmData, outputSchema, inputSplit.getStart(),
                                               inputSplit.getEnd(), inputSplit.getBatchSize());
       } else {

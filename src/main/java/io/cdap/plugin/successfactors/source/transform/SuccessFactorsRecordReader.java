@@ -87,6 +87,7 @@ public class SuccessFactorsRecordReader extends RecordReader<LongWritable, Struc
       if (!isCallRequired()) {
         return false;
       }
+      // This condition will be true in case of client side pagination
       if (start != null && end != null && packageSize != null) {
         calculateSkipAndFetchCount();
       }

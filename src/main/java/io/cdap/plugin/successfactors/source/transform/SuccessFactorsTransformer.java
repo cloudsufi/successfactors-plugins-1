@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -164,13 +165,7 @@ public class SuccessFactorsTransformer {
    * @return list of {@code StructuredRecord}
    */
   private List<StructuredRecord> readInternalODataEntry(Schema recordSchema, ODataEntryImpl oDataEntryImpl) {
-    //List<ODataEntry> entryList = oDataEntryList.getEntries();
-
-    List<ODataEntry> entryList = new ArrayList<>();
-    entryList.add(oDataEntryImpl);
-
-    return entryList.stream().map(oDataEntry -> buildStructureRecord(recordSchema.getComponentSchema(), oDataEntry))
-      .collect(Collectors.toList());
+    return Arrays.asList(buildStructureRecord(recordSchema.getComponentSchema(), oDataEntryImpl));
   }
 
   /**
@@ -191,13 +186,9 @@ public class SuccessFactorsTransformer {
       recordBuilder.set(fieldName, fieldValue);
 
     } else if (logicalType == Schema.LogicalType.DECIMAL) {
-      try {
-        recordBuilder
-          .setDecimal(fieldName, new BigDecimal(String.valueOf(fieldValue)).setScale(fieldSchema.getScale(),
-                                                                                     BigDecimal.ROUND_HALF_UP));
-      } catch (NumberFormatException ne) {
-        LOG.error("Exception thrown while processing DECIMAL value ", ne);
-      }
+      recordBuilder
+        .setDecimal(fieldName, new BigDecimal(String.valueOf(fieldValue)).setScale(fieldSchema.getScale(),
+                                                                                   BigDecimal.ROUND_HALF_UP));
 
     } else if (logicalType == Schema.LogicalType.DATETIME) {
       LocalDateTime localDateTime = ((GregorianCalendar) fieldValue).toZonedDateTime().toLocalDateTime();

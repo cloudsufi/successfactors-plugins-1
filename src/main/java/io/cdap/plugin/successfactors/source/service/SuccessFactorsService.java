@@ -236,6 +236,7 @@ public class SuccessFactorsService {
 
   /**
    * Calls the SAP SuccessFactors service to fetch records and convert it into list of {@code ODataEntry}.
+   * skip and top params are only used with client side pagination.
    *
    * @param edm  SuccessFactors service entity metadata
    * @param skip number of rows to skip
