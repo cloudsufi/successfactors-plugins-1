@@ -323,6 +323,21 @@ public class SuccessFactorsService {
   }
 
   /**
+   * Filter the data stream after removing the expanded entity data.
+   * 
+   * Data stream after conversion to JSON has the following format:
+   * "d": {
+   *         "results": [
+   *             {
+   *                 "__metadata": {
+   *                     "uri": "https://apisalesdemo2.successfactors.eu/odata/v2/EmpCompensation(startDate=datetime
+   *                     '1997-01-01T00:00:00',userId='107030')",
+   *                     "type": "SFOData.EmpCompensation"
+   *                 },
+   *                 "userId": "107030",
+   *
+   *                 and so on...
+   *
    * @param dataStream
    * @return filteredDataStream Filtered Data Stream after removing expanded entity data
    * @throws IOException
