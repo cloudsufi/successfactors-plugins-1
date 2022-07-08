@@ -180,7 +180,8 @@ public class SuccessFactorsPartitionBuilderTest {
      * Default Split count is 8
      */
     List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount, fetchRowCount);
-    Assert.assertEquals("Split count is not same", 8, partitionList.size());
+    Assert.assertEquals("Split count is not same", SuccessFactorsPartitionBuilder.DEFAULT_SPLIT_COUNT,
+                        partitionList.size());
     Assert.assertEquals("Package size is not same", 188, partitionList.get(0).getBatchSize());
   }
 
