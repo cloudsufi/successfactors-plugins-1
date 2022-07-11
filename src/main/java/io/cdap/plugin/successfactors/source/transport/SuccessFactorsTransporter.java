@@ -79,10 +79,7 @@ public class SuccessFactorsTransporter {
     throws TransportException {
 
     try {
-      LOG.debug(ResourceConstants.DEBUG_CALL_SERVICE_START.getMsgForKey(fetchType));
       Response res = transport(endpoint, mediaType);
-      LOG.debug(ResourceConstants.DEBUG_CALL_SERVICE_END.getMsgForKey(fetchType));
-
       return prepareResponseContainer(res);
     } catch (IOException ioe) {
       throw new TransportException(ResourceConstants.ERR_CALL_SERVICE_FAILURE.getMsgForKey(), ioe);
@@ -103,9 +100,7 @@ public class SuccessFactorsTransporter {
   public SuccessFactorsResponseContainer callSuccessFactorsWithRetry(URL endpoint)
     throws IOException, TransportException {
 
-    LOG.debug(ResourceConstants.DEBUG_CALL_SERVICE_START.getMsgForKey(SuccessFactorsService.DATA));
     Response res = retrySapTransportCall(endpoint, MediaType.APPLICATION_JSON);
-    LOG.debug(ResourceConstants.DEBUG_CALL_SERVICE_END.getMsgForKey(SuccessFactorsService.DATA));
 
     try {
       return prepareResponseContainer(res);
@@ -248,10 +243,7 @@ public class SuccessFactorsTransporter {
     throws TransportException {
 
     try {
-      LOG.debug(ResourceConstants.DEBUG_CALL_SERVICE_START.getMsgForKey(fetchType));
       Response res = transport(endpoint, mediaType);
-      LOG.debug(ResourceConstants.DEBUG_CALL_SERVICE_END.getMsgForKey(fetchType));
-
       return prepareResponseContainer(res);
     } catch (IOException ioe) {
       throw new TransportException(ResourceConstants.ERR_CALL_SERVICE_FAILURE.getMsgForKey(), ioe);

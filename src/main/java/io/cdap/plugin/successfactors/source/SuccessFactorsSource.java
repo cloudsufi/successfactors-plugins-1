@@ -64,7 +64,6 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
   public static final String NAME = "SuccessFactors";
   public static final String OUTPUT_SCHEMA = "outputSchema";
   public static final String SERVER_SIDE = "serverSide";
-  private static final long DEFAULT_PREVIEW_COUNT = 100L;
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsSource.class);
   private final SuccessFactorsPluginConfig config;
 
@@ -181,25 +180,14 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
   private void configureJob(BatchSourceContext context, Schema outputSchema)
     throws TransportException, SuccessFactorsServiceException, IOException {
 
-
     SuccessFactorsTransporter transporter = new SuccessFactorsTransporter(config.getUsername(), config.getPassword());
 
     SuccessFactorsService successFactorsService = new SuccessFactorsService(config, transporter);
-
-    long fetchRowCount = 0;
 
     long availableRowCount = successFactorsService.getTotalAvailableRowCount();
 
     if (availableRowCount <= 0) {
       LOG.warn(ResourceConstants.ERR_NO_RECORD_FOUND.getMsgForKeyWithCode(config.getEntityName()));
-    }
-
-    if (context.isPreviewEnabled()) {
-      long previewRecordCount = context.getMaxPreviewRecords();
-      if (previewRecordCount <= 0) {
-        fetchRowCount = DEFAULT_PREVIEW_COUNT;
-      }
-      fetchRowCount = Math.min(previewRecordCount, Math.min(fetchRowCount, availableRowCount));
     }
 
     SuccessFactorsPartitionBuilder partitionBuilder = new SuccessFactorsPartitionBuilder();
@@ -208,7 +196,7 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
       partitions = new ArrayList<>();
       partitions.add(new SuccessFactorsInputSplit());
     } else {
-      partitions = partitionBuilder.buildSplits(availableRowCount, fetchRowCount);
+      partitions = partitionBuilder.buildSplits(availableRowCount);
     }
 
     setJobForDataRead(context, outputSchema, partitions, successFactorsService);

@@ -102,8 +102,6 @@ public class SuccessFactorsUrlContainer {
         .url();
     }
 
-    LOG.debug(ResourceConstants.DEBUG_METADATA_ENDPOINT.getMsgForKey(metadataURL));
-
     return metadataURL;
   }
 
@@ -163,8 +161,6 @@ public class SuccessFactorsUrlContainer {
     }
     URL recordCountURL = builder.build().url();
 
-    LOG.debug(ResourceConstants.DEBUG_DATA_COUNT_ENDPOINT.getMsgForKey(recordCountURL));
-
     return recordCountURL;
   }
 
@@ -191,8 +187,6 @@ public class SuccessFactorsUrlContainer {
       builder.addQueryParameter(PAGING, SNAPSHOT);
     }
     URL dataURL = builder.build().url();
-
-    LOG.debug(ResourceConstants.DEBUG_DATA_ENDPOINT.getMsgForKey(dataURL));
 
     return dataURL;
   }

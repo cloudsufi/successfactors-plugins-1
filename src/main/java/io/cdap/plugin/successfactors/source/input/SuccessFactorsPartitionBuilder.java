@@ -16,9 +16,6 @@
 
 package io.cdap.plugin.successfactors.source.input;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,78 +23,42 @@ import java.util.List;
  * This {@code SuccessFactorsPartitionBuilder} will prepare the list of optimized splits containing start & end indices
  * for each split including the optimized package size.
  * <p>
- * Default Split count is 8
- * Max allowed Split count is 10
  * Max allowed Package size is 1000
+ * Default Split size is 10000
  * <p>
  * If the total fetch record count is less then equal to 2500 then only 1 split will be created.
  * <p>
  * Note: DEFAULT & MAX on split count and package size is for the Customer Preview.
  */
 public class SuccessFactorsPartitionBuilder {
-  public static final int DEFAULT_SPLIT_COUNT = 8;
   public static final long MAX_ALLOWED_PACKAGE_SIZE = 1000L;
-  private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsPartitionBuilder.class);
+  public static final long SPLIT_SIZE = 10000L;
 
   /**
-   * builds the list of {@code SuccessFactorsInputSplit}
+   * Builds the list of {@code SuccessFactorsInputSplit}
    *
    * @param availableRecordCount available row count
-   * @param fetchRowCount        plugin property, number of rows to extract. 0 (zero) means the total record to fetch
-   *                             will be same as total number of available records.
    * @return list of {@code SuccessFactorsInputSplit}
    */
-  public List<SuccessFactorsInputSplit> buildSplits(long availableRecordCount, long fetchRowCount) {
+  public List<SuccessFactorsInputSplit> buildSplits(long availableRecordCount) {
 
     List<SuccessFactorsInputSplit> list = new ArrayList<>();
+    long start = 1;
+    // setting up the optimal split size and count values
+    long packageSize = Math.min(availableRecordCount, MAX_ALLOWED_PACKAGE_SIZE);
+    long optimalLoadOnSplit = Math.min(availableRecordCount, SPLIT_SIZE);
+    long optimalSplitCount = availableRecordCount / optimalLoadOnSplit +
+      (availableRecordCount % optimalLoadOnSplit != 0 ? 1 : 0);
+    long leftoverLoadCount = availableRecordCount % optimalSplitCount;
 
-    long recordReadStartIndex = 1;
-    long actualRecordToExtract = (fetchRowCount == 0 ? availableRecordCount : fetchRowCount);
-    long recordReadEndIndex = Math.min(actualRecordToExtract, availableRecordCount);
-    if (actualRecordToExtract > availableRecordCount) {
-      actualRecordToExtract = availableRecordCount;
-      if (actualRecordToExtract <= 0) {
-        String msg = "As per the provided configuration no records were found for extraction.";
-        throw new IllegalArgumentException(msg);
-      }
-    }
-
-    // setting up the optimal package size values
-    long packageSize = Math.min(actualRecordToExtract, MAX_ALLOWED_PACKAGE_SIZE);
-
-    int splitCount = DEFAULT_SPLIT_COUNT;
-
-    // in case total fetch record count is less than the DEFAULT_PACKAGE_SIZE then Split count will be defaulted to 1.
-    if (actualRecordToExtract <= MAX_ALLOWED_PACKAGE_SIZE) {
-      splitCount = 1;
-    }
-
-    long optimalLoadOnSplit =
-      (splitCount == 1 ? actualRecordToExtract : (actualRecordToExtract / splitCount));
-    long optimalPackageSize = Math.min(optimalLoadOnSplit, packageSize);
-
-    long leftoverLoadCount = actualRecordToExtract % splitCount;
-
-    LOG.info("Total number to available record: {}", availableRecordCount);
-    LOG.info("Total number of record to extract: {}", actualRecordToExtract);
-    LOG.info("Record extraction to begin at index: {}", recordReadStartIndex);
-    LOG.info("Record extraction to end at index: {}", recordReadEndIndex);
-    LOG.info("Calculated number of splits: {}", splitCount);
-    LOG.info("Optimal record count to extract on the each splits: {}", optimalLoadOnSplit);
-    LOG.info("Optimal package size in each splits: {}", optimalPackageSize);
-
-    long start = recordReadStartIndex;
-
-    for (int i = 0; i < splitCount; i++) {
-      long extra = i < leftoverLoadCount ? 1 : 0;
+    for (int split = 1; split <= optimalSplitCount; split++) {
+      long extra = split < leftoverLoadCount ? 1 : 0;
       long end = (start - 1) + optimalLoadOnSplit + extra;
 
       // prepare the split list
-      list.add(new SuccessFactorsInputSplit(start, end, optimalPackageSize + extra));
-
+      list.add(new SuccessFactorsInputSplit(start, end, packageSize + extra));
       start = end + 1;
     }
-
     return list;
   }
 }

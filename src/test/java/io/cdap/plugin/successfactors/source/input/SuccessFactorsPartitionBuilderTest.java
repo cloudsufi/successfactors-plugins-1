@@ -22,6 +22,17 @@ import org.junit.Test;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Class to test the building of splits.
+ * <p>
+ * Optimal Split count is calculated by dividing the total number of available records by the optimal load on split
+ * plus 1, if the remainder of the total number of available records and optimal load on split is not equal to zero
+ * optimalSplitCount = availableRecordCount / optimalLoadOnSplit +
+ * (availableRecordCount % optimalLoadOnSplit != 0 ? 1 : 0);
+ * Default Split Size is 10000L. Optimal load on split is the minimum of (total number of available records and the
+ * split size)
+ * Maximum package size is 1000L.
+ */
 public class SuccessFactorsPartitionBuilderTest {
 
   private SuccessFactorsPartitionBuilder partitionBuilder;
@@ -34,9 +45,8 @@ public class SuccessFactorsPartitionBuilderTest {
   @Test
   public void testWithDefaultValue() {
     long availableRowCount = 100;
-    long fetchRowCount = 0;
 
-    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount, fetchRowCount);
+    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount);
 
     Assert.assertEquals("Start is not same", 1, partitionList.get(0).getStart());
     Assert.assertEquals("End is not same", 100, partitionList.get(0).getEnd());
@@ -46,15 +56,15 @@ public class SuccessFactorsPartitionBuilderTest {
   @Test
   public void testWithExtraLoadOnSplitWithMaxPackageSize() {
     long availableRowCount = 378403;
-    long fetchRowCount = 0;
 
-    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount, fetchRowCount);
+    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount);
 
-    long expectedExtraLoadCount = availableRowCount % partitionList.size();
+    long expectedExtraLoadCount = availableRowCount % partitionList.size() - 1;
     long optimalLoad = (availableRowCount / partitionList.size());
-
+    //For rounding off
+    optimalLoad = (optimalLoad + 500) / 1000 * 1000;
     Assert
-      .assertEquals("Split size is not same", SuccessFactorsPartitionBuilder.DEFAULT_SPLIT_COUNT,
+      .assertEquals("Split size is not same", 38,
                     partitionList.size());
     Assert.assertEquals("Start is not same", 1, partitionList.get(0).getStart());
     Assert.assertEquals("End is not same", (optimalLoad + 1), partitionList.get(0).getEnd());
@@ -80,17 +90,17 @@ public class SuccessFactorsPartitionBuilderTest {
   @Test
   public void testWithExtraLoadOnSplit() {
     long availableRowCount = 378403;
-    long fetchRowCount = 0;
     long packageSize = 1000;
 
-    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount, fetchRowCount);
+    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount);
 
-    long expectedExtraLoadCount = availableRowCount % partitionList.size();
-    long optimalLoad = (availableRowCount / partitionList.size());
+    long expectedExtraLoadCount = availableRowCount % partitionList.size() - 1;
+    long optimalLoad = availableRowCount / partitionList.size();
+    //For rounding off
+    optimalLoad = (optimalLoad + 500) / 1000 * 1000;
 
     Assert
-      .assertEquals("Split size is not same", SuccessFactorsPartitionBuilder.DEFAULT_SPLIT_COUNT,
-                    partitionList.size());
+      .assertEquals("Split size is not same", 38, partitionList.size());
     Assert.assertEquals("Start is not same", 1, partitionList.get(0).getStart());
     Assert.assertEquals("End is not same", (optimalLoad + 1), partitionList.get(0).getEnd());
     Assert.assertEquals("Package size is not same", (packageSize + 1), partitionList.get(0).getBatchSize());
@@ -109,11 +119,10 @@ public class SuccessFactorsPartitionBuilderTest {
   @Test
   public void testUpdatedFetchRowCount() {
     long availableRowCount = 123;
-    long fetchRowCount = 100;
 
-    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount, fetchRowCount);
+    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount);
 
-    long expectedFetchSize = fetchRowCount;
+    long expectedFetchSize = availableRowCount;
     long actualFetchSize =
       partitionList.stream().collect(Collectors.summarizingLong(SuccessFactorsInputSplit::getBatchSize)).getSum();
     Assert.assertEquals("Total record extraction count is not same", expectedFetchSize, actualFetchSize);
@@ -122,11 +131,10 @@ public class SuccessFactorsPartitionBuilderTest {
   @Test
   public void testPackageSizeOptimizationBasedOnSplitCount() {
     long availableRowCount = 123;
-    long fetchRowCount = 100;
 
-    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount, fetchRowCount);
+    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount);
 
-    long expectedPackageSize = fetchRowCount;
+    long expectedPackageSize = availableRowCount;
     Assert.assertEquals("Package size is not optimized", expectedPackageSize,
       partitionList.get(partitionList.size() - 1).getBatchSize());
   }
@@ -134,23 +142,22 @@ public class SuccessFactorsPartitionBuilderTest {
   @Test
   public void testMaxPackageSizeOptimization() {
     long availableRowCount = 2000;
-    long fetchRowCount = 1000;
     int splitCount = 1;
 
-    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount, fetchRowCount);
+    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount);
 
     Assert.assertTrue("Package size is beyond the allowed optimized size.",
       partitionList.stream()
-        .filter(successFactorsInputSplit -> successFactorsInputSplit.getBatchSize() == 1000)
+        .filter(successFactorsInputSplit -> successFactorsInputSplit.getBatchSize() == SuccessFactorsPartitionBuilder.
+          MAX_ALLOWED_PACKAGE_SIZE)
         .count() == splitCount);
   }
 
   @Test
   public void testStartEndAndPackageSizeCompare() {
     long availableRowCount = 9;
-    long fetchRowCount = 0;
 
-    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount, fetchRowCount);
+    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount);
 
     Assert.assertEquals("Start is not same for split 1", 1, partitionList.get(0).getStart());
     Assert.assertEquals("End is not same for split 1", 9, partitionList.get(0).getEnd());
@@ -160,39 +167,29 @@ public class SuccessFactorsPartitionBuilderTest {
   @Test
   public void testBatchSize() {
     long availableRowCount = 9000;
-    long fetchRowCount = 0;
 
-    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount, fetchRowCount);
-    Assert.assertEquals("Split count is not same", SuccessFactorsPartitionBuilder.DEFAULT_SPLIT_COUNT,
-                        partitionList.size());
+    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount);
+    Assert.assertEquals("Split count is not same", 1, partitionList.size());
     Assert.assertEquals("Package size is not same", SuccessFactorsPartitionBuilder.MAX_ALLOWED_PACKAGE_SIZE,
                         partitionList.get(0).getBatchSize());
   }
 
   @Test
-  public void testSplitCountOnBelowDefaultPackageSize() {
+  public void testSplitCountOnBelowDefaultSplitSize() {
     long availableRowCount = 9000;
-    long fetchRowCount = 1500;
 
-    /**
-     * Package size is computed by dividing the number of records to extract by the number of splits.
-     * packageSize = actualRecordToExtract / splitCount i.e. 5000/8 = 188
-     * Default Split count is 8
-     */
-    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount, fetchRowCount);
-    Assert.assertEquals("Split count is not same", SuccessFactorsPartitionBuilder.DEFAULT_SPLIT_COUNT,
+    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount);
+    Assert.assertEquals("Split count is not same", 1,
                         partitionList.size());
-    Assert.assertEquals("Package size is not same", 188, partitionList.get(0).getBatchSize());
   }
 
   @Test
   public void testMaxAllowedSplitCountAndBatchSize() {
     long availableRowCount = 190000;
-    long fetchRowCount = 0;
 
-    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount, fetchRowCount);
+    List<SuccessFactorsInputSplit> partitionList = partitionBuilder.buildSplits(availableRowCount);
     Assert
-      .assertEquals("Split count is not same", SuccessFactorsPartitionBuilder.DEFAULT_SPLIT_COUNT,
+      .assertEquals("Split count is not same", 19,
                     partitionList.size());
     Assert.assertEquals("Package size is not same", SuccessFactorsPartitionBuilder.MAX_ALLOWED_PACKAGE_SIZE,
       partitionList.get(0).getBatchSize());
