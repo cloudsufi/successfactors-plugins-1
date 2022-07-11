@@ -21,18 +21,17 @@ import java.util.List;
 
 /**
  * This {@code SuccessFactorsPartitionBuilder} will prepare the list of optimized splits containing start & end indices
- * for each split including the optimized package size.
+ * for each split including the optimized batch size.
  * <p>
- * Max allowed Package size is 1000
- * Default Split size is 10000
+ * Max allowed Batch size is 1000
+ * Max records in Split is 10000
  * <p>
- * If the total fetch record count is less then equal to 2500 then only 1 split will be created.
+ * If the total available record count is less than equal to 10000 then only 1 split will be created.
  * <p>
- * Note: DEFAULT & MAX on split count and package size is for the Customer Preview.
  */
 public class SuccessFactorsPartitionBuilder {
-  public static final long MAX_ALLOWED_PACKAGE_SIZE = 1000L;
-  public static final long SPLIT_SIZE = 10000L;
+  public static final long MAX_ALLOWED_BATCH_SIZE = 1000L;
+  public static final long MAX_RECORDS_IN_SPLIT = 10000L;
 
   /**
    * Builds the list of {@code SuccessFactorsInputSplit}
@@ -45,8 +44,8 @@ public class SuccessFactorsPartitionBuilder {
     List<SuccessFactorsInputSplit> list = new ArrayList<>();
     long start = 1;
     // setting up the optimal split size and count values
-    long packageSize = Math.min(availableRecordCount, MAX_ALLOWED_PACKAGE_SIZE);
-    long optimalLoadOnSplit = Math.min(availableRecordCount, SPLIT_SIZE);
+    long batchSize = Math.min(availableRecordCount, MAX_ALLOWED_BATCH_SIZE);
+    long optimalLoadOnSplit = Math.min(availableRecordCount, MAX_RECORDS_IN_SPLIT);
     long optimalSplitCount = availableRecordCount / optimalLoadOnSplit +
       (availableRecordCount % optimalLoadOnSplit != 0 ? 1 : 0);
     long leftoverLoadCount = availableRecordCount % optimalSplitCount;
@@ -56,7 +55,7 @@ public class SuccessFactorsPartitionBuilder {
       long end = (start - 1) + optimalLoadOnSplit + extra;
 
       // prepare the split list
-      list.add(new SuccessFactorsInputSplit(start, end, packageSize + extra));
+      list.add(new SuccessFactorsInputSplit(start, end, batchSize + extra));
       start = end + 1;
     }
     return list;
