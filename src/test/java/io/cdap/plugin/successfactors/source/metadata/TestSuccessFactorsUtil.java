@@ -59,7 +59,7 @@ public class TestSuccessFactorsUtil {
 
     Assert.assertNotNull(successFactorsError.getError().getInnerError().getErrorResolution());
     Assert.assertEquals("See SAP Note 1797736 for error analysis (https://service.sap.com/sap/support/notes/1797736)",
-                        successFactorsError.getError().getInnerError().getErrorResolution().getSapNote());
+                        successFactorsError.getError().getInnerError().getErrorResolution().getSuccessFactorsNote());
 
     Assert.assertNotNull(successFactorsError.getError().getInnerError().getInnerErrorDetails());
     Assert.assertEquals("'TEAM_012345678' is not a valid ID.",

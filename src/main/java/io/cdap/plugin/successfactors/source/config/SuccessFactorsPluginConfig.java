@@ -51,7 +51,11 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   private static final String COMMON_ACTION = ResourceConstants.ERR_MISSING_PARAM_OR_MACRO_ACTION.getMsgForKey();
   private static final Pattern PATTERN = Pattern.compile("\\(.*\\)");
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsPluginConfig.class);
-
+  private static final String SAP_SUCCESSFACTORS_BASE_URL = "SAP SuccessFactors Base URL";
+  private static final String SAP_SUCCESSFACTORS_USERNAME = "SAP SuccessFactors Username";
+  private static final String SAP_SUCCESSFACTORS_PASSWORD = "SAP SuccessFactors Password";
+  private static final String SAP_SUCCESSFACTORS_ENTITY_NAME = "Entity Name";
+  
   @Macro
   @Name(BASE_URL)
   @Description("SuccessFactors Base URL.")
@@ -237,7 +241,6 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   public void validatePluginParameters(FailureCollector failureCollector) {
     validateMandatoryParameters(failureCollector);
     validateBasicCredentials(failureCollector);
-    LOG.debug("Validating the advanced parameters.");
     validateEntityParameter(failureCollector);
     failureCollector.getOrThrowException();
   }
@@ -251,17 +254,17 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
 
     IdUtils.validateReferenceName(getReferenceName(), failureCollector);
     if (SuccessFactorsUtil.isNullOrEmpty(getBaseURL()) && !containsMacro(BASE_URL)) {
-      String errMsg = ResourceConstants.ERR_MISSING_PARAM_PREFIX.getMsgForKey("SAP SuccessFactor Base URL");
+      String errMsg = ResourceConstants.ERR_MISSING_PARAM_PREFIX.getMsgForKey(SAP_SUCCESSFACTORS_BASE_URL);
       failureCollector.addFailure(errMsg, COMMON_ACTION).withConfigProperty(BASE_URL);
     }
     if (SuccessFactorsUtil.isNotNullOrEmpty(getBaseURL()) && !containsMacro(BASE_URL)) {
       if (HttpUrl.parse(getBaseURL()) == null) {
-        String errMsg = ResourceConstants.ERR_INVALID_BASE_URL.getMsgForKey("SAP SuccessFactor Base URL");
+        String errMsg = ResourceConstants.ERR_INVALID_BASE_URL.getMsgForKey(SAP_SUCCESSFACTORS_BASE_URL);
         failureCollector.addFailure(errMsg, COMMON_ACTION).withConfigProperty(BASE_URL);
       }
     }
     if (SuccessFactorsUtil.isNullOrEmpty(getEntityName()) && !containsMacro(ENTITY_NAME)) {
-      String errMsg = ResourceConstants.ERR_MISSING_PARAM_PREFIX.getMsgForKey("Entity Name");
+      String errMsg = ResourceConstants.ERR_MISSING_PARAM_PREFIX.getMsgForKey(SAP_SUCCESSFACTORS_ENTITY_NAME);
       failureCollector.addFailure(errMsg, COMMON_ACTION).withConfigProperty(ENTITY_NAME);
     }
   }
@@ -274,11 +277,11 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   private void validateBasicCredentials(FailureCollector failureCollector) {
 
     if (SuccessFactorsUtil.isNullOrEmpty(getUsername()) && !containsMacro(UNAME)) {
-      String errMsg = ResourceConstants.ERR_MISSING_PARAM_PREFIX.getMsgForKey("SAP SuccessFactors Username");
+      String errMsg = ResourceConstants.ERR_MISSING_PARAM_PREFIX.getMsgForKey(SAP_SUCCESSFACTORS_USERNAME);
       failureCollector.addFailure(errMsg, COMMON_ACTION).withConfigProperty(UNAME);
     }
     if (SuccessFactorsUtil.isNullOrEmpty(getPassword()) && !containsMacro(PASSWORD)) {
-      String errMsg = ResourceConstants.ERR_MISSING_PARAM_PREFIX.getMsgForKey("SAP SuccessFactors Password");
+      String errMsg = ResourceConstants.ERR_MISSING_PARAM_PREFIX.getMsgForKey(SAP_SUCCESSFACTORS_PASSWORD);
       failureCollector.addFailure(errMsg, COMMON_ACTION).withConfigProperty(PASSWORD);
     }
   }

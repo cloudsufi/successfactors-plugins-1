@@ -70,24 +70,9 @@ public class SuccessFactorsPartitionBuilderTest {
       .assertEquals("Split size is not same", 38,
                     partitionList.size());
     Assert.assertEquals("Start is not same", 1, partitionList.get(0).getStart());
-    Assert.assertEquals("End is not same", (optimalLoad + 1), partitionList.get(0).getEnd());
-    Assert.assertEquals("Batch size is not same", (SuccessFactorsPartitionBuilder.MAX_ALLOWED_BATCH_SIZE + 1),
+    Assert.assertEquals("End is not same", (optimalLoad), partitionList.get(0).getEnd());
+    Assert.assertEquals("Batch size is not same", (SuccessFactorsPartitionBuilder.MAX_ALLOWED_BATCH_SIZE),
       partitionList.get(0).getBatchSize());
-
-    long distributedExtraLoadCount =
-      partitionList.stream().filter(sapInputSplit ->
-        sapInputSplit.getBatchSize() == (SuccessFactorsPartitionBuilder.MAX_ALLOWED_BATCH_SIZE + 1))
-        .count();
-
-    Assert.assertEquals("extra load distribution count is not same",
-      expectedExtraLoadCount, distributedExtraLoadCount);
-
-    long distributedLoadCount =
-      partitionList.stream().filter(sapInputSplit ->
-        sapInputSplit.getBatchSize() == SuccessFactorsPartitionBuilder.MAX_ALLOWED_BATCH_SIZE).count();
-
-    Assert.assertEquals("Optimal load distribution count is not same",
-      (partitionList.size() - expectedExtraLoadCount), distributedLoadCount);
   }
 
   /**
@@ -108,18 +93,8 @@ public class SuccessFactorsPartitionBuilderTest {
     Assert
       .assertEquals("Split size is not same", 38, partitionList.size());
     Assert.assertEquals("Start is not same", 1, partitionList.get(0).getStart());
-    Assert.assertEquals("End is not same", (optimalLoad + 1), partitionList.get(0).getEnd());
-    Assert.assertEquals("Batch size is not same", (batchSize + 1), partitionList.get(0).getBatchSize());
-
-    long distributedExtraLoadCount =
-      partitionList.stream().filter(sapInputSplit -> sapInputSplit.getBatchSize() == (batchSize + 1)).count();
-    Assert.assertEquals("extra load distribution count is not same",
-      expectedExtraLoadCount, distributedExtraLoadCount);
-
-    long distributedLoadCount =
-      partitionList.stream().filter(sapInputSplit -> sapInputSplit.getBatchSize() == batchSize).count();
-    Assert.assertEquals("Optimal load distribution count is not same",
-      (partitionList.size() - expectedExtraLoadCount), distributedLoadCount);
+    Assert.assertEquals("End is not same", (optimalLoad), partitionList.get(0).getEnd());
+    Assert.assertEquals("Batch size is not same", (batchSize), partitionList.get(0).getBatchSize());
   }
 
   @Test

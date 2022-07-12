@@ -55,7 +55,7 @@ public class SuccessFactorsInputFormat extends InputFormat<LongWritable, Structu
   }.getType();
 
   @Override
-  public List<InputSplit> getSplits(JobContext jContext) throws IOException, InterruptedException {
+  public List<InputSplit> getSplits(JobContext jContext) {
 
     Configuration configuration = jContext.getConfiguration();
     List<InputSplit> splits = new ArrayList<>();
@@ -73,7 +73,7 @@ public class SuccessFactorsInputFormat extends InputFormat<LongWritable, Structu
   @Override
   public RecordReader<LongWritable, StructuredRecord> createRecordReader(InputSplit split,
                                                                          TaskAttemptContext taContext)
-    throws IOException, InterruptedException {
+    throws IOException {
 
     SuccessFactorsInputSplit inputSplit = (SuccessFactorsInputSplit) split;
 

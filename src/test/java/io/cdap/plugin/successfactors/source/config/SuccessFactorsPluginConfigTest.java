@@ -27,6 +27,12 @@ import java.util.List;
 
 public class SuccessFactorsPluginConfigTest {
 
+  private static final String REFERENCE_NAME = "unit-test-ref-name";
+  private static final String BASE_URL = "http://localhost";
+  private static final String ENTITY_NAME = "hunit-test-ref-name";
+  private static final String ENTITY = "entity";
+  private static final String USER_NAME = "username";
+  private static final String PASSWORD = "password";
   private MockFailureCollector failureCollector;
   private SuccessFactorsPluginConfig.Builder pluginConfigBuilder;
 
@@ -34,11 +40,11 @@ public class SuccessFactorsPluginConfigTest {
   public void setUp() {
     failureCollector = new MockFailureCollector();
     pluginConfigBuilder = SuccessFactorsPluginConfig.builder()
-      .referenceName("unit-test-ref-name")
-      .baseURL("http://localhost")
-      .entityName("entity name")
-      .username("username")
-      .password("password");
+      .referenceName(REFERENCE_NAME)
+      .baseURL(BASE_URL)
+      .entityName(ENTITY_NAME)
+      .username(USER_NAME)
+      .password(PASSWORD);
   }
 
   @Test
@@ -51,8 +57,8 @@ public class SuccessFactorsPluginConfigTest {
   public void testValidatePluginParametersWithEmptyEntityName() {
     SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder
       .entityName(null)
-      .username("username")
-      .password("password")
+      .username(USER_NAME)
+      .password(PASSWORD)
       .build();
 
     try {
@@ -71,7 +77,7 @@ public class SuccessFactorsPluginConfigTest {
     SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder
       .entityName("entity")
       .username(null)
-      .password("password")
+      .password(PASSWORD)
       .build();
     try {
       pluginConfig.validatePluginParameters(failureCollector);
@@ -87,8 +93,8 @@ public class SuccessFactorsPluginConfigTest {
   @Test
   public void testValidatePluginParametersWithEmptyPassword() {
     SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder
-      .entityName("entity")
-      .username("username")
+      .entityName(ENTITY)
+      .username(USER_NAME)
       .password(null)
       .build();
     try {
@@ -105,9 +111,9 @@ public class SuccessFactorsPluginConfigTest {
   @Test
   public void testValidatePluginParametersWithEmptyURL() {
     SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder
-      .entityName("entity")
-      .username("username")
-      .password("password")
+      .entityName(ENTITY)
+      .username(USER_NAME)
+      .password(PASSWORD)
       .baseURL(null)
       .build();
     try {
@@ -116,7 +122,7 @@ public class SuccessFactorsPluginConfigTest {
     } catch (ValidationException ve) {
       List<ValidationFailure> failures = ve.getFailures();
       Assert.assertEquals(1, failures.size());
-      Assert.assertEquals(ResourceConstants.ERR_MISSING_PARAM_PREFIX.getMsgForKey("SAP SuccessFactor Base URL"),
+      Assert.assertEquals(ResourceConstants.ERR_MISSING_PARAM_PREFIX.getMsgForKey("SAP SuccessFactors Base URL"),
                           failures.get(0).getMessage());
     }
   }

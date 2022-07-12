@@ -21,25 +21,26 @@ package io.cdap.plugin.successfactors.common.exception.proto.innererror;
  */
 public class ErrorResolution {
 
-  private final String sapTransaction;
-  private final String sapNote;
-  private final String additionalSAPNote;
+  private final String successFactorsTransaction;
+  private final String successFactorsNote;
+  private final String additionalSuccessFactorsNote;
 
-  public ErrorResolution(String sapTransaction, String sapNote, String additionalSAPNote) {
-    this.sapTransaction = sapTransaction;
-    this.sapNote = sapNote;
-    this.additionalSAPNote = additionalSAPNote;
+  public ErrorResolution(String successFactorsTransaction, String successFactorsNote,
+                         String additionalSuccessFactorsNote) {
+    this.successFactorsTransaction = successFactorsTransaction;
+    this.successFactorsNote = successFactorsNote;
+    this.additionalSuccessFactorsNote = additionalSuccessFactorsNote;
   }
 
-  public String getSapTransaction() {
-    return sapTransaction;
+  public String getSuccessFactorsTransaction() {
+    return successFactorsTransaction;
   }
 
-  public String getSapNote() {
-    return sapNote;
+  public String getSuccessFactorsNote() {
+    return successFactorsNote;
   }
 
-  public String getAdditionalSAPNote() {
-    return additionalSAPNote;
+  public String getAdditionalSuccessFactorsNote() {
+    return additionalSuccessFactorsNote;
   }
 }

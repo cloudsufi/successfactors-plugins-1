@@ -48,14 +48,12 @@ public class SuccessFactorsPartitionBuilder {
     long optimalLoadOnSplit = Math.min(availableRecordCount, MAX_RECORDS_IN_SPLIT);
     long optimalSplitCount = availableRecordCount / optimalLoadOnSplit +
       (availableRecordCount % optimalLoadOnSplit != 0 ? 1 : 0);
-    long leftoverLoadCount = availableRecordCount % optimalSplitCount;
 
     for (int split = 1; split <= optimalSplitCount; split++) {
-      long extra = split < leftoverLoadCount ? 1 : 0;
-      long end = (start - 1) + optimalLoadOnSplit + extra;
+      long end = (start - 1) + optimalLoadOnSplit;
 
       // prepare the split list
-      list.add(new SuccessFactorsInputSplit(start, end, batchSize + extra));
+      list.add(new SuccessFactorsInputSplit(start, end, batchSize));
       start = end + 1;
     }
     return list;

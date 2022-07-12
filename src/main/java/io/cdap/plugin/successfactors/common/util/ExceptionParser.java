@@ -45,6 +45,8 @@ public class ExceptionParser {
 
   public static final int NO_VERSION_FOUND = 1;
   public static final int INVALID_VERSION_FOUND = 2;
+  public static final String BROKEN_HYPERLINK = "Refer to https";
+  public static final String HTML_TAG = "<html>";
 
   private static final Gson GSON = new Gson();
   private static final String SUPPORTED_DATASERVICE_VERSION = "2.0";
@@ -89,12 +91,11 @@ public class ExceptionParser {
 
           rawResponseString = bufferedReader.lines().collect(Collectors.joining(" "));
           // For handling broken hyperlinks to SAP docs in error messages returned by SAP SuccessFactors OData v2 API
-          if (rawResponseString.contains("Refer to https")) {
+          if (rawResponseString.contains(BROKEN_HYPERLINK)) {
             rawResponseString = rawResponseString.substring(0, rawResponseString.indexOf("Refer to https"));
           }
         } catch (IOException ioe) {
-          // no-ops
-          LOG.error("Exception thrown while reading input stream ", ioe);
+          throw new SuccessFactorsServiceException(ioe.getMessage(), responseContainer.getHttpStatusCode());
         }
       }
 
@@ -105,7 +106,7 @@ public class ExceptionParser {
         error = GSON.fromJson(rawResponseString, SuccessFactorsError.class);
       } catch (JsonSyntaxException | JsonIOException je) {
         // html errors are only found in case of invalid SuccessFactors service namespace
-        if (rawResponseString.startsWith("<html>")) {
+        if (rawResponseString.startsWith(HTML_TAG)) {
           failureMessage += ResourceConstants.ERR_INVALID_ENTITY_NAME.getMsgForKey();
           throw new SuccessFactorsServiceException(failureMessage, responseContainer.getHttpStatusCode());
         }
