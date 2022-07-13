@@ -1,223 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
-  <edmx:Reference Uri="http://hostname/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMON',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
-    <edmx:Include Namespace="com.sap.vocabularies.Common.v1" Alias="Common"/>
-  </edmx:Reference>
-  <edmx:Reference Uri="http://hostname/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CAPABILITIES',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
-    <edmx:Include Namespace="Org.OData.Capabilities.V1" Alias="Capabilities"/>
-  </edmx:Reference>
-  <edmx:Reference Uri="http://hostname/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMUNICATION',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
-    <edmx:Include Namespace="com.sap.vocabularies.Communication.v1" Alias="Communication"/>
-  </edmx:Reference>
-  <edmx:Reference Uri="http://hostname/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_AGGREGATION',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
-    <edmx:Include Namespace="Org.OData.Aggregation.V1" Alias="Aggregation"/>
-  </edmx:Reference>
-  <edmx:Reference Uri="http://hostname/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_PERSONALDATA',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
-    <edmx:Include Namespace="com.sap.vocabularies.PersonalData.v1" Alias="PersonalData"/>
-  </edmx:Reference>
-  <edmx:DataServices m:DataServiceVersion="2.0">
-    <Schema Namespace="C_GLACCOUNTHIERARCHYNODE_SRV" xml:lang="en" sap:schema-version="1" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
-      <EntityType Name="C_GLAccountHierarchyNodeType" sap:label="API GL Acccount Hierarchy Node" sap:content-version="1">
-        <Key>
-          <PropertyRef Name="GLAccountHierarchy"/>
-          <PropertyRef Name="HierarchyNode"/>
-          <PropertyRef Name="ValidityEndDate"/>
-        </Key>
-        <Property Name="GLAccountHierarchy" Type="Edm.String" Nullable="false" MaxLength="42" sap:display-format="UpperCase" sap:filter-restriction="single-value" sap:required-in-filter="true" sap:label="Hierarchy ID"/>
-        <Property Name="HierarchyNode" Type="Edm.String" Nullable="false" MaxLength="50" sap:label="Node" sap:quickinfo="Hierarchy node"/>
-        <Property Name="ValidityEndDate" Type="Edm.DateTime" Nullable="false" Precision="0" sap:display-format="Date" sap:filter-restriction="single-value" sap:required-in-filter="true" sap:label="Validity End Date"/>
-        <Property Name="ParentNode" Type="Edm.String" MaxLength="50" sap:label="Par. Node" sap:quickinfo="Hierarchy parent node"/>
-        <Property Name="HierarchyVersion" Type="Edm.String" MaxLength="15" sap:display-format="NonNegative" sap:label="Version" sap:quickinfo="Hierarchy version"/>
-        <Property Name="ValidityStartDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Validity Start Date"/>
-        <Property Name="ChartOfAccounts" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Chart of Accounts"/>
-        <Property Name="GLAccount" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:text="to_GLAccountInChartOfAccounts/GLAccount_Text" sap:label="G/L Account" sap:quickinfo="General Ledger Account" sap:value-list="standard"/>
-        <Property Name="SequenceNumber" Type="Edm.String" MaxLength="56"/>
-        <Property Name="HierarchyNodeLevel" Type="Edm.String" MaxLength="6" sap:display-format="NonNegative" sap:label="Hierarchy Level"/>
-        <Property Name="NodeType" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Node Type" sap:quickinfo="Hierarchy node type"/>
-        <Property Name="SemanticTag" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Semantic Tag" sap:quickinfo="Semantic Tag of a Hierarchy Node"/>
-        <Property Name="SACAccountType" Type="Edm.String" MaxLength="3"/>
-        <NavigationProperty Name="to_GLAccountInChartOfAccounts" Relationship="C_GLACCOUNTHIERARCHYNODE_SRV.assoc_7201F50982BB5887352912F94F00AA3E" FromRole="FromRole_assoc_7201F50982BB5887352912F94F00AA3E" ToRole="ToRole_assoc_7201F50982BB5887352912F94F00AA3E"/>
-        <NavigationProperty Name="to_Text" Relationship="C_GLACCOUNTHIERARCHYNODE_SRV.assoc_1FFA19A665F3F7ABF920E89AF168C220" FromRole="FromRole_assoc_1FFA19A665F3F7ABF920E89AF168C220" ToRole="ToRole_assoc_1FFA19A665F3F7ABF920E89AF168C220"/>
-      </EntityType>
-      <EntityType Name="C_GLAccountHierarchyNodeTType" sap:label="API GL Account Hierarchy Node Text" sap:content-version="1">
-        <Key>
-          <PropertyRef Name="GLAccountHierarchy"/>
-          <PropertyRef Name="HierarchyNode"/>
-          <PropertyRef Name="ValidityEndDate"/>
-          <PropertyRef Name="Language"/>
-        </Key>
-        <Property Name="GLAccountHierarchy" Type="Edm.String" Nullable="false" MaxLength="42" sap:display-format="UpperCase" sap:label="Hierarchy ID"/>
-        <Property Name="HierarchyNode" Type="Edm.String" Nullable="false" MaxLength="50" sap:label="Node" sap:quickinfo="Hierarchy node"/>
-        <Property Name="ValidityEndDate" Type="Edm.DateTime" Nullable="false" Precision="0" sap:display-format="Date" sap:label="Valid To" sap:quickinfo="Valid To Date"/>
-        <Property Name="Language" Type="Edm.String" Nullable="false" MaxLength="2" sap:label="Language Key"/>
-        <Property Name="HierarchyNodeText" Type="Edm.String" MaxLength="50" sap:label="Description" sap:quickinfo="Hierarchy node description"/>
-        <Property Name="HierarchyNodeShortText" Type="Edm.String" MaxLength="20"/>
-        <Property Name="ValidityStartDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Valid From" sap:quickinfo="Valid-From Date"/>
-        <Property Name="NodeType" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Node Type" sap:quickinfo="Hierarchy node type"/>
-        <NavigationProperty Name="to_GLAccountHierarchyNode" Relationship="C_GLACCOUNTHIERARCHYNODE_SRV.assoc_1AB516F04C6DADF25AC23179A0551C99" FromRole="FromRole_assoc_1AB516F04C6DADF25AC23179A0551C99" ToRole="ToRole_assoc_1AB516F04C6DADF25AC23179A0551C99"/>
-      </EntityType>
-      <EntityType Name="I_GLAccountInChartOfAccountsType" sap:label="G/L Account In Chart Of Accounts" sap:content-version="1">
-        <Key>
-          <PropertyRef Name="ChartOfAccounts"/>
-          <PropertyRef Name="GLAccount"/>
-        </Key>
-        <Property Name="ChartOfAccounts" Type="Edm.String" Nullable="false" MaxLength="4" sap:display-format="UpperCase" sap:text="ChartOfAccounts_Text" sap:label="Chart of Accounts"/>
-        <Property Name="ChartOfAccounts_Text" Type="Edm.String" MaxLength="50" sap:label="Description" sap:quickinfo="Chart of Accounts Description" sap:creatable="false" sap:updatable="false"/>
-        <Property Name="GLAccount" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:text="GLAccount_Text" sap:label="G/L Account" sap:quickinfo="G/L Account Number"/>
-        <Property Name="GLAccount_Text" Type="Edm.String" MaxLength="20" sap:label="Short Text" sap:quickinfo="G/L account short text" sap:creatable="false" sap:updatable="false"/>
-        <Property Name="IsBalanceSheetAccount" Type="Edm.Boolean" sap:display-format="UpperCase" sap:label="Balance sheet acct" sap:quickinfo="Indicator: Account is a balance sheet account?"/>
-        <Property Name="GLAccountGroup" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:text="GLAccountGroup_Text" sap:label="Account Group" sap:quickinfo="G/L Account Group"/>
-        <Property Name="GLAccountGroup_Text" Type="Edm.String" MaxLength="30" sap:label="Name" sap:quickinfo="Account Group Name" sap:creatable="false" sap:updatable="false"/>
-        <Property Name="CorporateGroupAccount" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Group Account Number"/>
-        <Property Name="ProfitLossAccountType" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="P&amp;L state. acct" sap:quickinfo="P&amp;L statement account type"/>
-        <Property Name="SampleGLAccount" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Sample Account" sap:quickinfo="Number of the Sample Account"/>
-        <Property Name="AccountIsMarkedForDeletion" Type="Edm.Boolean" sap:display-format="UpperCase" sap:label="Deletion Flag" sap:quickinfo="Indicator: Account Marked for Deletion?"/>
-        <Property Name="AccountIsBlockedForCreation" Type="Edm.Boolean" sap:display-format="UpperCase" sap:label="Creation Block" sap:quickinfo="Indicator: Account Is Blocked for Creation ?"/>
-        <Property Name="AccountIsBlockedForPosting" Type="Edm.Boolean" sap:display-format="UpperCase" sap:label="Posting Block" sap:quickinfo="Indicator: Is Account Blocked for Posting?"/>
-        <Property Name="AccountIsBlockedForPlanning" Type="Edm.Boolean" sap:display-format="UpperCase" sap:label="Planning Block" sap:quickinfo="Indicator: Account Blocked for Planning ?"/>
-        <Property Name="PartnerCompany" Type="Edm.String" MaxLength="6" sap:display-format="UpperCase" sap:label="Trading Partner No." sap:quickinfo="Company ID of Trading Partner"/>
-        <Property Name="FunctionalArea" Type="Edm.String" MaxLength="16" sap:display-format="UpperCase" sap:label="Functional Area"/>
-        <Property Name="CreationDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Created on" sap:quickinfo="Date on which the Record Was Created"/>
-        <Property Name="CreatedByUser" Type="Edm.String" MaxLength="12" sap:display-format="UpperCase" sap:label="Created by" sap:quickinfo="Name of Person who Created the Object"/>
-        <Property Name="LastChangeDateTime" Type="Edm.DateTimeOffset" Precision="0" ConcurrencyMode="Fixed" sap:label="Time Stamp" sap:quickinfo="UTC Time Stamp in Short Form (YYYYMMDDhhmmss)"/>
-        <Property Name="GLAccountType" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="G/L Account Type" sap:quickinfo="Type of a General Ledger Account"/>
-        <Property Name="GLAccountExternal" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="G/L Account" sap:quickinfo="G/L Account Number, Significant Length"/>
-        <Property Name="IsProfitLossAccount" Type="Edm.Boolean" sap:display-format="UpperCase" sap:label="Profit Loss Account" sap:quickinfo="Indicator: Account is a balance sheet account?"/>
-        <NavigationProperty Name="to_Text" Relationship="C_GLACCOUNTHIERARCHYNODE_SRV.assoc_219DA14EF4C105088389250950AF69A6" FromRole="FromRole_assoc_219DA14EF4C105088389250950AF69A6" ToRole="ToRole_assoc_219DA14EF4C105088389250950AF69A6"/>
-      </EntityType>
-      <EntityType Name="I_GLAccountTextType" sap:label="General Ledger Account Text" sap:content-version="1">
-        <Key>
-          <PropertyRef Name="ChartOfAccounts"/>
-          <PropertyRef Name="GLAccount"/>
-          <PropertyRef Name="Language"/>
-        </Key>
-        <Property Name="ChartOfAccounts" Type="Edm.String" Nullable="false" MaxLength="4" sap:display-format="UpperCase" sap:text="ChartOfAccounts_Text" sap:label="Chart of Accounts"/>
-        <Property Name="ChartOfAccounts_Text" Type="Edm.String" MaxLength="50" sap:label="Description" sap:quickinfo="Chart of Accounts Description" sap:creatable="false" sap:updatable="false"/>
-        <Property Name="GLAccount" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="G/L Account" sap:quickinfo="G/L Account Number"/>
-        <Property Name="Language" Type="Edm.String" Nullable="false" MaxLength="2" sap:label="Language Key"/>
-        <Property Name="GLAccountName" Type="Edm.String" MaxLength="20" sap:label="Short Text" sap:quickinfo="G/L account short text"/>
-        <Property Name="GLAccountLongName" Type="Edm.String" MaxLength="50" sap:label="G/L Acct Long Text" sap:quickinfo="G/L Account Long Text"/>
-        <Property Name="LastChangeDateTime" Type="Edm.DateTimeOffset" Precision="0" ConcurrencyMode="Fixed" sap:label="Time Stamp" sap:quickinfo="UTC Time Stamp in Short Form (YYYYMMDDhhmmss)"/>
-      </EntityType>
-      <Association Name="assoc_219DA14EF4C105088389250950AF69A6" sap:content-version="1">
-        <End Type="C_GLACCOUNTHIERARCHYNODE_SRV.I_GLAccountInChartOfAccountsType" Multiplicity="1" Role="FromRole_assoc_219DA14EF4C105088389250950AF69A6"/>
-        <End Type="C_GLACCOUNTHIERARCHYNODE_SRV.I_GLAccountTextType" Multiplicity="*" Role="ToRole_assoc_219DA14EF4C105088389250950AF69A6"/>
-      </Association>
-      <Association Name="assoc_1AB516F04C6DADF25AC23179A0551C99" sap:content-version="1">
-        <End Type="C_GLACCOUNTHIERARCHYNODE_SRV.C_GLAccountHierarchyNodeTType" Multiplicity="1" Role="FromRole_assoc_1AB516F04C6DADF25AC23179A0551C99"/>
-        <End Type="C_GLACCOUNTHIERARCHYNODE_SRV.C_GLAccountHierarchyNodeType" Multiplicity="1" Role="ToRole_assoc_1AB516F04C6DADF25AC23179A0551C99"/>
-      </Association>
-      <Association Name="assoc_1FFA19A665F3F7ABF920E89AF168C220" sap:content-version="1">
-        <End Type="C_GLACCOUNTHIERARCHYNODE_SRV.C_GLAccountHierarchyNodeType" Multiplicity="1" Role="FromRole_assoc_1FFA19A665F3F7ABF920E89AF168C220"/>
-        <End Type="C_GLACCOUNTHIERARCHYNODE_SRV.C_GLAccountHierarchyNodeTType" Multiplicity="*" Role="ToRole_assoc_1FFA19A665F3F7ABF920E89AF168C220"/>
-      </Association>
-      <Association Name="assoc_7201F50982BB5887352912F94F00AA3E" sap:content-version="1">
-        <End Type="C_GLACCOUNTHIERARCHYNODE_SRV.C_GLAccountHierarchyNodeType" Multiplicity="1" Role="FromRole_assoc_7201F50982BB5887352912F94F00AA3E"/>
-        <End Type="C_GLACCOUNTHIERARCHYNODE_SRV.I_GLAccountInChartOfAccountsType" Multiplicity="0..1" Role="ToRole_assoc_7201F50982BB5887352912F94F00AA3E"/>
-        <ReferentialConstraint>
-          <Principal Role="ToRole_assoc_7201F50982BB5887352912F94F00AA3E">
-            <PropertyRef Name="GLAccount"/>
-            <PropertyRef Name="ChartOfAccounts"/>
-          </Principal>
-          <Dependent Role="FromRole_assoc_7201F50982BB5887352912F94F00AA3E">
-            <PropertyRef Name="GLAccount"/>
-            <PropertyRef Name="ChartOfAccounts"/>
-          </Dependent>
-        </ReferentialConstraint>
-      </Association>
-      <EntityContainer Name="C_GLACCOUNTHIERARCHYNODE_SRV_Entities" m:IsDefaultEntityContainer="true" sap:message-scope-supported="true" sap:supported-formats="atom json xlsx">
-        <EntitySet Name="C_GLAccountHierarchyNode" EntityType="C_GLACCOUNTHIERARCHYNODE_SRV.C_GLAccountHierarchyNodeType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:requires-filter="true" sap:content-version="1"/>
-        <EntitySet Name="C_GLAccountHierarchyNodeT" EntityType="C_GLACCOUNTHIERARCHYNODE_SRV.C_GLAccountHierarchyNodeTType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
-        <EntitySet Name="I_GLAccountInChartOfAccounts" EntityType="C_GLACCOUNTHIERARCHYNODE_SRV.I_GLAccountInChartOfAccountsType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:searchable="true" sap:content-version="1"/>
-        <EntitySet Name="I_GLAccountText" EntityType="C_GLACCOUNTHIERARCHYNODE_SRV.I_GLAccountTextType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
-        <AssociationSet Name="assoc_219DA14EF4C105088389250950AF69A6" Association="C_GLACCOUNTHIERARCHYNODE_SRV.assoc_219DA14EF4C105088389250950AF69A6" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
-          <End EntitySet="I_GLAccountInChartOfAccounts" Role="FromRole_assoc_219DA14EF4C105088389250950AF69A6"/>
-          <End EntitySet="I_GLAccountText" Role="ToRole_assoc_219DA14EF4C105088389250950AF69A6"/>
+<edmx:Edmx Version="1.0"
+           xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
+           xmlns:atom="http://www.w3.org/2005/Atom">
+  <edmx:DataServices m:DataServiceVersion="2.0"
+                     xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">
+    <Schema Namespace="SFODataSet"
+            xmlns="http://schemas.microsoft.com/ado/2008/09/edm"
+            xmlns:sf="http://www.successfactors.com/edm/sf"
+            xmlns:sap="http://www.successfactors.com/edm/sap">
+      <EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true">
+        <EntitySet Name="Benefit" EntityType="SFOData.Benefit" sap:label="Benefit" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:deletable="false">
+          <Documentation>
+            <Summary>Benefit</Summary>
+            <LongDescription>This entity is used to create and configure benefits. It is used for reimbursements and allowances, such as medical bills, higher education, and a company car.</LongDescription>
+            <sap:tagcollection>
+              <sap:tag>Employee Central (EC)</sap:tag>
+              <sap:tag>EC - Global Benefits</sap:tag>
+            </sap:tagcollection>
+          </Documentation>
+        </EntitySet>
+        <AssociationSet Name="walletsAssociated_of_Benefit" Association="SFOData.walletsAssociated_of_Benefit">
+          <End EntitySet="Benefit" Role="Benefit"></End>
+          <End EntitySet="Benefit" Role="asso_walletsAssociated"></End>
         </AssociationSet>
-        <AssociationSet Name="assoc_1FFA19A665F3F7ABF920E89AF168C220" Association="C_GLACCOUNTHIERARCHYNODE_SRV.assoc_1FFA19A665F3F7ABF920E89AF168C220" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
-          <End EntitySet="C_GLAccountHierarchyNode" Role="FromRole_assoc_1FFA19A665F3F7ABF920E89AF168C220"/>
-          <End EntitySet="C_GLAccountHierarchyNodeT" Role="ToRole_assoc_1FFA19A665F3F7ABF920E89AF168C220"/>
-        </AssociationSet>
-        <AssociationSet Name="assoc_7201F50982BB5887352912F94F00AA3E" Association="C_GLACCOUNTHIERARCHYNODE_SRV.assoc_7201F50982BB5887352912F94F00AA3E" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
-          <End EntitySet="C_GLAccountHierarchyNode" Role="FromRole_assoc_7201F50982BB5887352912F94F00AA3E"/>
-          <End EntitySet="I_GLAccountInChartOfAccounts" Role="ToRole_assoc_7201F50982BB5887352912F94F00AA3E"/>
-        </AssociationSet>
-        <AssociationSet Name="assoc_1AB516F04C6DADF25AC23179A0551C99" Association="C_GLACCOUNTHIERARCHYNODE_SRV.assoc_1AB516F04C6DADF25AC23179A0551C99" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
-          <End EntitySet="C_GLAccountHierarchyNodeT" Role="FromRole_assoc_1AB516F04C6DADF25AC23179A0551C99"/>
-          <End EntitySet="C_GLAccountHierarchyNode" Role="ToRole_assoc_1AB516F04C6DADF25AC23179A0551C99"/>
+        <AssociationSet Name="eligibleBenefits_of_Benefit" Association="SFOData.eligibleBenefits_of_Benefit">
+          <End EntitySet="Benefit" Role="Benefit"></End>
+          <End EntitySet="Benefit" Role="asso_eligibleBenefits"></End>
         </AssociationSet>
       </EntityContainer>
-      <Annotations Target="C_GLACCOUNTHIERARCHYNODE_SRV.C_GLAccountHierarchyNodeType/GLAccount" xmlns="http://docs.oasis-open.org/odata/ns/edm">
-        <Annotation Term="Common.ValueList">
-          <Record>
-            <PropertyValue Property="Label" String="G/L Account In Chart Of Accounts"/>
-            <PropertyValue Property="CollectionPath" String="I_GLAccountInChartOfAccounts"/>
-            <PropertyValue Property="SearchSupported" Bool="true"/>
-            <PropertyValue Property="Parameters">
-              <Collection>
-                <Record Type="Common.ValueListParameterInOut">
-                  <PropertyValue Property="LocalDataProperty" PropertyPath="ChartOfAccounts"/>
-                  <PropertyValue Property="ValueListProperty" String="ChartOfAccounts"/>
-                </Record>
-                <Record Type="Common.ValueListParameterInOut">
-                  <PropertyValue Property="LocalDataProperty" PropertyPath="GLAccount"/>
-                  <PropertyValue Property="ValueListProperty" String="GLAccount"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="ChartOfAccounts_Text"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="GLAccount_Text"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="GLAccountGroup_Text"/>
-                </Record>
-              </Collection>
-            </PropertyValue>
-          </Record>
-        </Annotation>
-      </Annotations>
-      <Annotations Target="C_GLACCOUNTHIERARCHYNODE_SRV.C_GLACCOUNTHIERARCHYNODE_SRV_Entities" xmlns="http://docs.oasis-open.org/odata/ns/edm">
-        <Annotation Term="Aggregation.ApplySupported">
-          <Record>
-            <PropertyValue Property="Transformations">
-              <Collection>
-                <String>aggregate</String>
-                <String>groupby</String>
-                <String>filter</String>
-              </Collection>
-            </PropertyValue>
-            <PropertyValue Property="Rollup" EnumMember="None"/>
-          </Record>
-        </Annotation>
-      </Annotations>
-      <Annotations Target="C_GLACCOUNTHIERARCHYNODE_SRV.C_GLACCOUNTHIERARCHYNODE_SRV_Entities/C_GLAccountHierarchyNode" xmlns="http://docs.oasis-open.org/odata/ns/edm">
-        <Annotation Term="Capabilities.FilterRestrictions">
-          <Record>
-            <PropertyValue Property="RequiresFilter" Bool="true"/>
-            <PropertyValue Property="RequiredProperties">
-              <Collection>
-                <PropertyPath>GLAccountHierarchy</PropertyPath>
-                <PropertyPath>ValidityEndDate</PropertyPath>
-              </Collection>
-            </PropertyValue>
-            <PropertyValue Property="FilterExpressionRestrictions">
-              <Collection>
-                <Record>
-                  <PropertyValue Property="Property" PropertyPath="GLAccountHierarchy"/>
-                  <PropertyValue Property="AllowedExpressions" String="SingleValue"/>
-                </Record>
-                <Record>
-                  <PropertyValue Property="Property" PropertyPath="ValidityEndDate"/>
-                  <PropertyValue Property="AllowedExpressions" String="SingleValue"/>
-                </Record>
-              </Collection>
-            </PropertyValue>
-          </Record>
-        </Annotation>
-      </Annotations>
-      <atom:link rel="self" href="http://hostname/sap/opu/odata/sap/C_GLACCOUNTHIERARCHYNODE_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
-      <atom:link rel="latest-version" href="http://hostname/sap/opu/odata/sap/C_GLACCOUNTHIERARCHYNODE_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+    </Schema>
+    <Schema Namespace="SFOData"
+            xmlns="http://schemas.microsoft.com/ado/2008/09/edm"
+            xmlns:sf="http://www.successfactors.com/edm/sf"
+            xmlns:sap="http://www.successfactors.com/edm/sap">
+      <EntityType Name="Benefit">
+        <Key>
+          <PropertyRef Name="benefitId"></PropertyRef>
+          <PropertyRef Name="effectiveStartDate"></PropertyRef>
+        </Key>
+        <Property Name="ageOfRetirement" Type="Edm.Decimal" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Retirement Age"></Property>
+        <Property Name="annualMaxContributionAmount" Type="Edm.Decimal" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Annual Maximum Contribution Amount"></Property>
+        <Property Name="annualMaxPayComponent" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="32" sap:label="Pay Component for Annual Maximum Contribution"></Property>
+        <Property Name="annualMinContributionAmount" Type="Edm.Decimal" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Annual Minimum Contribution Amount"></Property>
+        <Property Name="balanceCarryForward" Type="Edm.Boolean" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Balance Carry Forward"></Property>
+        <Property Name="bandingsConfiguration" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Bands Based on Pensionable Earnings"></Property>
+        <Property Name="beneficiaryRelevant" Type="Edm.Boolean" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Beneficiary Relevant"></Property>
+        <Property Name="benefitEntityID" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="mdfSystemEntityId"></Property>
+        <Property Name="benefitId" Type="Edm.String" Nullable="false" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Benefit ID"></Property>
+        <Property Name="benefitName" Type="Edm.String" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Benefit Name"></Property>
+        <Property Name="benefitProgram" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Benefit Program"></Property>
+        <Property Name="benefitSavingsPlanSubType" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Plan Subtype"></Property>
+        <Property Name="benefitSchedule" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Benefit Schedule"></Property>
+        <Property Name="benefitShortDescription" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Benefit Short Description"></Property>
+        <Property Name="benefitSpecific" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Benefit Specific Fields"></Property>
+        <Property Name="benefitType" Type="Edm.String" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Benefit Type"></Property>
+        <Property Name="bothBalanceCarryForwardParametersPresent" Type="Edm.Boolean" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="bothBalanceCarryForwardParametersPresent"></Property>
+        <Property Name="carryForwardEnrollment" Type="Edm.Boolean" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Carry Forward Enrollment"></Property>
+        <Property Name="claim" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Additional Claim Fields"></Property>
+        <Property Name="claimDetail" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Proof Details"></Property>
+        <Property Name="claimDetailRequired" Type="Edm.Boolean" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Multiple Proofs"></Property>
+        <Property Name="claimScreenID" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Claim Screen ID"></Property>
+        <Property Name="claimsLimitPerFrequencyPeriod" Type="Edm.Int64" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Maximum Claims Per Frequency"></Property>
+        <Property Name="conversionFactor" Type="Edm.Decimal" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Conversion Factor"></Property>
+        <Property Name="country" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Country/Region"></Property>
+        <Property Name="coverage" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Default Insurance Coverage"></Property>
+        <Property Name="createdBy" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="100" sap:label="createdBy"></Property>
+        <Property Name="createdDate" Type="Edm.DateTime" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:display-format="Date" sap:label="Created Date"></Property>
+        <Property Name="createdDateTime" Type="Edm.DateTimeOffset" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Created Date"></Property>
+        <Property Name="creditPoints" Type="Edm.Decimal" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Credit Points"></Property>
+        <Property Name="currency" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Currency"></Property>
+        <Property Name="decimalPrecisionSettingForContributionAmount" Type="Edm.Boolean" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Use Decimal Precision for Contribution Amounts"></Property>
+        <Property Name="deductionStartDate" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Deduction Start Date"></Property>
+        <Property Name="dependentSpecificRule" Type="Edm.Boolean" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Dependent specific Rule"></Property>
+        <Property Name="dummyField" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="dummyField"></Property>
+        <Property Name="effectiveEndDate" Type="Edm.DateTime" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:display-format="Date" sap:label="effectiveEndDate"></Property>
+        <Property Name="effectiveStartDate" Type="Edm.DateTime" Nullable="false" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:display-format="Date" sap:label="Effective From"></Property>
+        <Property Name="effectiveStatus" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="mdfSystemStatus"></Property>
+        <Property Name="eligibilityRuleId" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Eligibility Rule"></Property>
+        <Property Name="emailNotificationForEnrollment" Type="Edm.Boolean" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Email Notification For Enrollment"></Property>
+        <Property Name="empAnnualLimitPayComponent" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="32" sap:label="Pay Component for Employee Annual Limit "></Property>
+        <Property Name="employeeClaimWorkflowId" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="32" sap:label="Claim Workflow"></Property>
+        <Property Name="employeeEnrollmentEditAllowed" Type="Edm.Boolean" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Enrollment Edit Allowed"></Property>
+        <Property Name="employeeEnrollmentEditType" Type="Edm.String" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Allow Edit of Enrollment"></Property>
+        <Property Name="employeeEnrollmentWorkflowId" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="32" sap:label="Enrollment Workflow"></Property>
+        <Property Name="employeeWithEmployerMatchContributions" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Employee/Employer Match Contributions"></Property>
+        <Property Name="employerContributionHSA" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Employer Contribution"></Property>
+        <Property Name="employerPayComponent" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="32" sap:label="Pay Component for Employer Contribution"></Property>
+        <Property Name="enrolleeOptions" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Default Enrollee Options"></Property>
+        <Property Name="enrollment" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Additional Enrollment Fields"></Property>
+        <Property Name="enrollmentEffFromDateRule" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Effective From Rule"></Property>
+        <Property Name="enrollmentOptOutAllowed" Type="Edm.String" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="5" sap:label="Allow Opt Out of Enrollment"></Property>
+        <Property Name="enrollmentRequired" Type="Edm.Boolean" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Enrollment Required"></Property>
+        <Property Name="enrollmentScreenID" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Enrollment Screen ID"></Property>
+        <Property Name="enrollmentType" Type="Edm.String" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Enrollment Type"></Property>
+        <Property Name="entitlementAmount" Type="Edm.Decimal" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Entitlement Amount"></Property>
+        <Property Name="exceedEntitlementAmount" Type="Edm.Boolean" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Exceed Entitlement Amount"></Property>
+        <Property Name="exceptionWorkflowId" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="32" sap:label="Exception Workflow"></Property>
+        <Property Name="frequency" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="32" sap:label="Frequency"></Property>
+        <Property Name="insuranceType" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:picklist="insuranceType" sap:label="Insurance Type"></Property>
+        <Property Name="isEmployerContributionRequired" Type="Edm.Boolean" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Enable Employer Contribution"></Property>
+        <Property Name="jobEnrollmentEditAllowed" Type="Edm.Boolean" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Allow Automatic Updates of Enrollment"></Property>
+        <Property Name="lastModifiedBy" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="100" sap:label="lastModifiedBy"></Property>
+        <Property Name="lastModifiedDate" Type="Edm.DateTime" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:display-format="Date" sap:label="lastModifiedDate"></Property>
+        <Property Name="lastModifiedDateTime" Type="Edm.DateTimeOffset" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="lastModifiedDate"></Property>
+        <Property Name="lastModifiedDateWithTZ" Type="Edm.DateTimeOffset" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="lastModifiedDate"></Property>
+        <Property Name="mdfSystemObjectType" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Object Type"></Property>
+        <Property Name="mdfSystemRecordId" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Record ID"></Property>
+        <Property Name="mdfSystemRecordStatus" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Record Status"></Property>
+        <Property Name="mdfSystemTransactionSequence" Type="Edm.Int64" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Transaction Sequence Number"></Property>
+        <Property Name="mdfSystemVersionId" Type="Edm.Int64" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Version ID"></Property>
+        <Property Name="multipleFundSelectionsAllowed" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="5" sap:label="Pension Funds"></Property>
+        <Property Name="noOfClaimTansactions" Type="Edm.Int64" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Maximum Claims Per Schedule"></Property>
+        <Property Name="noOfDependentsToConsider" Type="Edm.Int64" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="No of dependents"></Property>
+        <Property Name="nomineeRelevant" Type="Edm.Boolean" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Nominee Relevant "></Property>
+        <Property Name="optOutWorkflowId" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="32" sap:label="Opt-Out Workflow"></Property>
+        <Property Name="payrollIntegration" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="5" sap:label="Integration Mode"></Property>
+        <Property Name="pensionContributionOptions" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Contribution Options"></Property>
+        <Property Name="pensionMinMaxContributionLimits" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Contribution Limits"></Property>
+        <Property Name="pensionSchemeStartDate" Type="Edm.DateTime" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:display-format="Date" sap:label="Pension Year Start"></Property>
+        <Property Name="plan" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Default Insurance Plan"></Property>
+        <Property Name="qualifyingScheme" Type="Edm.Boolean" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Qualifying Pension Scheme"></Property>
+        <Property Name="retroCalculationMode" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Retro Calculation Mode"></Property>
+        <Property Name="savingsPlanCatchUpDetail" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Savings Plan Catch Up Detail"></Property>
+        <Property Name="savingsPlanSubType" Type="Edm.String" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Savings Plan type"></Property>
+        <Property Name="schemeType" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:picklist="schemeType" sap:label="Scheme Type"></Property>
+        <Property Name="sconNumber" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="SCON Number"></Property>
+        <Property Name="showRemaningNoOfDaysForClaim" Type="Edm.String" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Days Remaining to Claim"></Property>
+        <Property Name="showRemaningNoOfDaysForEnrollment" Type="Edm.String" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Days Remaining to Enroll"></Property>
+        <Property Name="status" Type="Edm.String" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Status"></Property>
+        <Property Name="supressClientDateValidation" Type="Edm.Boolean" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Disable Client Date Validation"></Property>
+        <Property Name="taxationMode" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Taxation Mode"></Property>
+        <Property Name="triggerDate" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Trigger Event"></Property>
+        <Property Name="typeOfPension" Type="Edm.String" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Retirement Plan type"></Property>
+        <Property Name="walletType" Type="Edm.String" Nullable="true" sap:required="true" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Wallet Type"></Property>
+        <NavigationProperty Name="eligibleBenefits" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" Relationship="SFOData.eligibleBenefits_of_Benefit" FromRole="Benefit" ToRole="asso_eligibleBenefits" sap:field-control="BenefitFieldControlsNav/eligibleBenefits" sap:label="Assigned Benefits"></NavigationProperty>
+        <NavigationProperty Name="walletsAssociated" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" Relationship="SFOData.walletsAssociated_of_Benefit" FromRole="Benefit" ToRole="asso_walletsAssociated" sap:field-control="BenefitFieldControlsNav/walletsAssociated" sap:label="Associated To Wallets"></NavigationProperty>
+      </EntityType>
+      <Association Name="walletsAssociated_of_Benefit">
+        <End Type="SFOData.Benefit" Multiplicity="*" Role="Benefit"></End>
+        <End Type="SFOData.Benefit" Multiplicity="*" Role="asso_walletsAssociated"></End>
+      </Association>
+      <Association Name="eligibleBenefits_of_Benefit">
+        <End Type="SFOData.Benefit" Multiplicity="*" Role="Benefit"></End>
+        <End Type="SFOData.Benefit" Multiplicity="*" Role="asso_eligibleBenefits"></End>
+      </Association>
     </Schema>
   </edmx:DataServices>
 </edmx:Edmx>

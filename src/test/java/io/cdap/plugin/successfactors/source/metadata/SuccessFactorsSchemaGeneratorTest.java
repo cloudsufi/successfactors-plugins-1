@@ -45,73 +45,56 @@ public class SuccessFactorsSchemaGeneratorTest {
 
   @Test
   public void testBuildSelectOutputSchema() throws SuccessFactorsServiceException {
-    Schema outputSchema = generator.buildSelectOutputSchema("C_GLAccountHierarchyNode",
-                                                            "GLAccountHierarchy,HierarchyNode," +
-                                                              "HierarchyVersion,SemanticTag");
+    Schema outputSchema = generator.buildSelectOutputSchema("Benefit",
+                                                            "ageOfRetirement,annualMaxContributionAmount," +
+                                                              "annualMaxPayComponent,annualMinContributionAmount");
 
     int lastIndex = outputSchema.getFields().size() - 1;
-    Assert.assertEquals("Schema field size is not same.", 4, outputSchema.getFields().size());
-    Assert.assertEquals("Schema first field name is not same.", "GLAccountHierarchy",
+    Assert.assertEquals("Schema field size is same.", 4, outputSchema.getFields().size());
+    Assert.assertEquals("Schema first field name is same.", "ageOfRetirement",
                         outputSchema.getFields().get(0).getName());
-    Assert.assertEquals("Schema last field name is not same.",
-                        "SemanticTag",
+    Assert.assertEquals("Schema last field name is same.",
+                        "annualMinContributionAmount",
                         outputSchema.getFields().get(lastIndex).getName());
   }
 
   @Test
   public void testSelectWithExpandNames() throws SuccessFactorsServiceException {
-    Schema outputSchema = generator.buildSelectOutputSchema("C_GLAccountHierarchyNode",
-                                                            "to_GLAccountInChartOfAccounts/GLAccount," +
-                                                              "to_GLAccountInChartOfAccounts/" +
-                                                              "GLAccount_Text,HierarchyNode");
-
-    Assert.assertEquals("Schema field size is not same.",
+    Schema outputSchema = generator.buildSelectOutputSchema("Benefit",
+                                                            "eligibleBenefits/benefitId," +
+                                                              "eligibleBenefits/" +
+                                                              "benefitSchedule,mdfSystemRecordStatus");
+    Assert.assertEquals("Schema field size is same.",
                         2,
                         outputSchema.getFields().size());
-
-    Assert.assertEquals("to_GLAccountInChartOfAccounts field is not of Schema.Type.RECORD.",
-                        Schema.Type.RECORD,
-                        getFieldSchema(outputSchema.getFields(), "to_GLAccountInChartOfAccounts").getType());
-
-    Assert.assertEquals("to_GLAccountInChartOfAccounts field does not contains 2 child.",
-                        2,
-                        getFieldSchema(outputSchema.getFields(), "to_GLAccountInChartOfAccounts").
-                          getFields().size());
-
+    Assert.assertEquals("eligibleBenefits field is of Schema.Type.ARRAY.",
+                        Schema.Type.ARRAY,
+                        getFieldSchema(outputSchema.getFields(), "eligibleBenefits").getType());
   }
 
   @Test
   public void testBuildExpandOutputSchema() throws SuccessFactorsServiceException {
-    Schema outputSchema = generator.buildExpandOutputSchema("C_GLAccountHierarchyNode",
-                                                            "to_GLAccountInChartOfAccounts");
-
+    Schema outputSchema = generator.buildExpandOutputSchema("Benefit",
+                                                            "eligibleBenefits");
     int lastIndex = outputSchema.getFields().size() - 1;
-    Assert.assertEquals("Schema field size is not same.",
-                        14,
+    Assert.assertEquals("Schema field size is same.",
+                        96,
                         outputSchema.getFields().size());
-
-    Assert.assertEquals("Schema last field name is not same.",
-                        "to_GLAccountInChartOfAccounts",
+    Assert.assertEquals("Schema last field name is same.",
+                        "eligibleBenefits",
                         outputSchema.getFields().get(lastIndex).getName());
-
-    Assert.assertFalse("Schema last field is not a nested field.",
+    Assert.assertFalse("Schema last field is not of simple type.",
                        outputSchema.getFields().get(lastIndex).getSchema().getType().isSimpleType());
-
-    Assert.assertEquals("Schema last nested field child count is not same.",
-                        22,
-                        outputSchema.getFields().get(lastIndex).getSchema().getNonNullable().getFields().size());
   }
 
   @Test
   public void testBuildDefaultOutputSchema() throws SuccessFactorsServiceException {
-    Schema outputSchema = generator.buildDefaultOutputSchema("C_GLAccountHierarchyNode");
-
-    Assert.assertEquals("Schema field size is not same.",
-                        13,
+    Schema outputSchema = generator.buildDefaultOutputSchema("Benefit");
+    Assert.assertEquals("Schema field size is same.",
+                        95,
                         outputSchema.getFields().size());
-
-    Assert.assertEquals("Schema 1st field name is not same.",
-                        "GLAccountHierarchy",
+    Assert.assertEquals("Schema 1st field name is same.",
+                        "ageOfRetirement",
                         outputSchema.getFields().get(0).getName());
   }
 
@@ -121,41 +104,36 @@ public class SuccessFactorsSchemaGeneratorTest {
                                         .readResource("successfactors-supported-datatype.xml"), false);
     serviceHelper = new SuccessFactorsEntityProvider(edm);
     generator = new SuccessFactorsSchemaGenerator(serviceHelper);
-
-    Schema outputSchema = generator.buildDefaultOutputSchema("ZDATA_TYPESet");
-
+    Schema outputSchema = generator.buildDefaultOutputSchema("EmployeePayrollRunResultsItems");
     List<Schema.Field> fieldList = outputSchema.getFields();
     Assert.assertEquals("Edm.String to Schema.Type.STRING.",
                         Schema.Type.STRING,
-                        getFieldSchema(fieldList, "Zchar").getType());
+                        getFieldSchema(fieldList, "EmployeePayrollRunResults_externalCode").getType());
 
-    Assert.assertEquals("Edm.Byte to Schema.Type.BYTES.",
-                        Schema.Type.BYTES,
-                        getFieldSchema(fieldList, "Zint1").getType());
+    Assert.assertEquals("Edm.Int64 to Schema.Type.LONG.",
+                        Schema.Type.LONG,
+                        getFieldSchema(fieldList, "mdfSystemTransactionSequence").getType());
 
-    Assert.assertEquals("Edm.Int16 to Schema.Type.INT.",
-                        Schema.Type.INT,
-                        getFieldSchema(fieldList, "Zint2").getType());
-
-    Assert.assertEquals("Edm.Double to Schema.Type.DOUBLE.",
-                        Schema.Type.DOUBLE,
-                        getFieldSchema(fieldList, "Zdec16").getType());
-
-    Assert.assertEquals("Edm.Decimal to Schema.LogicalType.DECIMAL.",
+    Assert.assertEquals("Edm.Decimal to Schema.LogicalType.DECIMAL",
                         Schema.LogicalType.DECIMAL,
-                        getFieldSchema(fieldList, "Zdec34").getLogicalType());
+                        getFieldSchema(fieldList, "amount").getLogicalType());
 
-    Assert.assertEquals("Edm.Time to Schema.Type.DOUBLE.",
-                        Schema.LogicalType.TIME_MICROS,
-                        getFieldSchema(fieldList, "Ztime").getLogicalType());
-
-    Assert.assertEquals("Edm.DateTime to Schema.LogicalType.DATETIME.",
-                        Schema.LogicalType.DATETIME,
-                        getFieldSchema(fieldList, "Zdate").getLogicalType());
-
-    Assert.assertEquals("Edm.Binary to Schema.Type.BYTES.",
+    Assert.assertEquals("Edm.Decimal to Schema.Type.BYTES",
                         Schema.Type.BYTES,
-                        getFieldSchema(fieldList, "Zraw").getType());
+                        getFieldSchema(fieldList, "quantity").getType());
+
+    Assert.assertEquals("Edm.DateTime to Schema.LogicalType.TIMESTAMP_MICROS",
+                        Schema.LogicalType.DATETIME,
+                        getFieldSchema(fieldList, "createdDate").getLogicalType());
+
+
+    Assert.assertEquals("Edm.Decimal to Schema.LogicalType.DECIMAL",
+                        Schema.LogicalType.DECIMAL,
+                        getFieldSchema(fieldList, "quantity").getLogicalType());
+
+    Assert.assertEquals("Edm.String to Schema.Type.STRING.",
+                        Schema.Type.STRING,
+                        getFieldSchema(fieldList, "mdfSystemRecordStatus").getType());
   }
 
   @Test
@@ -166,8 +144,8 @@ public class SuccessFactorsSchemaGeneratorTest {
 
   @Test
   public void testInvalidExpandName() throws SuccessFactorsServiceException {
-    exception.expectMessage("'INVALID-NAVIGATION-NAME' not found in the 'C_GLAccountHierarchyNode' entity.");
-    generator.buildExpandOutputSchema("C_GLAccountHierarchyNode", "INVALID-NAVIGATION-NAME");
+    exception.expectMessage("'INVALID-NAVIGATION-NAME' not found in the 'Benefit' entity.");
+    generator.buildExpandOutputSchema("Benefit", "INVALID-NAVIGATION-NAME");
   }
 
   private Schema getFieldSchema(List<Schema.Field> fieldList, String fieldName) {

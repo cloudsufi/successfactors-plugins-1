@@ -30,48 +30,6 @@ public class SuccessFactorsColumnMetaDataTest {
 
   private SuccessFactorsColumnMetadata successFactorsColumnMetadata;
 
-  private enum SapSuccessFactorsColMetadata {
-    SBYTE(FIELD_NAME + 1, "SByte", false, null),
-    BYTE(FIELD_NAME + 2, "Byte", false, null),
-    INT16(FIELD_NAME + 3, "Int16", false, null),
-    INT32(FIELD_NAME + 4, "Int32", false, null),
-    INT64(FIELD_NAME + 5, "Int64", false, null),
-    SINGLE(FIELD_NAME + 6, "Single", false, null),
-    DOUBLE(FIELD_NAME + 7, "Double", false, null),
-    DECIMAL(FIELD_NAME + 8, "Decimal", false, null),
-    GUID(FIELD_NAME + 9, "Guid", false, null),
-    STRING(FIELD_NAME + 10, "String", false, null),
-    BINARY(FIELD_NAME + 11, "Binary", false, null),
-    BOOLEAN(FIELD_NAME + 12, "Boolean", false, null),
-    DATETIME(FIELD_NAME + 13, "DateTime", false, null),
-    TIME(FIELD_NAME + 14, "Time", false, null),
-    DATETIMEOFFSET(FIELD_NAME + 15, "DateTimeOffset", false, null);
-
-    private String name;
-    private String type;
-    private boolean isNullable;
-    private List<SuccessFactorsColumnMetadata> childList;
-
-    SapSuccessFactorsColMetadata(String name, String type, boolean isNullable,
-                        List<SuccessFactorsColumnMetadata> childList) {
-      this.name = name;
-      this.type = type;
-      this.isNullable = isNullable;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public String getType() {
-      return type;
-    }
-
-    public boolean isNullable() {
-      return isNullable;
-    }
-  }
-
   @Test
   public void checkBuildForDefaultInitialization() {
     successFactorsColumnMetadata = SuccessFactorsColumnMetadata.builder().build();
@@ -86,12 +44,56 @@ public class SuccessFactorsColumnMetaDataTest {
       .name(SapSuccessFactorsColMetadata.STRING.getName())
       .type(SapSuccessFactorsColMetadata.STRING.getType())
       .isNullable(SapSuccessFactorsColMetadata.STRING.isNullable())
+      .isVisible(SapSuccessFactorsColMetadata.STRING.isVisible)
+      .maxLength(SapSuccessFactorsColMetadata.STRING.getMaxLength())
       .build();
-
     Assert.assertEquals(SapSuccessFactorsColMetadata.STRING.getName(), successFactorsColumnMetadata.getName());
     Assert.assertEquals(SapSuccessFactorsColMetadata.STRING.getType(), successFactorsColumnMetadata.getType());
+    Assert.assertEquals(SapSuccessFactorsColMetadata.STRING.getMaxLength(),
+                        successFactorsColumnMetadata.getMaxLength());
+    Assert.assertTrue(successFactorsColumnMetadata.isVisible());
     Assert.assertFalse(successFactorsColumnMetadata.isNullable());
     Assert.assertFalse(successFactorsColumnMetadata.containsChild());
+  }
+
+  @Test
+  public void checkBasicInitialization2() {
+    successFactorsColumnMetadata = SuccessFactorsColumnMetadata.builder()
+      .isUnicode(SapSuccessFactorsColMetadata.DECIMAL.isUnicode())
+      .isFixedLength(SapSuccessFactorsColMetadata.DECIMAL.isFixedLength())
+      .requiredInFilter(SapSuccessFactorsColMetadata.DECIMAL.getRequiredInFilter())
+      .build();
+    Assert.assertFalse(successFactorsColumnMetadata.isUnicode());
+    Assert.assertTrue(successFactorsColumnMetadata.isFixedLength());
+    Assert.assertTrue(successFactorsColumnMetadata.getRequiredInFilter());
+
+  }
+
+  @Test
+  public void checkSapAttributesInitialization() {
+    successFactorsColumnMetadata = SuccessFactorsColumnMetadata.builder()
+      .collation(SapSuccessFactorsColMetadata.BYTE.getCollation())
+      .concurrencyModeName(SapSuccessFactorsColMetadata.BYTE.getConcurrencyModeName())
+      .filterRestrictions(SapSuccessFactorsColMetadata.BYTE.getFilterRestrictions())
+      .displayFormat(SapSuccessFactorsColMetadata.BYTE.getDisplayFormat())
+      .kindName(SapSuccessFactorsColMetadata.BYTE.getKindName())
+      .defaultValue(SapSuccessFactorsColMetadata.BYTE.getDefaultValue())
+      .label(SapSuccessFactorsColMetadata.BYTE.getLabel())
+      .build();
+
+    Assert.assertEquals(SapSuccessFactorsColMetadata.BYTE.getFilterRestrictions(),
+                        successFactorsColumnMetadata.getFilterRestrictions());
+    Assert.assertEquals(SapSuccessFactorsColMetadata.BYTE.getCollation(), successFactorsColumnMetadata.getCollation());
+    Assert.assertEquals(SapSuccessFactorsColMetadata.BYTE.getConcurrencyModeName(),
+                        successFactorsColumnMetadata.getConcurrencyModeName());
+    Assert.assertEquals(SapSuccessFactorsColMetadata.BYTE.getDisplayFormat(),
+                        successFactorsColumnMetadata.getDisplayFormat());
+    Assert.assertEquals(SapSuccessFactorsColMetadata.BYTE.getLabel(),
+                        successFactorsColumnMetadata.getLabel());
+    Assert.assertEquals(SapSuccessFactorsColMetadata.BYTE.getDefaultValue(),
+                        successFactorsColumnMetadata.getDefaultValue());
+    Assert.assertEquals(SapSuccessFactorsColMetadata.BYTE.getKindName(),
+                        successFactorsColumnMetadata.getKindName());
   }
 
   @Test
@@ -124,16 +126,12 @@ public class SuccessFactorsColumnMetaDataTest {
       .name(SapSuccessFactorsColMetadata.INT16.getName())
       .type(SapSuccessFactorsColMetadata.INT16.getType())
       .build();
-
     SuccessFactorsColumnMetadata child1 = SuccessFactorsColumnMetadata.builder()
       .name(SapSuccessFactorsColMetadata.BYTE.getName())
       .type(SapSuccessFactorsColMetadata.BYTE.getType())
       .build();
-
     successFactorsColumnMetadata.appendChild(child1);
-
     Assert.assertTrue(successFactorsColumnMetadata.containsChild());
-
     Assert.assertEquals(1, successFactorsColumnMetadata.getChildList().size());
   }
 
@@ -143,14 +141,11 @@ public class SuccessFactorsColumnMetaDataTest {
       .name(SapSuccessFactorsColMetadata.INT16.getName())
       .type(SapSuccessFactorsColMetadata.INT16.getType())
       .build();
-
     successFactorsColumnMetadata.finalizeChildren();
-
     SuccessFactorsColumnMetadata child1 = SuccessFactorsColumnMetadata.builder()
       .name(SapSuccessFactorsColMetadata.BYTE.getName())
       .type(SapSuccessFactorsColMetadata.BYTE.getType())
       .build();
-
     exceptionRule.expect(IllegalStateException.class);
     exceptionRule.expectMessage("No more children can be added for the current object, check if the " +
                                   "'finalizeChildren' is called before adding the children.");
@@ -164,35 +159,26 @@ public class SuccessFactorsColumnMetaDataTest {
       .name(SapSuccessFactorsColMetadata.GUID.getName())
       .type(SapSuccessFactorsColMetadata.GUID.getType())
       .build();
-
     SuccessFactorsColumnMetadata child2 = SuccessFactorsColumnMetadata.builder()
       .name(SapSuccessFactorsColMetadata.DATETIME.getName())
       .type(SapSuccessFactorsColMetadata.DATETIME.getType())
       .build();
-
     successFactorsColumnMetadata = SuccessFactorsColumnMetadata.builder()
       .name(SapSuccessFactorsColMetadata.STRING.getName())
       .type(SapSuccessFactorsColMetadata.STRING.getType())
       .childList(Arrays.asList(child1, child2))
       .build();
-
     SuccessFactorsColumnMetadata child3 = SuccessFactorsColumnMetadata.builder()
       .name(SapSuccessFactorsColMetadata.DATETIME.getName())
       .type(SapSuccessFactorsColMetadata.DATETIME.getType())
       .build();
-
     successFactorsColumnMetadata.getChildList().get(1).appendChild(child3);
-
     Assert.assertTrue(successFactorsColumnMetadata.containsChild());
-
     Assert.assertEquals(1, successFactorsColumnMetadata.getChildList().get(1).getChildList().size());
-
     successFactorsColumnMetadata.finalizeChildren();
-
     exceptionRule.expect(IllegalStateException.class);
     exceptionRule.expectMessage("No more children can be added for the current object, check if the " +
                                   "'finalizeChildren' is called before adding the children.");
-
     SuccessFactorsColumnMetadata child4 = SuccessFactorsColumnMetadata.builder()
       .name(SapSuccessFactorsColMetadata.DATETIME.getName())
       .type(SapSuccessFactorsColMetadata.DATETIME.getType())
@@ -200,5 +186,133 @@ public class SuccessFactorsColumnMetaDataTest {
 
     // must throw IllegalStateException as finalizeChildren is already called
     successFactorsColumnMetadata.getChildList().get(1).appendChild(child4);
+  }
+
+  private enum SapSuccessFactorsColMetadata {
+    BYTE(FIELD_NAME, "Byte", false, null, 2, Boolean.TRUE,
+         Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, "displayFormat", "filterRestrictions",
+         "collation", "concurrencyModeName", "defaultValue", "kindName",
+         "label"),
+    INT16(FIELD_NAME, "Int16", false, null, 2, Boolean.TRUE,
+          Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, "displayFormat", "filterRestrictions",
+          "collation", "concurrencyModeName", "defaultValue", "kindName",
+          "label"),
+    DECIMAL(FIELD_NAME, "Decimal", false, null, 2, Boolean.TRUE,
+            Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, "displayFormat", "filterRestrictions",
+            "collation", "concurrencyModeName", "defaultValue", "kindName",
+            "label"),
+    GUID(FIELD_NAME, "Guid", false, null, 2, Boolean.TRUE,
+         Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, "displayFormat", "filterRestrictions",
+         "collation", "concurrencyModeName", "defaultValue", "kindName",
+         "label"),
+    STRING(FIELD_NAME, "String", false, null, 2, Boolean.TRUE,
+           Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, "displayFormat", "filterRestrictions",
+           "collation", "concurrencyModeName", "defaultValue", "kindName",
+           "label"),
+    DATETIME(FIELD_NAME, "DateTime", false, null, 2, Boolean.TRUE,
+             Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, "displayFormat", "filterRestrictions",
+             "collation", "concurrencyModeName", "defaultValue", "kindName",
+             "label");
+
+    private final String name;
+    private final String type;
+    private final boolean isNullable;
+    private final Integer maxLength;
+    private final Boolean isVisible;
+    private final Boolean isFixedLength;
+    private final Boolean isUnicode;
+    private final Boolean getRequiredInFilter;
+    private final String displayFormat;
+    private final String filterRestrictions;
+    private final String collation;
+    private final String concurrencyModeName;
+    private final String kindName;
+    private final String label;
+    private final String defaultValue;
+    private List<SuccessFactorsColumnMetadata> childList;
+
+
+    SapSuccessFactorsColMetadata(String name, String type, boolean isNullable,
+                                 List<SuccessFactorsColumnMetadata> childList, Integer maxLength, Boolean isVisible,
+                                 Boolean isFixedLength, Boolean isUnicode, Boolean getRequiredInFilter,
+                                 String displayFormat, String filterRestrictions, String collation,
+                                 String concurrencyModeName, String label, String kindName, String defaultValue) {
+      this.name = name;
+      this.type = type;
+      this.isNullable = isNullable;
+      this.maxLength = maxLength;
+      this.isVisible = isVisible;
+      this.isUnicode = isUnicode;
+      this.isFixedLength = isFixedLength;
+      this.getRequiredInFilter = getRequiredInFilter;
+      this.filterRestrictions = filterRestrictions;
+      this.collation = collation;
+      this.displayFormat = displayFormat;
+      this.concurrencyModeName = concurrencyModeName;
+      this.kindName = kindName;
+      this.defaultValue = defaultValue;
+      this.label = label;
+
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public boolean isNullable() {
+      return isNullable;
+    }
+
+    public boolean isVisible() {
+      return isVisible;
+    }
+
+    public Integer getMaxLength() {
+      return maxLength;
+    }
+
+    public boolean isFixedLength() {
+      return isFixedLength;
+    }
+
+    public boolean isUnicode() {
+      return isUnicode;
+    }
+
+    public boolean getRequiredInFilter() {
+      return getRequiredInFilter;
+    }
+
+    public String getCollation() {
+      return collation;
+    }
+
+    public String getConcurrencyModeName() {
+      return concurrencyModeName;
+    }
+
+    public String getDisplayFormat() {
+      return displayFormat;
+    }
+
+    public String getFilterRestrictions() {
+      return filterRestrictions;
+    }
+
+    public String getKindName() {
+      return kindName;
+    }
+
+    public String getDefaultValue() {
+      return defaultValue;
+    }
+
+    public String getLabel() {
+      return label;
+    }
   }
 }

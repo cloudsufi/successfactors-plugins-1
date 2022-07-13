@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:atom="http://www.w3.org/2005/Atom" Version="1.0">
+  <edmx:DataServices xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" m:DataServiceVersion="2.0">
+    <Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" xmlns:sap="http://www.successfactors.com/edm/sap" xmlns:sf="http://www.successfactors.com/edm/sf" Namespace="SFODataSet">
+      <EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true">
+        <EntitySet Name="Background_SpecialAssign" EntityType="SFOData.Background_SpecialAssign" sap:label="Background_SpecialAssign" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:deletable="true">
+          <Documentation>
+            <Summary>Background*</Summary>
+            <LongDescription>Background objects are customizable to store general background information about an employee. Representative definitions include education and outside work experience</LongDescription>
+            <sap:tagcollection>
+              <sap:tag>Employee Central (EC)</sap:tag>
+              <sap:tag>EC - Employee Profile</sap:tag>
+            </sap:tagcollection>
+          </Documentation>
+        </EntitySet>
+      </EntityContainer>
+    </Schema>
+    <Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" xmlns:sap="http://www.successfactors.com/edm/sap" xmlns:sf="http://www.successfactors.com/edm/sf" Namespace="SFOData">
+      <EntityType Name="Background_SpecialAssign">
+        <Key>
+          <PropertyRef Name="backgroundElementId" />
+          <PropertyRef Name="userId" />
+        </Key>
+        <Property Name="backgroundElementId" Type="Edm.Int64" Nullable="false" sap:required="false" sap:creatable="false" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="false" sap:filterable="false" sap:label="backgroundElementId" />
+        <Property Name="bgOrderPos" Type="Edm.Int64" Nullable="false" sap:required="false" sap:creatable="false" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="true" sap:filterable="false" sap:label="bgOrderPos" />
+        <Property Name="description" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="false" sap:filterable="false" sap:label="Description" />
+        <Property Name="endDate" Type="Edm.DateTime" Nullable="true" sap:required="false" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="false" sap:filterable="false" sap:display-format="Date" sap:label="End Date" />
+        <Property Name="lastModifiedDate" Type="Edm.DateTimeOffset" Nullable="false" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="false" sap:filterable="true" sap:label="Last Modified Date" />
+        <Property Name="project" Type="Edm.String" Nullable="false" sap:required="true" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="false" sap:filterable="false" sap:label="Assignment/Project" />
+        <Property Name="startDate" Type="Edm.DateTime" Nullable="false" sap:required="true" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="false" sap:filterable="false" sap:display-format="Date" sap:label="From Date" />
+        <Property Name="userId" Type="Edm.String" Nullable="false" sap:required="true" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="false" sap:filterable="true" sap:label="userId" />
+      </EntityType>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

@@ -128,16 +128,16 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     "automatically forces client-side pagination on the query. Default is Server-side Pagination.")
   private String paginationType;
 
-  SuccessFactorsPluginConfig(String referenceName,
-                             String baseURL,
-                             String entityName,
-                             String associateEntityName,
-                             @Nullable String username,
-                             @Nullable String password,
-                             @Nullable String filterOption,
-                             @Nullable String selectOption,
-                             @Nullable String expandOption,
-                             String paginationType) {
+  public SuccessFactorsPluginConfig(String referenceName,
+                                    String baseURL,
+                                    String entityName,
+                                    String associateEntityName,
+                                    @Nullable String username,
+                                    @Nullable String password,
+                                    @Nullable String filterOption,
+                                    @Nullable String selectOption,
+                                    @Nullable String expandOption,
+                                    String paginationType) {
 
     this.referenceName = referenceName;
     this.baseURL = baseURL;

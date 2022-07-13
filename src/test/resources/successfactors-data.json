@@ -1,0 +1,48 @@
+{
+    "d": {
+        "results": [
+            {
+                "__metadata": {
+                    "uri": "https://apisalesdemo2.successfactors.eu/odata/v2/Background_SpecialAssign(backgroundElementId=130166L,userId='gsteward')",
+                    "type": "SFOData.Background_SpecialAssign"
+                },
+                "backgroundElementId": "130166",
+                "userId": "gsteward",
+                "endDate": "/Date(1583107200000)/",
+                "lastModifiedDate": "/Date(1618796144000+0000)/",
+                "bgOrderPos": "2",
+                "description": "Provided Cyber Security expertise for Acme Corp Project",
+                "project": "Cyber Security",
+                "startDate": "/Date(1580688000000)/"
+            },
+            {
+                "__metadata": {
+                    "uri": "https://apisalesdemo2.successfactors.eu/odata/v2/Background_SpecialAssign(backgroundElementId=130167L,userId='gsteward')",
+                    "type": "SFOData.Background_SpecialAssign"
+                },
+                "backgroundElementId": "130167",
+                "userId": "gsteward",
+                "endDate": "/Date(1590710400000)/",
+                "lastModifiedDate": "/Date(1618796144000+0000)/",
+                "bgOrderPos": "1",
+                "description": "Acme Corp - customer enablement for security tools",
+                "project": "Cyber Security",
+                "startDate": "/Date(1588291200000)/"
+            },
+            {
+                "__metadata": {
+                    "uri": "https://apisalesdemo2.successfactors.eu/odata/v2/Background_SpecialAssign(backgroundElementId=130169L,userId='kblackburn')",
+                    "type": "SFOData.Background_SpecialAssign"
+                },
+                "backgroundElementId": "130169",
+                "userId": "kblackburn",
+                "endDate": "/Date(1605225600000)/",
+                "lastModifiedDate": "/Date(1618801301000+0000)/",
+                "bgOrderPos": "1",
+                "description": "Assisted with set up of security for ABC Corp",
+                "project": "Cyber Security",
+                "startDate": "/Date(1604880000000)/"
+            }
+        ]
+    }
+}

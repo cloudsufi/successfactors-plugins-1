@@ -1,90 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
-  <edmx:Reference Uri="http://hostname/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMON',Version='0001',SAP__Origin='LOCAL')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
-    <edmx:Include Namespace="com.sap.vocabularies.Common.v1" Alias="Common"/>
-  </edmx:Reference>
-  <edmx:Reference Uri="http://hostname/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CAPABILITIES',Version='0001',SAP__Origin='LOCAL')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
-    <edmx:Include Namespace="Org.OData.Capabilities.V1" Alias="Capabilities"/>
-  </edmx:Reference>
-  <edmx:Reference Uri="http://hostname/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMUNICATION',Version='0001',SAP__Origin='LOCAL')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
-    <edmx:Include Namespace="com.sap.vocabularies.Communication.v1" Alias="Communication"/>
-  </edmx:Reference>
-  <edmx:Reference Uri="http://hostname/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_AGGREGATION',Version='0001',SAP__Origin='LOCAL')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
-    <edmx:Include Namespace="Org.OData.Aggregation.V1" Alias="Aggregation"/>
-  </edmx:Reference>
-  <edmx:Reference Uri="http://hostname/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_PERSONALDATA',Version='0001',SAP__Origin='LOCAL')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
-    <edmx:Include Namespace="com.sap.vocabularies.PersonalData.v1" Alias="PersonalData"/>
-  </edmx:Reference>
-  <edmx:DataServices m:DataServiceVersion="2.0">
-    <Schema Namespace="ZDATA_TYPE_ODATA_SRV" xml:lang="en" sap:schema-version="1" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
-      <EntityType Name="ZDATA_TYPE" sap:content-version="1">
-        <Key>
-          <PropertyRef Name="Zchar"/>
-        </Key>
-        <Property Name="Zchar" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="char" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Zint1" Type="Edm.Byte" Nullable="false" sap:unicode="false" sap:label="INT1" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Zint2" Type="Edm.Int16" Nullable="false" sap:unicode="false" sap:label="INT2" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Zdec16" Type="Edm.Double" Nullable="false" sap:unicode="false" sap:label="zfltp" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Zdec34" Type="Edm.Decimal" Nullable="false" Precision="16" Scale="6" sap:unicode="false" sap:label="zdecfloat34" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Zfloat" Type="Edm.Double" Nullable="false" sap:unicode="false" sap:label="zfltp" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Znumc" Type="Edm.String" Nullable="false" MaxLength="15" sap:unicode="false" sap:label="ZNUMC" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Zcuky" Type="Edm.String" Nullable="false" MaxLength="5" sap:unicode="false" sap:label="ZCUKY" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false" sap:semantics="currency-code"/>
-        <Property Name="Zcurr" Type="Edm.Decimal" Nullable="false" Precision="14" Scale="3" sap:unicode="false" sap:unit="Zcuky" sap:label="ZCURR" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Ztime" Type="Edm.Time" Nullable="false" Precision="0" sap:unicode="false" sap:label="ZTIME" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Zdate" Type="Edm.DateTime" Nullable="false" Precision="7" sap:unicode="false" sap:label="ZDATE" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Zraw" Type="Edm.Binary" Nullable="false" sap:unicode="false" sap:label="ZRAW" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Zdec" Type="Edm.Decimal" Nullable="false" Precision="13" Scale="3" sap:unicode="false" sap:label="ZDEC" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Zaccp" Type="Edm.String" Nullable="false" MaxLength="6" sap:unicode="false" sap:label="ZACCP" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Zlang" Type="Edm.String" Nullable="false" MaxLength="2" sap:unicode="false" sap:label="ZLANG" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Zquan" Type="Edm.Decimal" Nullable="false" Precision="17" Scale="6" sap:unicode="false" sap:unit="Zunit" sap:label="ZQUAN" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Zunit" Type="Edm.String" Nullable="false" MaxLength="3" sap:unicode="false" sap:label="ZUNIT" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false" sap:semantics="unit-of-measure"/>
-        <Property Name="Zint4" Type="Edm.Int32" Nullable="false" sap:unicode="false" sap:label="INT4" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-        <Property Name="Zlraw" Type="Edm.Binary" Nullable="false" sap:unicode="false" sap:label="ZLRAW" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
-      </EntityType>
-      <EntityType Name="ZDATA_TYPE_TEST_DDType" sap:label="Data tyoe test view" sap:content-version="1">
-        <Key>
-          <PropertyRef Name="zchar"/>
-        </Key>
-        <Property Name="zchar" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="" sap:quickinfo="char"/>
-        <Property Name="zint1" Type="Edm.Byte" sap:label="INT1" sap:quickinfo="1 Byte Unsigned Integer"/>
-        <Property Name="zint2" Type="Edm.Int16" sap:label="INT2" sap:quickinfo="2 Byte Signed Integer"/>
-        <Property Name="zdec16" Type="Edm.Double" sap:label="" sap:quickinfo="zfltp"/>
-        <Property Name="zdec34" Type="Edm.Double" sap:label="" sap:quickinfo="zfltp"/>
-        <Property Name="zfloat" Type="Edm.Double" sap:label="" sap:quickinfo="zfltp"/>
-        <Property Name="znumc" Type="Edm.String" MaxLength="15" sap:display-format="NonNegative"/>
-        <Property Name="zcuky" Type="Edm.String" MaxLength="5" sap:semantics="currency-code"/>
-        <Property Name="zcurr" Type="Edm.Decimal" Precision="14" Scale="3" sap:unit="zcuky"/>
-        <Property Name="ztime" Type="Edm.Time" Precision="0"/>
-        <Property Name="zdate" Type="Edm.DateTime" Precision="0" sap:display-format="Date"/>
-        <Property Name="zraw" Type="Edm.Binary"/>
-        <Property Name="zdec" Type="Edm.Decimal" Precision="13" Scale="3"/>
-        <Property Name="zaccp" Type="Edm.String" MaxLength="6"/>
-        <Property Name="zlang" Type="Edm.String" MaxLength="2"/>
-        <Property Name="zquan" Type="Edm.Decimal" Precision="16" Scale="6" sap:unit="zunit"/>
-        <Property Name="zunit" Type="Edm.String" MaxLength="3" sap:semantics="unit-of-measure"/>
-        <Property Name="zint4" Type="Edm.Int32" sap:label="INT4" sap:quickinfo="4 Byte Signed Integer"/>
-        <Property Name="zlraw" Type="Edm.Binary"/>
-      </EntityType>
-      <EntityContainer Name="ZDATA_TYPE_ODATA_SRV_Entities" m:IsDefaultEntityContainer="true" sap:message-scope-supported="true" sap:supported-formats="atom json xlsx">
-        <EntitySet Name="ZDATA_TYPESet" EntityType="ZDATA_TYPE_ODATA_SRV.ZDATA_TYPE" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
-        <EntitySet Name="ZDATA_TYPE_TEST_DD" EntityType="ZDATA_TYPE_ODATA_SRV.ZDATA_TYPE_TEST_DDType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:atom="http://www.w3.org/2005/Atom">
+  <edmx:DataServices m:DataServiceVersion="2.0" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">
+    <Schema Namespace="SFODataSet" xmlns="http://schemas.microsoft.com/ado/2008/09/edm" xmlns:sf="http://www.successfactors.com/edm/sf" xmlns:sap="http://www.successfactors.com/edm/sap">
+      <EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true">
+        <EntitySet Name="EmployeePayrollRunResultsItems" EntityType="SFOData.EmployeePayrollRunResultsItems" sap:label="Employee Payroll Run Results Items" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:deletable="true">
+          <Documentation>
+            <Summary>EmployeePayrollRunResultsItems</Summary>
+            <LongDescription>Contains information about a specific item in a payroll run result.</LongDescription>
+            <sap:tagcollection>
+              <sap:tag>Employee Central (EC)</sap:tag>
+              <sap:tag>EC - Employee Central Payroll</sap:tag>
+            </sap:tagcollection>
+          </Documentation>
+        </EntitySet>
       </EntityContainer>
-      <Annotations Target="ZDATA_TYPE_ODATA_SRV.ZDATA_TYPE_ODATA_SRV_Entities" xmlns="http://docs.oasis-open.org/odata/ns/edm">
-        <Annotation Term="Aggregation.ApplySupported">
-          <Record>
-            <PropertyValue Property="Transformations">
-              <Collection>
-                <String>aggregate</String>
-                <String>groupby</String>
-                <String>filter</String>
-              </Collection>
-            </PropertyValue>
-            <PropertyValue Property="Rollup" EnumMember="None"/>
-          </Record>
-        </Annotation>
-      </Annotations>
-      <atom:link rel="self" href="http://hostname/sap/opu/odata/sap/ZDATA_TYPE_ODATA_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
-      <atom:link rel="latest-version" href="http://hostname/sap/opu/odata/sap/ZDATA_TYPE_ODATA_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+    </Schema>
+    <Schema Namespace="SFOData" xmlns="http://schemas.microsoft.com/ado/2008/09/edm" xmlns:sf="http://www.successfactors.com/edm/sf" xmlns:sap="http://www.successfactors.com/edm/sap">
+      <EntityType Name="EmployeePayrollRunResultsItems">
+        <Key>
+          <PropertyRef Name="EmployeePayrollRunResults_externalCode"></PropertyRef>
+          <PropertyRef Name="EmployeePayrollRunResults_mdfSystemEffectiveStartDate"></PropertyRef>
+          <PropertyRef Name="externalCode"></PropertyRef>
+        </Key>
+        <Property Name="EmployeePayrollRunResults_externalCode" Type="Edm.String" Nullable="false" sap:required="true" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Employee Payroll Run Results_externalCode"></Property>
+        <Property Name="EmployeePayrollRunResults_mdfSystemEffectiveStartDate" Type="Edm.DateTime" Nullable="false" sap:required="true" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:display-format="Date" sap:label="Employee Payroll Run Results_Effective Start Date"></Property>
+        <Property Name="amount" Type="Edm.Decimal" Nullable="true" sap:required="false" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Amount"></Property>
+        <Property Name="createdBy" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="100" sap:label="createdBy"></Property>
+        <Property Name="createdDate" Type="Edm.DateTime" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:display-format="Date" sap:label="createdDate"></Property>
+        <Property Name="createdDateTime" Type="Edm.DateTimeOffset" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="createdDate"></Property>
+        <Property Name="endDateWhenEarned" Type="Edm.DateTime" Nullable="true" sap:required="true" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:display-format="Date" sap:label="End of Payroll Period"></Property>
+        <Property Name="externalCode" Type="Edm.String" Nullable="false" sap:required="true" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="externalCode"></Property>
+        <Property Name="externalName" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="externalName"></Property>
+        <Property Name="groupingReason" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:picklist="payrollRunResultsGroupingReason" sap:label="Grouping Reason"></Property>
+        <Property Name="lastModifiedBy" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="100" sap:label="lastModifiedBy"></Property>
+        <Property Name="lastModifiedDate" Type="Edm.DateTime" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:display-format="Date" sap:label="lastModifiedDate"></Property>
+        <Property Name="lastModifiedDateTime" Type="Edm.DateTimeOffset" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="lastModifiedDate"></Property>
+        <Property Name="lastModifiedDateWithTZ" Type="Edm.DateTimeOffset" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="lastModifiedDate"></Property>
+        <Property Name="mdfSystemEffectiveEndDate" Type="Edm.DateTime" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:display-format="Date" sap:label="mdfSystemEffectiveEndDate"></Property>
+        <Property Name="mdfSystemEffectiveStartDate" Type="Edm.DateTime" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:display-format="Date" sap:label="mdfSystemEffectiveStartDate"></Property>
+        <Property Name="mdfSystemEntityId" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Entity ID"></Property>
+        <Property Name="mdfSystemObjectType" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Object Type"></Property>
+        <Property Name="mdfSystemRecordId" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Record ID"></Property>
+        <Property Name="mdfSystemRecordStatus" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Record Status"></Property>
+        <Property Name="mdfSystemStatus" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Status"></Property>
+        <Property Name="mdfSystemTransactionSequence" Type="Edm.Int64" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="mdfSystemTransactionSequence"></Property>
+        <Property Name="mdfSystemVersionId" Type="Edm.Int64" Nullable="true" sap:required="false" sap:creatable="false" sap:updatable="false" sap:upsertable="false" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Version ID"></Property>
+        <Property Name="payrollProviderGroupingReason" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Source: Grouping Reason"></Property>
+        <Property Name="payrollProviderGroupingValue" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Grouping Value"></Property>
+        <Property Name="payrollProviderUnitOfMeasurement" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Source: Unit of Measurement"></Property>
+        <Property Name="payrollProviderWageType" Type="Edm.String" Nullable="true" sap:required="true" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="255" sap:label="Source: Wage Type"></Property>
+        <Property Name="quantity" Type="Edm.Decimal" Nullable="true" sap:required="false" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:label="Quantity"></Property>
+        <Property Name="startDateWhenEarned" Type="Edm.DateTime" Nullable="true" sap:required="true" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="true" sap:filterable="true" sap:display-format="Date" sap:label="Start of Payroll Period"></Property>
+        <Property Name="unitOfMeasurement" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:label="Unit of Measurement"></Property>
+        <Property Name="wageType" Type="Edm.String" Nullable="true" sap:required="false" sap:creatable="true" sap:updatable="true" sap:upsertable="true" sap:visible="true" sap:sortable="true" sap:filterable="true" MaxLength="128" sap:picklist="wageType" sap:label="Wage Type"></Property>
+      </EntityType>
     </Schema>
   </edmx:DataServices>
 </edmx:Edmx>
