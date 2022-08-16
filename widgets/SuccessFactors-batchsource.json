@@ -17,30 +17,56 @@
         },
         {
           "widget-type": "textbox",
-          "label": "SAP SuccessFactors Base URL",
-          "name": "baseURL",
-          "widget-attributes": {
-            "placeholder": "SAP SuccessFactors base url, for example, https://<hostname>/odata/v2"
-          }
-        },
-        {
-          "widget-type": "textbox",
           "label": "Entity Name",
           "name": "entityName",
           "widget-attributes": {
             "placeholder": "SAP SuccessFactors Entity name. For example, People"
           },
+
           "plugin-function": {
             "method": "POST",
             "widget": "outputSchema",
             "plugin-method": "getSchema"
           }
+        },
+        {
+          "label": "browse",
+          "widget-type": "connection-browser",
+          "widget-category": "plugin",
+          "widget-attributes": {
+            "connectionType": " SUCCESSFACTORS",
+            "label": "Browse"
+          }
         }
       ]
     },
     {
-      "label": "Credentials",
+      "label": "Connection",
       "properties": [
+        {
+          "widget-type": "toggle",
+          "label": "Use connection",
+          "name": "useConnection",
+          "widget-attributes": {
+            "on": {
+              "value": "true",
+              "label": "YES"
+            },
+            "off": {
+              "value": "false",
+              "label": "NO"
+            },
+            "default": "false"
+          }
+        },
+        {
+          "widget-type": "connection-select",
+          "label": "Connection",
+          "name": "connection",
+          "widget-attributes": {
+            "connectionType": "SuccessFactors"
+          }
+        },
         {
           "widget-type": "textbox",
           "label": "SAP SuccessFactors Logon Username",
@@ -55,6 +81,14 @@
           "name": "password",
           "widget-attributes": {
             "placeholder": ""
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "SAP SuccessFactors Base URL",
+          "name": "baseURL",
+          "widget-attributes": {
+            "placeholder": "SAP SuccessFactors base url, for example, https://<hostname>/odata/v2"
           }
         }
       ]
@@ -112,6 +146,40 @@
               }
             ]
           }
+        }
+      ]
+    }
+  ],
+  "filters":[
+    {
+      "name": "showConnectionProperties ",
+      "condition": {
+        "expression": "useConnection == false"
+      },
+      "show": [
+        {
+          "type": "property",
+          "name": "username"
+        },
+        {
+          "type": "property",
+          "name": "password"
+        },
+        {
+          "type": "property",
+          "name": "baseURL"
+        }
+      ]
+    },
+    {
+      "name": "showConnectionId",
+      "condition": {
+        "expression": "useConnection == true"
+      },
+      "show": [
+        {
+          "type": "property",
+          "name": "connection"
         }
       ]
     }

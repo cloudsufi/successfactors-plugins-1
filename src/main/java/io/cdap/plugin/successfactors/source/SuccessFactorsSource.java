@@ -120,18 +120,21 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
    */
   @Nullable
   private Schema getOutputSchema(FailureCollector failureCollector) {
-    SuccessFactorsTransporter transporter = new SuccessFactorsTransporter(config.getUsername(), config.getPassword());
-    SuccessFactorsService successFactorsServices = new SuccessFactorsService(config, transporter);
-    try {
-      //validate if the given parameters form a valid SuccessFactors URL.
-      successFactorsServices.checkSuccessFactorsURL();
-      return successFactorsServices.buildOutputSchema();
-    } catch (TransportException te) {
-      String errorMsg = ExceptionParser.buildTransportError(te);
-      errorMsg = ResourceConstants.ERR_ODATA_SERVICE_CALL.getMsgForKeyWithCode(errorMsg);
-      failureCollector.addFailure(errorMsg, null).withConfigProperty(SuccessFactorsPluginConfig.BASE_URL);
-    } catch (SuccessFactorsServiceException ose) {
-      attachFieldWithError(ose, failureCollector);
+    if (config.getConnection() != null) {
+      SuccessFactorsTransporter transporter = new SuccessFactorsTransporter(config.getConnection().getUsername(),
+                                                                            config.getConnection().getPassword());
+      SuccessFactorsService successFactorsServices = new SuccessFactorsService(config, transporter);
+      try {
+        //validate if the given parameters form a valid SuccessFactors URL.
+        successFactorsServices.checkSuccessFactorsURL();
+        return successFactorsServices.buildOutputSchema();
+      } catch (TransportException te) {
+        String errorMsg = ExceptionParser.buildTransportError(te);
+        errorMsg = ResourceConstants.ERR_ODATA_SERVICE_CALL.getMsgForKeyWithCode(errorMsg);
+        failureCollector.addFailure(errorMsg, null).withConfigProperty(SuccessFactorsPluginConfig.BASE_URL);
+      } catch (SuccessFactorsServiceException ose) {
+        attachFieldWithError(ose, failureCollector);
+      }
     }
     failureCollector.getOrThrowException();
     return null;

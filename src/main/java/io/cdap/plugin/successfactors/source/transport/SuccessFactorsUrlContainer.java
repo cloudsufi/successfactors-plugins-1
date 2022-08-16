@@ -64,7 +64,7 @@ public class SuccessFactorsUrlContainer {
    * @return tester URL.
    */
   public URL getTesterURL() {
-    HttpUrl.Builder builder = HttpUrl.parse(pluginConfig.getBaseURL())
+    HttpUrl.Builder builder = HttpUrl.parse(pluginConfig.getConnection().getBaseURL())
       .newBuilder()
       .addPathSegment(pluginConfig.getEntityName());
 
@@ -82,7 +82,7 @@ public class SuccessFactorsUrlContainer {
    * @return metadata URL.
    */
   public URL getMetadataURL() {
-    URL metadataURL = HttpUrl.parse(pluginConfig.getBaseURL())
+    URL metadataURL = HttpUrl.parse(pluginConfig.getConnection().getBaseURL())
       .newBuilder()
       .addPathSegments(pluginConfig.getEntityName())
       .addPathSegment(METADATA)
@@ -90,7 +90,7 @@ public class SuccessFactorsUrlContainer {
       .url();
 
     if (SuccessFactorsUtil.isNotNullOrEmpty(pluginConfig.getAssociatedEntityName())) {
-      metadataURL = HttpUrl.parse(pluginConfig.getBaseURL())
+      metadataURL = HttpUrl.parse(pluginConfig.getConnection().getBaseURL())
         .newBuilder()
         .addPathSegments(pluginConfig.getEntityName()
         .concat(PROPERTY_SEPARATOR)
@@ -147,7 +147,7 @@ public class SuccessFactorsUrlContainer {
    * @return total available record count URL.
    */
   public URL getTotalRecordCountURL() {
-    HttpUrl.Builder builder = HttpUrl.parse(pluginConfig.getBaseURL())
+    HttpUrl.Builder builder = HttpUrl.parse(pluginConfig.getConnection().getBaseURL())
       .newBuilder()
       .addPathSegment(pluginConfig.getEntityName())
       .addPathSegment(COUNT);
@@ -168,7 +168,7 @@ public class SuccessFactorsUrlContainer {
    * @return data URL with provided '$skip' and '$top' parameters.
    */
   public URL getDataFetchURL(@Nullable Long skip, @Nullable Long top) {
-    HttpUrl.Builder builder = HttpUrl.parse(pluginConfig.getBaseURL())
+    HttpUrl.Builder builder = HttpUrl.parse(pluginConfig.getConnection().getBaseURL())
       .newBuilder()
       .addPathSegment(pluginConfig.getEntityName());
 

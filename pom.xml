@@ -43,6 +43,7 @@
     <okhttp3.version>4.9.1</okhttp3.version>
     <apache.olingo.v2>2.0.0</apache.olingo.v2>
     <wiremock.version>2.27.2</wiremock.version>
+    <hydrator.version>2.7.0</hydrator.version>
   </properties>
 
   <repositories>
@@ -302,7 +303,11 @@
       <artifactId>jackson-core</artifactId>
       <version>${jackson.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>io.cdap.plugin</groupId>
+      <artifactId>hydrator-common</artifactId>
+      <version>${hydrator.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.jmockit</groupId>
       <artifactId>jmockit</artifactId>
@@ -376,7 +381,7 @@
         <configuration>
           <instructions>
             <_exportcontents>
-              io.cdap.plugin.successfactors.source.*;
+              io.cdap.plugin.successfactors.*;
             </_exportcontents>
             <Embed-Dependency>*;inline=false;scope=compile</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>

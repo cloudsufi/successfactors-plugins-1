@@ -124,14 +124,16 @@ public class SuccessFactorsTransporterTest {
       .password("secret");
     pluginConfig = pluginConfigBuilder.build();
     successFactorsURL = new SuccessFactorsUrlContainer(pluginConfig);
-    transporter = new SuccessFactorsTransporter(pluginConfig.getUsername(), pluginConfig.getPassword());
+    transporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(),
+                                                pluginConfig.getConnection().getPassword());
   }
 
   @Test
   public void testCallSuccessFactors() throws TransportException {
     String expectedBody = "{\"d\": [{\"ID\": 0,\"Name\": \"Bread\"}}]}";
     WireMock.stubFor(WireMock.get("/Entity?%24top=1")
-                       .withBasicAuth(pluginConfig.getUsername(), pluginConfig.getPassword())
+                       .withBasicAuth(pluginConfig.getConnection().getUsername(),
+                                      pluginConfig.getConnection().getPassword())
                        .willReturn(WireMock.ok()
                                      .withHeader(SuccessFactorsTransporter.SERVICE_VERSION, "2.0")
                                      .withBody(expectedBody)));

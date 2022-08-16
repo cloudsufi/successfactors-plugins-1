@@ -1,0 +1,38 @@
+{
+  "metadata": {
+    "spec-version": "1.0"
+  },
+  "display-name": "SAP SuccessFactors",
+  "configuration-groups": [
+    {
+      "label": "Credentials",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "SAP SuccessFactors Logon Username",
+          "name": "username",
+          "widget-attributes": {
+            "placeholder": ""
+          }
+        },
+        {
+          "widget-type": "password",
+          "label": "SAP SuccessFactors Logon Password",
+          "name": "password",
+          "widget-attributes": {
+            "placeholder": ""
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "SAP SuccessFactors Base URL",
+          "name": "baseURL",
+          "widget-attributes": {
+            "placeholder": "SAP SuccessFactors base url, for example, https://<hostname>/odata/v2"
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": []
+}

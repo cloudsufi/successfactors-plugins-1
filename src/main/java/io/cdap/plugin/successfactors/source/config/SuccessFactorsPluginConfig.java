@@ -24,10 +24,11 @@ import io.cdap.cdap.api.annotation.Name;
 import io.cdap.cdap.api.data.schema.Schema;
 import io.cdap.cdap.api.plugin.PluginConfig;
 import io.cdap.cdap.etl.api.FailureCollector;
+import io.cdap.plugin.common.ConfigUtil;
 import io.cdap.plugin.common.IdUtils;
 import io.cdap.plugin.successfactors.common.util.ResourceConstants;
 import io.cdap.plugin.successfactors.common.util.SuccessFactorsUtil;
-import okhttp3.HttpUrl;
+import io.cdap.plugin.successfactors.connector.SuccessFactorsConnectorConfig;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
@@ -49,15 +50,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   private static final String PAGINATION_TYPE = "paginationType";
   private static final String COMMON_ACTION = ResourceConstants.ERR_MISSING_PARAM_OR_MACRO_ACTION.getMsgForKey();
   private static final Pattern PATTERN = Pattern.compile("\\(.*\\)");
-  private static final String SAP_SUCCESSFACTORS_BASE_URL = "SAP SuccessFactors Base URL";
-  private static final String SAP_SUCCESSFACTORS_USERNAME = "SAP SuccessFactors Username";
-  private static final String SAP_SUCCESSFACTORS_PASSWORD = "SAP SuccessFactors Password";
   private static final String SAP_SUCCESSFACTORS_ENTITY_NAME = "Entity Name";
-  
-  @Macro
-  @Name(BASE_URL)
-  @Description("SuccessFactors Base URL.")
-  private final String baseURL;
 
   @Macro
   @Name(ENTITY_NAME)
@@ -69,19 +62,6 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   @Name(ASSOCIATED_ENTITY_NAME)
   @Description("Name of the Associated Entity to be extracted.")
   private final String associateEntityName;
-
-  /**
-   * Credentials parameters
-   */
-  @Name(UNAME)
-  @Macro
-  @Description("SAP SuccessFactors Username for user authentication.")
-  private final String username;
-
-  @Name(PASSWORD)
-  @Macro
-  @Description("SAP SuccessFactors password for user authentication.")
-  private final String password;
 
   /**
    * Advanced parameters
@@ -126,6 +106,17 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     "automatically forces client offset pagination on the query.y. Default is Server-side Pagination.")
   private String paginationType;
 
+  @Name(ConfigUtil.NAME_USE_CONNECTION)
+  @Nullable
+  @Description("Whether to use an existing connection.")
+  private Boolean useConnection;
+
+  @Name(ConfigUtil.NAME_CONNECTION)
+  @Macro
+  @Nullable
+  @Description("The existing connection to use.")
+  private SuccessFactorsConnectorConfig connection;
+
   @VisibleForTesting
   public SuccessFactorsPluginConfig(String referenceName,
                                     String baseURL,
@@ -137,19 +128,19 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
                                     @Nullable String selectOption,
                                     @Nullable String expandOption,
                                     String paginationType) {
-
+    this.connection = new SuccessFactorsConnectorConfig(username, password, baseURL);
     this.referenceName = referenceName;
-    this.baseURL = baseURL;
     this.entityName = entityName;
     this.associateEntityName = associateEntityName;
-    this.username = username;
-    this.password = password;
     this.filterOption = filterOption;
     this.selectOption = selectOption;
     this.expandOption = expandOption;
     this.paginationType = paginationType;
   }
-
+  @Nullable
+  public SuccessFactorsConnectorConfig getConnection() {
+    return connection;
+  }
   public static Builder builder() {
     return new Builder();
   }
@@ -158,26 +149,12 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     return this.referenceName;
   }
 
-  public String getBaseURL() {
-    return SuccessFactorsUtil.trim(this.baseURL);
-  }
-
   public String getEntityName() {
     return SuccessFactorsUtil.trim(this.entityName);
   }
 
   public String getAssociatedEntityName() {
     return SuccessFactorsUtil.trim(this.associateEntityName);
-  }
-
-  @Nullable
-  public String getUsername() {
-    return SuccessFactorsUtil.trim(this.username);
-  }
-
-  @Nullable
-  public String getPassword() {
-    return this.password;
   }
 
   @Nullable
@@ -252,16 +229,6 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   private void validateMandatoryParameters(FailureCollector failureCollector) {
 
     IdUtils.validateReferenceName(getReferenceName(), failureCollector);
-    if (SuccessFactorsUtil.isNullOrEmpty(getBaseURL()) && !containsMacro(BASE_URL)) {
-      String errMsg = ResourceConstants.ERR_MISSING_PARAM_PREFIX.getMsgForKey(SAP_SUCCESSFACTORS_BASE_URL);
-      failureCollector.addFailure(errMsg, COMMON_ACTION).withConfigProperty(BASE_URL);
-    }
-    if (SuccessFactorsUtil.isNotNullOrEmpty(getBaseURL()) && !containsMacro(BASE_URL)) {
-      if (HttpUrl.parse(getBaseURL()) == null) {
-        String errMsg = ResourceConstants.ERR_INVALID_BASE_URL.getMsgForKey(SAP_SUCCESSFACTORS_BASE_URL);
-        failureCollector.addFailure(errMsg, COMMON_ACTION).withConfigProperty(BASE_URL);
-      }
-    }
     if (SuccessFactorsUtil.isNullOrEmpty(getEntityName()) && !containsMacro(ENTITY_NAME)) {
       String errMsg = ResourceConstants.ERR_MISSING_PARAM_PREFIX.getMsgForKey(SAP_SUCCESSFACTORS_ENTITY_NAME);
       failureCollector.addFailure(errMsg, COMMON_ACTION).withConfigProperty(ENTITY_NAME);
@@ -274,14 +241,8 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
    * @param failureCollector {@code FailureCollector}
    */
   private void validateBasicCredentials(FailureCollector failureCollector) {
-
-    if (SuccessFactorsUtil.isNullOrEmpty(getUsername()) && !containsMacro(UNAME)) {
-      String errMsg = ResourceConstants.ERR_MISSING_PARAM_PREFIX.getMsgForKey(SAP_SUCCESSFACTORS_USERNAME);
-      failureCollector.addFailure(errMsg, COMMON_ACTION).withConfigProperty(UNAME);
-    }
-    if (SuccessFactorsUtil.isNullOrEmpty(getPassword()) && !containsMacro(PASSWORD)) {
-      String errMsg = ResourceConstants.ERR_MISSING_PARAM_PREFIX.getMsgForKey(SAP_SUCCESSFACTORS_PASSWORD);
-      failureCollector.addFailure(errMsg, COMMON_ACTION).withConfigProperty(PASSWORD);
+    if (connection != null) {
+      connection.validateBasicCredentials(failureCollector);
     }
   }
 

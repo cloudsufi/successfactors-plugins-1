@@ -160,7 +160,8 @@ public class SuccessFactorsSourceTest {
       .password("password");
 
     pluginConfig = pluginConfigBuilder.build();
-    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getUsername(), pluginConfig.getPassword());
+    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(),
+                                                              pluginConfig.getConnection().getPassword());
     successFactorsUrlContainer = new SuccessFactorsUrlContainer(pluginConfig);
     successFactorsSchemaGenerator = new SuccessFactorsSchemaGenerator(new SuccessFactorsEntityProvider(edm));
 

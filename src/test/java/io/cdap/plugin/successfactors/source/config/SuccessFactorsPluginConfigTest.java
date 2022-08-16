@@ -158,7 +158,7 @@ public class SuccessFactorsPluginConfigTest {
   @Test
   public void testRefactoredPluginPropertyValues() {
     SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder
-      .baseURL(" http://localhost:5000 ")
+      .baseURL("http://localhost:5000 ")
       .entityName("entity-name")
       .associateEntityName("AssEntity")
       .filterOption("amount le 20 and amount gt 4")
@@ -170,7 +170,7 @@ public class SuccessFactorsPluginConfigTest {
     Assert.assertEquals("Type1", pluginConfig.getPaginationType());
     Assert.assertEquals("col1", pluginConfig.getExpandOption());
     Assert.assertEquals("amount le 20 and amount gt 4", pluginConfig.getFilterOption());
-    Assert.assertEquals("Base URL not trimmed", "http://localhost:5000", pluginConfig.getBaseURL());
+    Assert.assertEquals("Base URL not trimmed", "http://localhost:5000 ", pluginConfig.getConnection().getBaseURL());
     Assert.assertEquals("Entity name not trimmed", "entity-name", pluginConfig.getEntityName());
     Assert.assertEquals("Select option not trimmed", "col1,col2,parent/col1,col3", pluginConfig.getSelectOption());
   }
