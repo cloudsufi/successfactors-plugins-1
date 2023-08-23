@@ -171,7 +171,7 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
       case HttpURLConnection.HTTP_BAD_REQUEST:
         failureCollector.addFailure(errMsg, ResourceConstants.ERR_CHECK_ADVANCED_PARAM.getMsgForKey());
         break;
-
+      case ExceptionParser.INVALID_ASSOCIATED_ENTITY_NAME:
       default:
         failureCollector.addFailure(errMsg, null);
     }
