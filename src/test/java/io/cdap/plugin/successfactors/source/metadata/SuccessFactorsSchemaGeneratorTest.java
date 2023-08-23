@@ -17,8 +17,6 @@ package io.cdap.plugin.successfactors.source.metadata;
 
 import io.cdap.cdap.api.data.schema.Schema;
 import io.cdap.plugin.successfactors.common.exception.SuccessFactorsServiceException;
-import io.cdap.plugin.successfactors.source.config.SuccessFactorsPluginConfig;
-
 import org.apache.olingo.odata2.api.edm.Edm;
 import org.apache.olingo.odata2.api.ep.EntityProvider;
 import org.apache.olingo.odata2.api.ep.EntityProviderException;
@@ -29,8 +27,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 public class SuccessFactorsSchemaGeneratorTest {
 
@@ -78,12 +74,8 @@ public class SuccessFactorsSchemaGeneratorTest {
 
   @Test
   public void testBuildExpandOutputSchema() throws SuccessFactorsServiceException {
-    SuccessFactorsPluginConfig pluginConfig = new SuccessFactorsPluginConfig("referenceName",
-      "baseUR", "entityName", "associateEntityName", "username",
-      "password", "filterOption", "selectOption", "expandOption",
-      "paginationType");
     Schema outputSchema = generator.buildExpandOutputSchema("Benefit",
-                                                            "eligibleBenefits", "associatedEntity", pluginConfig);
+                                                            "eligibleBenefits");
     int lastIndex = outputSchema.getFields().size() - 1;
     Assert.assertEquals("Schema field size is same.",
                         96,
@@ -152,13 +144,8 @@ public class SuccessFactorsSchemaGeneratorTest {
 
   @Test
   public void testInvalidExpandName() throws SuccessFactorsServiceException {
-    SuccessFactorsPluginConfig pluginConfig = new SuccessFactorsPluginConfig("referenceName",
-      "baseUR", "entityName", "associateEntityName", "username",
-      "password", "filterOption", "selectOption", "expandOption",
-      "paginationType");
-    exception.expectMessage("'assEntity' not found in the 'Benefit' entity.");
-    generator.buildExpandOutputSchema("Benefit", "INVALID-NAVIGATION-NAME",
-      "assEntity", pluginConfig);
+    exception.expectMessage("'INVALID-NAVIGATION-NAME' not found in the 'Benefit' entity.");
+    generator.buildExpandOutputSchema("Benefit", "INVALID-NAVIGATION-NAME");
   }
 
   private Schema getFieldSchema(List<Schema.Field> fieldList, String fieldName) {

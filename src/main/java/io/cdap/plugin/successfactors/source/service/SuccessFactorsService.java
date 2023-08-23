@@ -132,7 +132,7 @@ public class SuccessFactorsService {
       }
     } else if (SuccessFactorsUtil.isNotNullOrEmpty(pluginConfig.getExpandOption())) {
       return successFactorsSchemaGenerator.buildExpandOutputSchema(pluginConfig.getEntityName(), pluginConfig.
-        getExpandOption(), pluginConfig.getAssociatedEntityName(), pluginConfig);
+        getExpandOption());
     } else {
       return successFactorsSchemaGenerator.buildDefaultOutputSchema(pluginConfig.getEntityName());
     }
@@ -282,15 +282,8 @@ public class SuccessFactorsService {
       }
 
     } catch (EdmException | EntityProviderException | IOException ex) {
-      if (pluginConfig.getAssociatedEntityName() != null) {
-        String errMsg =
-          ResourceConstants.ERR_UNSUPPORTED_ASSOCIATED_ENTITY.
-            getMsgForKey(pluginConfig.getAssociatedEntityName(), pluginConfig.getEntityName());
-        throw new SuccessFactorsServiceException(errMsg, ex);
-      } else {
-        String errMsg = ResourceConstants.ERR_RECORD_PROCESSING.getMsgForKeyWithCode(pluginConfig.getEntityName());
-        throw new SuccessFactorsServiceException(errMsg, ex);
-      }
+      String errMsg = ResourceConstants.ERR_RECORD_PROCESSING.getMsgForKeyWithCode(pluginConfig.getEntityName());
+      throw new SuccessFactorsServiceException(errMsg, ex);
     } catch (TransportException te) {
       String errMsg = ResourceConstants.ERR_RECORD_PULL.getMsgForKeyWithCode(pluginConfig.getEntityName());
       errMsg += ExceptionParser.buildTransportError(te);

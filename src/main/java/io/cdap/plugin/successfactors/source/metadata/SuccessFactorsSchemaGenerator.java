@@ -23,8 +23,6 @@ import io.cdap.plugin.successfactors.common.util.ResourceConstants;
 import io.cdap.plugin.successfactors.common.util.SapAttributes;
 import io.cdap.plugin.successfactors.common.util.SuccessFactorsDataTypes;
 import io.cdap.plugin.successfactors.common.util.SuccessFactorsUtil;
-import io.cdap.plugin.successfactors.source.config.SuccessFactorsPluginConfig;
-
 import org.apache.olingo.odata2.api.edm.EdmAnnotationAttribute;
 import org.apache.olingo.odata2.api.edm.EdmComplexType;
 import org.apache.olingo.odata2.api.edm.EdmEntityType;
@@ -299,34 +297,25 @@ public class SuccessFactorsSchemaGenerator {
    *
    * @param entityName   service entity name
    * @param expandOption all the selective expanded property names
-   * @param pluginConfig
    * @return {@code Schema}
    * @throws SuccessFactorsServiceException throws in following two cases
    *                                        1. if neither default nor expanded property were found in the given entity
    *                                        name,
    *                                        2. if fails at apache olingo processing.
    */
-  public Schema buildExpandOutputSchema(String entityName, String expandOption, String associatedEntity,
-                                        SuccessFactorsPluginConfig pluginConfig) throws
-    SuccessFactorsServiceException {
+  public Schema buildExpandOutputSchema(String entityName, String expandOption) throws SuccessFactorsServiceException {
     try {
       List<SuccessFactorsColumnMetadata> columnDetailList = buildDefaultColumns(entityName);
       if (columnDetailList.isEmpty()) {
         throw new SuccessFactorsServiceException(ResourceConstants.ERR_NO_COLUMN_FOUND.getMsgForKey(DEFAULT_PROPERTY,
-                                                                                                    entityName, 4));
+                                                                                                    entityName));
       }
 
       List<SuccessFactorsColumnMetadata> expandColumnDetailList = buildExpandedEntity(entityName, expandOption);
       if (expandColumnDetailList.isEmpty()) {
-        if (associatedEntity == null && !pluginConfig.containsMacro
-          (SuccessFactorsPluginConfig.ASSOCIATED_ENTITY_NAME)) {
-          throw new SuccessFactorsServiceException(ResourceConstants.ERR_NO_COLUMN_FOUND.getMsgForKey(expandOption,
-            entityName), 4);
-        } else if (!pluginConfig.containsMacro(SuccessFactorsPluginConfig.ASSOCIATED_ENTITY_NAME)) {
-          throw new SuccessFactorsServiceException(ResourceConstants.ERR_UNSUPPORTED_ASSOCIATED_ENTITY.
-            getMsgForKey(associatedEntity, entityName), 4);
-        }
+        throw new SuccessFactorsServiceException(ResourceConstants.ERR_NO_COLUMN_FOUND.getMsgForKey(expandOption,
 
+                                                                                                    entityName));
       }
 
       columnDetailList.addAll(expandColumnDetailList);

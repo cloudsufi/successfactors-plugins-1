@@ -45,7 +45,6 @@ public class ExceptionParser {
 
   public static final int NO_VERSION_FOUND = 1;
   public static final int INVALID_VERSION_FOUND = 2;
-  public static final int INVALID_ASSOCIATED_ENTITY_NAME = 4;
   private static final String BROKEN_HYPERLINK = "Refer to https";
   private static final String HTML_TAG = "<html>";
 

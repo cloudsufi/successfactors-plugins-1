@@ -32,7 +32,6 @@ import io.cdap.plugin.successfactors.connector.SuccessFactorsConnectorConfig;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nullable;
 
 /**
@@ -46,10 +45,9 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   private static final String REFERENCE_NAME = "referenceName";
   private static final String REFERENCE_NAME_DESCRIPTION = "This will be used to uniquely identify this source/sink " +
     "for lineage, annotating metadata, etc.";
-  public static final String ASSOCIATED_ENTITY_NAME = "associatedEntityName";
+  private static final String ASSOCIATED_ENTITY_NAME = "associatedEntityName";
   private static final String NAME_SCHEMA = "schema";
   private static final String PAGINATION_TYPE = "paginationType";
-  public static final String EXPAND_OPTION = "expandOption";
   private static final String COMMON_ACTION = ResourceConstants.ERR_MISSING_PARAM_OR_MACRO_ACTION.getMsgForKey();
   private static final Pattern PATTERN = Pattern.compile("\\(.*\\)");
   private static final String SAP_SUCCESSFACTORS_ENTITY_NAME = "Entity Name";
@@ -80,7 +78,6 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     "All the fields must be comma (,) separated.\n")
   private final String selectOption;
 
-  @Name(EXPAND_OPTION)
   @Nullable
   @Macro
   @Description("List of navigation fields to be expanded in the extracted output data. For example: customManager. " +
@@ -260,12 +257,6 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
       if (PATTERN.matcher(getEntityName()).find()) {
         failureCollector.addFailure(ResourceConstants.ERR_FEATURE_NOT_SUPPORTED.getMsgForKey(), null)
           .withConfigProperty(ENTITY_NAME);
-      }
-    }
-    if (SuccessFactorsUtil.isNotNullOrEmpty(associateEntityName)) {
-      if (SuccessFactorsUtil.isNullOrEmpty(getExpandOption()) && !containsMacro(EXPAND_OPTION)) {
-        failureCollector.addFailure(ResourceConstants.ERR_INVALID_ENTITY_CALL.getMsgForKey(), null)
-          .withConfigProperty(ASSOCIATED_ENTITY_NAME);
       }
     }
   }
