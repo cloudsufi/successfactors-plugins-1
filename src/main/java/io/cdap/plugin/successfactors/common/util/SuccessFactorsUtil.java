@@ -97,8 +97,7 @@ public class SuccessFactorsUtil {
    * @return SuccessFactorsService instance
    */
   public static SuccessFactorsService getSuccessFactorsService(SuccessFactorsPluginConfig pluginConfig) {
-    SuccessFactorsTransporter transporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(),
-                                                                          pluginConfig.getConnection().getPassword());
+    SuccessFactorsTransporter transporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     SuccessFactorsService successFactorsService = new SuccessFactorsService(pluginConfig, transporter);
     return successFactorsService;
   }

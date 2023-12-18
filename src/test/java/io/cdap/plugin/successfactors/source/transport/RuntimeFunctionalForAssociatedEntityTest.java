@@ -88,8 +88,7 @@ public class RuntimeFunctionalForAssociatedEntityTest {
     long availableRowCount = 1;
     List<SuccessFactorsInputSplit> partitionList = new SuccessFactorsPartitionBuilder().buildSplits(availableRowCount);
 
-    transporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(), pluginConfig.
-      getConnection().getPassword());
+    transporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     successFactorsService = new SuccessFactorsService(pluginConfig, transporter);
     prepareStubForMetadata();
     edmData = successFactorsService.getSuccessFactorsServiceEdm(encodedMetadataString);

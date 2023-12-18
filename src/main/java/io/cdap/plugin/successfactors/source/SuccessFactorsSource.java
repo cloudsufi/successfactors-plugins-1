@@ -39,6 +39,7 @@ import io.cdap.plugin.successfactors.common.util.ExceptionParser;
 import io.cdap.plugin.successfactors.common.util.ResourceConstants;
 import io.cdap.plugin.successfactors.common.util.SuccessFactorsUtil;
 import io.cdap.plugin.successfactors.connector.SuccessFactorsConnector;
+import io.cdap.plugin.successfactors.connector.SuccessFactorsConnectorConfig;
 import io.cdap.plugin.successfactors.source.config.SuccessFactorsPluginConfig;
 import io.cdap.plugin.successfactors.source.input.SuccessFactorsInputFormat;
 import io.cdap.plugin.successfactors.source.input.SuccessFactorsInputSplit;
@@ -126,8 +127,7 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
   @Nullable
   private Schema getOutputSchema(FailureCollector failureCollector) {
     if (config.getConnection() != null) {
-      SuccessFactorsTransporter transporter = new SuccessFactorsTransporter(config.getConnection().getUsername(),
-                                                                            config.getConnection().getPassword());
+      SuccessFactorsTransporter transporter = new SuccessFactorsTransporter(config.getConnection());
       SuccessFactorsService successFactorsServices = new SuccessFactorsService(config, transporter);
       try {
         //validate if the given parameters form a valid SuccessFactors URL.
@@ -136,7 +136,14 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
       } catch (TransportException te) {
         String errorMsg = ExceptionParser.buildTransportError(te);
         errorMsg = ResourceConstants.ERR_ODATA_SERVICE_CALL.getMsgForKeyWithCode(errorMsg);
-        failureCollector.addFailure(errorMsg, null).withConfigProperty(SuccessFactorsPluginConfig.BASE_URL);
+        if (SuccessFactorsUtil.isNullOrEmpty(config.getConnection().getProxyUrl())) {
+          failureCollector.addFailure(errorMsg, null).withConfigProperty(SuccessFactorsPluginConfig.BASE_URL);
+        } else {
+          failureCollector.addFailure(errorMsg,
+              "Unable to connect to successFactors. Please check the basic and proxy connection parameters")
+            .withConfigProperty(SuccessFactorsPluginConfig.BASE_URL)
+            .withConfigProperty(SuccessFactorsConnectorConfig.PROPERTY_PROXY_URL);
+        }
       } catch (SuccessFactorsServiceException ose) {
         attachFieldWithError(ose, failureCollector);
       }

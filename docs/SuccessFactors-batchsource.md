@@ -23,6 +23,10 @@ You also can use the macro function ${conn(connection-name)}.
 **SAP SuccessFactors Logon Password (M)**: SAP SuccessFactors Logon password for user authentication.  
 **SAP SuccessFactors Base URL (M)**: SAP SuccessFactors Base URL.  
 
+## Proxy Configuration
+**Proxy URL:** Proxy URL. Must contain a protocol, address and port.  
+**Username:** Proxy username.  
+**Password:** Proxy password. 
 
 ## Advance Option:
 

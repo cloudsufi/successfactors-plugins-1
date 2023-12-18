@@ -39,12 +39,17 @@ public class SuccessFactorsSchemaGeneratorTest {
   public final ExpectedException exception = ExpectedException.none();
   private SuccessFactorsEntityProvider serviceHelper;
   private SuccessFactorsSchemaGenerator generator;
+  private SuccessFactorsPluginConfig pluginConfig;
 
   @Before
   public void setup() throws EntityProviderException {
     edm = EntityProvider.readMetadata(TestSuccessFactorsUtil.readResource("successfactors-metadata.xml"), false);
     serviceHelper = new SuccessFactorsEntityProvider(edm);
     generator = new SuccessFactorsSchemaGenerator(serviceHelper);
+    pluginConfig = new SuccessFactorsPluginConfig("referenceName", "baseUR",
+      "entityName", "associateEntityName", "username", "password",
+      null, null, null, "filterOption", "selectOption",
+      "expandOption", "additionalQueryParameters", "paginationType");
   }
 
   @Test
@@ -78,10 +83,6 @@ public class SuccessFactorsSchemaGeneratorTest {
 
   @Test
   public void testBuildExpandOutputSchema() throws SuccessFactorsServiceException {
-    SuccessFactorsPluginConfig pluginConfig = new SuccessFactorsPluginConfig("referenceName",
-      "baseUR", "entityName", "associateEntityName", "username",
-      "password", "filterOption", "selectOption", "expandOption",
-      "additionalQueryParameters", "paginationType");
     Schema outputSchema = generator.buildExpandOutputSchema("Benefit",
                                                             "eligibleBenefits", "associatedEntity", pluginConfig);
     int lastIndex = outputSchema.getFields().size() - 1;
@@ -152,10 +153,6 @@ public class SuccessFactorsSchemaGeneratorTest {
 
   @Test
   public void testInvalidExpandName() throws SuccessFactorsServiceException {
-    SuccessFactorsPluginConfig pluginConfig = new SuccessFactorsPluginConfig("referenceName",
-      "baseUR", "entityName", "associateEntityName", "username",
-      "password", "filterOption", "selectOption", "expandOption",
-      "additionalQueryParameters", "paginationType");
     exception.expectMessage("'assEntity' not found in the 'Benefit' entity.");
     generator.buildExpandOutputSchema("Benefit", "INVALID-NAVIGATION-NAME",
       "assEntity", pluginConfig);

@@ -24,20 +24,30 @@ import com.github.rholder.retry.WaitStrategies;
 import io.cdap.cdap.api.retry.RetryableException;
 import io.cdap.plugin.successfactors.common.exception.TransportException;
 import io.cdap.plugin.successfactors.common.util.ResourceConstants;
+import io.cdap.plugin.successfactors.common.util.SuccessFactorsUtil;
+import io.cdap.plugin.successfactors.connector.SuccessFactorsConnectorConfig;
+import okhttp3.Authenticator;
+import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.Route;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -51,14 +61,11 @@ public class SuccessFactorsTransporter {
   private static final long WAIT_TIME = 5;
   private static final long MAX_NUMBER_OF_RETRY_ATTEMPTS = 5;
 
-  private final String username;
-  private final String password;
+  private SuccessFactorsConnectorConfig config;
   private Response response;
 
-  public SuccessFactorsTransporter(String username, String password) {
-    this.username = username;
-    this.password = password;
-
+  public SuccessFactorsTransporter(SuccessFactorsConnectorConfig pluginConfig) {
+    this.config = pluginConfig;
   }
 
   /**
@@ -152,7 +159,8 @@ public class SuccessFactorsTransporter {
    * @throws TransportException any error while preparing the {@code OkHttpClient}
    */
   private Response transport(URL endpoint, String mediaType) throws IOException, TransportException {
-    OkHttpClient enhancedOkHttpClient = getConfiguredClient().build();
+    OkHttpClient enhancedOkHttpClient =
+      buildConfiguredClient(config.getProxyUrl(), config.getProxyUsername(), config.getProxyPassword());
     Request req = buildRequest(endpoint, mediaType);
 
     return enhancedOkHttpClient.newCall(req).execute();
@@ -190,6 +198,39 @@ public class SuccessFactorsTransporter {
   }
 
   /**
+   * Builds and configures an OkHttpClient with the specified proxy settings and authentication credentials.
+   * @param proxyUrl The URL of the proxy server (e.g., "http://proxy.example.com:8080").
+   * Set to null or an empty string to bypass proxy configuration.
+   * @param proxyUsername  The username for proxy authentication. Set to null or an empty string if not required.
+   * @param proxyPassword  The password for proxy authentication. Set to null or an empty string if not required.
+   * @return An OkHttpClient configured with the specified proxy settings and authentication credentials.
+   */
+  private OkHttpClient buildConfiguredClient(String proxyUrl, String proxyUsername, String proxyPassword)
+    throws MalformedURLException, TransportException {
+    OkHttpClient.Builder builder = getConfiguredClient();
+
+    if (SuccessFactorsUtil.isNotNullOrEmpty(proxyUrl)) {
+      URL url = new URL(proxyUrl);
+      Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(url.getHost(), url.getPort()));
+      builder.proxy(proxy);
+
+      if (SuccessFactorsUtil.isNotNullOrEmpty(proxyUsername) && SuccessFactorsUtil.isNotNullOrEmpty(proxyPassword)) {
+        builder.proxyAuthenticator(new Authenticator() {
+          @Override
+          public Request authenticate(Route route, Response response) {
+            String credential = Credentials.basic(proxyUsername, proxyPassword);
+            return response.request().newBuilder()
+              .header("Proxy-Authorization", credential)
+              .build();
+          }
+        });
+      }
+    }
+
+    return builder.build();
+  }
+
+  /**
    * Builds the {@code OkHttpClient.Builder} with following optimized configuration parameters as per the SAP Gateway
    * recommendations.
    * <p>
@@ -218,9 +259,9 @@ public class SuccessFactorsTransporter {
    */
   private String getAuthenticationKey() {
     return "Basic " + Base64.getEncoder()
-      .encodeToString(username
+      .encodeToString(config.getUsername()
                         .concat(":")
-                        .concat(password)
+                        .concat(config.getPassword())
                         .getBytes(StandardCharsets.UTF_8)
       );
   }

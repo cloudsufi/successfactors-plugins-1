@@ -160,8 +160,7 @@ public class SuccessFactorsSourceTest {
       .password("password");
 
     pluginConfig = pluginConfigBuilder.build();
-    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(),
-                                                              pluginConfig.getConnection().getPassword());
+    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     successFactorsUrlContainer = new SuccessFactorsUrlContainer(pluginConfig);
     successFactorsSchemaGenerator = new SuccessFactorsSchemaGenerator(new SuccessFactorsEntityProvider(edm));
 
@@ -267,7 +266,6 @@ public class SuccessFactorsSourceTest {
   public void testPrepareRun() throws Exception {
     successFactorsService = new SuccessFactorsService(pluginConfig, null);
     successFactorsPartitionBuilder = new SuccessFactorsPartitionBuilder();
-    successFactorsTransporter = new SuccessFactorsTransporter("username", "password");
     pluginConfigBuilder = SuccessFactorsPluginConfig.builder()
       .referenceName("unit-test-ref-name")
       .baseURL("http://localhost")
@@ -279,7 +277,7 @@ public class SuccessFactorsSourceTest {
       .filterOption("$topeq2");
 
     pluginConfig = pluginConfigBuilder.build();
-
+    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     new Expectations(SuccessFactorsService.class, SuccessFactorsTransporter.class) {
       {
         context.getOutputSchema();
