@@ -225,7 +225,8 @@ public class SuccessFactorsConnector implements DirectConnector {
       addQueryParameter(TOP_OPTION, String.valueOf(top)).addQueryParameter(SELECT_OPTION, selectFields.toString())
       .build().url();
     SuccessFactorsTransporter successFactorsHttpClient = new SuccessFactorsTransporter(config);
-    SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient.callSuccessFactorsWithRetry(dataURL);
+    SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient
+      .callSuccessFactorsWithRetry(dataURL, MediaType.APPLICATION_JSON);
 
     ExceptionParser.checkAndThrowException("", responseContainer);
     return responseContainer.getResponseStream();
