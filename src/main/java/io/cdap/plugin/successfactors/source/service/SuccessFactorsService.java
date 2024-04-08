@@ -162,9 +162,14 @@ public class SuccessFactorsService {
    * @throws TransportException any http client exceptions are wrapped under it.
    */
   private InputStream callEntityMetadata() throws TransportException {
+    try {
     SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient
-      .callSuccessFactorsEntity(urlContainer.getMetadataURL(), MediaType.APPLICATION_XML, METADATA);
+      .callSuccessFactorsWithRetry(urlContainer.getMetadataURL(), MediaType.APPLICATION_XML);
     return responseContainer.getResponseStream();
+    } catch (IOException e) {
+      LOG.error("Error occurred while fetching metadata for entity {}", pluginConfig.getEntityName());
+      throw new RuntimeException(e);
+    }
   }
 
   /**
@@ -320,7 +325,8 @@ public class SuccessFactorsService {
     } else {
       dataURL = urlContainer.getDataFetchURL(skip, top);
     }
-    SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient.callSuccessFactorsWithRetry(dataURL);
+    SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient
+      .callSuccessFactorsWithRetry(dataURL, MediaType.APPLICATION_JSON);
 
     ExceptionParser.checkAndThrowException("", responseContainer);
     return responseContainer.getResponseStream();

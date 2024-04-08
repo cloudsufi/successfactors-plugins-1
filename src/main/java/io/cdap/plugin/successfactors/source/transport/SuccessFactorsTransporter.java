@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -59,7 +60,7 @@ public class SuccessFactorsTransporter {
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsTransporter.class);
   private static final long CONNECTION_TIMEOUT = 300;
   private static final long WAIT_TIME = 5;
-  private static final long MAX_NUMBER_OF_RETRY_ATTEMPTS = 5;
+  private static final long MAX_NUMBER_OF_RETRY_ATTEMPTS = 10;
 
   private SuccessFactorsConnectorConfig config;
   private Response response;
@@ -103,10 +104,10 @@ public class SuccessFactorsTransporter {
    * @throws IOException        any http client exceptions
    * @throws TransportException any error while preparing the {@code OkHttpClient}
    */
-  public SuccessFactorsResponseContainer callSuccessFactorsWithRetry(URL endpoint)
+  public SuccessFactorsResponseContainer callSuccessFactorsWithRetry(URL endpoint,  String mediaType)
     throws IOException, TransportException {
 
-    Response res = retrySapTransportCall(endpoint, MediaType.APPLICATION_JSON);
+    Response res = retrySapTransportCall(endpoint, mediaType);
 
     try {
       return prepareResponseContainer(res);
@@ -126,8 +127,22 @@ public class SuccessFactorsTransporter {
    */
   public Response retrySapTransportCall(URL endpoint, String mediaType) throws IOException {
     Callable<Boolean> fetchRecords = () -> {
-      response = transport(endpoint, mediaType);
-      if (response != null && response.code() >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
+      try {
+        LOG.debug("Retrying the call to URL {}.", endpoint);
+        response = transport(endpoint, mediaType);
+        if (response != null) {
+          LOG.debug("Response code for URL {} is {}.", endpoint, response.code());
+        }
+        if (response != null && response.code() >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
+          throw new RetryableException();
+        }
+      } catch (ConnectException e) {
+        LOG.error("Retry Failed with ConnectException for URL {}.", endpoint);
+        LOG.error(e.toString());
+        throw new RetryableException();
+      } catch (IOException e) {
+        LOG.error("Retry Failed with IOException for URL {}.", endpoint);
+        LOG.error(e.toString());
         throw new RetryableException();
       }
       return true;
@@ -135,7 +150,7 @@ public class SuccessFactorsTransporter {
 
     Retryer<Boolean> retryer = RetryerBuilder.<Boolean>newBuilder()
       .retryIfExceptionOfType(RetryableException.class)
-      .withWaitStrategy(WaitStrategies.exponentialWait(WAIT_TIME, TimeUnit.SECONDS))
+      .withWaitStrategy(WaitStrategies.exponentialWait(100, 5 * 60, TimeUnit.SECONDS))
       .withStopStrategy(StopStrategies.stopAfterAttempt((int) MAX_NUMBER_OF_RETRY_ATTEMPTS))
       .build();
 
