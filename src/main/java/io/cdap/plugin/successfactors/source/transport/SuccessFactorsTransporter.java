@@ -130,6 +130,9 @@ public class SuccessFactorsTransporter {
       try {
         LOG.debug("Retrying the call to URL {}.", endpoint);
         response = transport(endpoint, mediaType);
+        if (response != null) {
+          LOG.debug("Response code for URL {} is {}.", endpoint, response.code());
+        }
         if (response != null && response.code() >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
           throw new RetryableException();
         }
