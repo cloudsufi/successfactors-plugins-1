@@ -49,7 +49,8 @@ public class SuccessFactorsSchemaGeneratorTest {
     pluginConfig = new SuccessFactorsPluginConfig("referenceName", "baseUR",
       "entityName", "associateEntityName", "username", "password",
       null, null, null, "filterOption", "selectOption",
-      "expandOption", "additionalQueryParameters", "paginationType");
+      "expandOption", "additionalQueryParameters", "paginationType",
+                                                  null, null, null, null);
   }
 
   @Test

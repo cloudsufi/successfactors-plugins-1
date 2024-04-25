@@ -18,6 +18,7 @@ package io.cdap.plugin.successfactors.source.transport;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import io.cdap.cdap.api.retry.RetryableException;
 import io.cdap.plugin.successfactors.common.exception.TransportException;
 import io.cdap.plugin.successfactors.common.util.ResourceConstants;
 import io.cdap.plugin.successfactors.source.config.SuccessFactorsPluginConfig;
@@ -33,11 +34,13 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -52,6 +55,8 @@ import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.core.MediaType;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class SuccessFactorsTransporterTest {
 
@@ -219,5 +224,18 @@ public class SuccessFactorsTransporterTest {
     exception.expectCause(CoreMatchers.isA(SocketTimeoutException.class));
     transporter.callSuccessFactors(successFactorsURL.getTesterURL(), MediaType.APPLICATION_JSON,
                                    SuccessFactorsService.TEST);
+  }
+
+  @Test(expected = RetryableException.class)
+  public void testValidNumberOfRetry() throws Exception {
+    SuccessFactorsTransporter transporterSpy = Mockito.spy(transporter);
+    int retryCount = 2;
+    try {
+      transporterSpy.callSuccessFactorsWithRetry(new URL("http://127.0.0.1/"), "TEST",
+                                                 1, 3, 2, retryCount);
+    } finally {
+      verify(transporterSpy, times(retryCount + 1))
+        .retrySapTransportCall(Mockito.any(URL.class), Mockito.anyString());
+    }
   }
 }

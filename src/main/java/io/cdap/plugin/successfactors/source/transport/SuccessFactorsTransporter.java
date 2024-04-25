@@ -16,11 +16,9 @@
 
 package io.cdap.plugin.successfactors.source.transport;
 
-import com.github.rholder.retry.RetryException;
-import com.github.rholder.retry.Retryer;
-import com.github.rholder.retry.RetryerBuilder;
-import com.github.rholder.retry.StopStrategies;
-import com.github.rholder.retry.WaitStrategies;
+import dev.failsafe.Failsafe;
+import dev.failsafe.FailsafeException;
+import dev.failsafe.RetryPolicy;
 import io.cdap.cdap.api.retry.RetryableException;
 import io.cdap.plugin.successfactors.common.exception.TransportException;
 import io.cdap.plugin.successfactors.common.util.ResourceConstants;
@@ -43,12 +41,9 @@ import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Base64;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-
-import javax.ws.rs.core.MediaType;
 
 /**
  * This {@code SuccessFactorsTransporter} class is used to
@@ -58,8 +53,6 @@ public class SuccessFactorsTransporter {
   static final String SERVICE_VERSION = "dataserviceversion";
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsTransporter.class);
   private static final long CONNECTION_TIMEOUT = 300;
-  private static final long WAIT_TIME = 5;
-  private static final long MAX_NUMBER_OF_RETRY_ATTEMPTS = 5;
 
   private SuccessFactorsConnectorConfig config;
   private Response response;
@@ -77,11 +70,10 @@ public class SuccessFactorsTransporter {
    *
    * @param endpoint  type of URL
    * @param mediaType mediaType for Accept header property, supported types are 'application/json' & 'application/xml'
-   * @param fetchType type of call i.e. TEST / METADATA / COUNT, used for logging purpose.
    * @return {@code SuccessFactorsResponseContainer}
    * @throws TransportException any http client exceptions are wrapped under it
    */
-  public SuccessFactorsResponseContainer callSuccessFactorsEntity(URL endpoint, String mediaType, String fetchType)
+  public SuccessFactorsResponseContainer callSuccessFactorsEntity(URL endpoint, String mediaType)
     throws TransportException {
 
     try {
@@ -100,13 +92,27 @@ public class SuccessFactorsTransporter {
    *
    * @param endpoint record fetch URL
    * @return {@code SuccessFactorsResponseContainer}
-   * @throws IOException        any http client exceptions
    * @throws TransportException any error while preparing the {@code OkHttpClient}
    */
-  public SuccessFactorsResponseContainer callSuccessFactorsWithRetry(URL endpoint)
-    throws IOException, TransportException {
-
-    Response res = retrySapTransportCall(endpoint, MediaType.APPLICATION_JSON);
+  public SuccessFactorsResponseContainer callSuccessFactorsWithRetry(URL endpoint, String mediaType,
+                                                                     int initialRetryDuration, int maxRetryDuration,
+                                                                     int retryMultiplier, int maxRetryCount)
+    throws TransportException {
+    LOG.debug(
+      "Retrying the call to SuccessFactors with initialRetryDuration: {}, maxRetryDuration: {}, retryMultiplier: {}, "
+        + "maxRetryCount: {}",
+      initialRetryDuration, maxRetryDuration, retryMultiplier, maxRetryCount);
+    LOG.debug("Endpoint: {}, MediaType: {}", endpoint, mediaType);
+    Response res;
+    try {
+      res = Failsafe.with(getRetryPolicy(initialRetryDuration, maxRetryDuration, retryMultiplier, maxRetryCount))
+        .get(() -> retrySapTransportCall(endpoint, mediaType));
+    } catch (FailsafeException e) {
+      if (e.getCause() != null) {
+        throw new RuntimeException(e.getCause());
+      }
+      throw e;
+    }
 
     try {
       return prepareResponseContainer(res);
@@ -122,31 +128,37 @@ public class SuccessFactorsTransporter {
    * @param endpoint  record fetch URL
    * @param mediaType mediaType for Accept header property
    * @return {@code Response}
-   * @throws IOException if all retries fail
    */
-  public Response retrySapTransportCall(URL endpoint, String mediaType) throws IOException {
-    Callable<Boolean> fetchRecords = () -> {
+  public Response retrySapTransportCall(URL endpoint, String mediaType) {
+    try {
       response = transport(endpoint, mediaType);
       if (response != null && response.code() >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
         throw new RetryableException();
       }
-      return true;
-    };
-
-    Retryer<Boolean> retryer = RetryerBuilder.<Boolean>newBuilder()
-      .retryIfExceptionOfType(RetryableException.class)
-      .withWaitStrategy(WaitStrategies.exponentialWait(WAIT_TIME, TimeUnit.SECONDS))
-      .withStopStrategy(StopStrategies.stopAfterAttempt((int) MAX_NUMBER_OF_RETRY_ATTEMPTS))
-      .build();
-
-    try {
-      retryer.call(fetchRecords);
-    } catch (RetryException | ExecutionException e) {
+    } catch (Exception e) {
       LOG.error("Data Recovery failed for URL {}.", endpoint);
-      throw new IOException();
+      if (e instanceof RetryableException) {
+        throw (RetryableException) e;
+      } else if (e instanceof IOException) {
+        throw new RetryableException("IOException occurred while calling SuccessFactors.");
+      } else {
+        throw new RuntimeException(e);
+      }
     }
-
     return response;
+  }
+
+  private RetryPolicy<Object> getRetryPolicy(int initialRetryDuration, int maxRetryDuration, int retryMultiplier,
+                                             int maxRetryCount) {
+    return RetryPolicy.builder()
+      .handle(RetryableException.class)
+      .withBackoff(Duration.ofSeconds(initialRetryDuration),
+                   Duration.ofSeconds(maxRetryDuration), retryMultiplier)
+      .withMaxRetries(maxRetryCount)
+      .onRetry(event -> LOG.debug("Retrying SapTransportCall. Retry count: {}", event.getAttemptCount()))
+      .onSuccess(event -> LOG.debug("SapTransportCall executed successfully."))
+      .onRetriesExceeded(event -> LOG.error("Retry limit reached for SapTransportCall."))
+      .build();
   }
 
   /**

@@ -97,7 +97,7 @@ public class SuccessFactorsService {
   public void checkSuccessFactorsURL() throws TransportException, SuccessFactorsServiceException {
 
     SuccessFactorsResponseContainer responseContainer =
-      successFactorsHttpClient.callSuccessFactorsEntity(urlContainer.getTesterURL(), MediaType.APPLICATION_JSON, TEST);
+      successFactorsHttpClient.callSuccessFactorsEntity(urlContainer.getTesterURL(), MediaType.APPLICATION_JSON);
 
     ExceptionParser.checkAndThrowException(ResourceConstants.ERR_FAILED_ENTITY_VALIDATION.getMsgForKey(),
                                            responseContainer);
@@ -163,7 +163,9 @@ public class SuccessFactorsService {
    */
   private InputStream callEntityMetadata() throws TransportException {
     SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient
-      .callSuccessFactorsEntity(urlContainer.getMetadataURL(), MediaType.APPLICATION_XML, METADATA);
+      .callSuccessFactorsWithRetry(urlContainer.getMetadataURL(), MediaType.APPLICATION_XML, pluginConfig
+        .getInitialRetryDuration(), pluginConfig.getMaxRetryDuration(), pluginConfig.getRetryMultiplier(),
+                                   pluginConfig.getMaxRetryCount());
     return responseContainer.getResponseStream();
   }
 
@@ -320,7 +322,10 @@ public class SuccessFactorsService {
     } else {
       dataURL = urlContainer.getDataFetchURL(skip, top);
     }
-    SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient.callSuccessFactorsWithRetry(dataURL);
+    SuccessFactorsResponseContainer responseContainer =
+      successFactorsHttpClient.callSuccessFactorsWithRetry(
+        dataURL, MediaType.APPLICATION_JSON, pluginConfig.getInitialRetryDuration(), pluginConfig.getMaxRetryDuration(),
+        pluginConfig.getRetryMultiplier(), pluginConfig.getMaxRetryCount());
 
     ExceptionParser.checkAndThrowException("", responseContainer);
     return responseContainer.getResponseStream();
@@ -337,7 +342,7 @@ public class SuccessFactorsService {
 
   /**
    * Filter the data stream after removing the expanded entity data.
-   * 
+   *
    * Data stream after conversion to JSON has the following format:
    * "d": {
    *         "results": [

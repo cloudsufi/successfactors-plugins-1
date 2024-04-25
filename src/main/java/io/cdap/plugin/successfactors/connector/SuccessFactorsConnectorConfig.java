@@ -20,7 +20,6 @@ import io.cdap.cdap.api.annotation.Macro;
 import io.cdap.cdap.api.annotation.Name;
 import io.cdap.cdap.api.plugin.PluginConfig;
 import io.cdap.cdap.etl.api.FailureCollector;
-import io.cdap.plugin.successfactors.common.exception.SuccessFactorsServiceException;
 import io.cdap.plugin.successfactors.common.exception.TransportException;
 import io.cdap.plugin.successfactors.common.util.ResourceConstants;
 import io.cdap.plugin.successfactors.common.util.SuccessFactorsUtil;
@@ -153,7 +152,7 @@ public class SuccessFactorsConnectorConfig extends PluginConfig {
     SuccessFactorsResponseContainer responseContainer = null;
     try {
       responseContainer =
-        successFactorsHttpClient.callSuccessFactorsEntity(testerURL, MediaType.APPLICATION_JSON, TEST);
+        successFactorsHttpClient.callSuccessFactorsEntity(testerURL, MediaType.APPLICATION_JSON);
     } catch (TransportException e) {
       LOG.error("Unable to fetch the response", e);
       collector.addFailure("Unable to call SuccessFactorsEntity",

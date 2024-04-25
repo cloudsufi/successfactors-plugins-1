@@ -69,6 +69,7 @@ public class SuccessFactorsSourceTest {
   private EntityProvider entityProvider;
   private SuccessFactorsUrlContainer successFactorsUrlContainer;
   private SuccessFactorsSchemaGenerator successFactorsSchemaGenerator;
+  private SuccessFactorsTransporter successFactorsHttpClient;
 
 
   @Before
@@ -163,6 +164,7 @@ public class SuccessFactorsSourceTest {
     successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     successFactorsUrlContainer = new SuccessFactorsUrlContainer(pluginConfig);
     successFactorsSchemaGenerator = new SuccessFactorsSchemaGenerator(new SuccessFactorsEntityProvider(edm));
+    successFactorsHttpClient = new  SuccessFactorsTransporter(pluginConfig.getConnection());
 
     new Expectations(SuccessFactorsUrlContainer.class, SuccessFactorsTransporter.class,
                      SuccessFactorsSchemaGenerator.class) {
@@ -175,7 +177,11 @@ public class SuccessFactorsSourceTest {
         result = getUrl();
         minTimes = 1;
 
-        successFactorsTransporter.callSuccessFactorsEntity(null, anyString, anyString);
+        successFactorsHttpClient.callSuccessFactorsWithRetry(null, anyString, anyInt, anyInt, anyInt, anyInt);
+        result = getResponseContainer();
+        minTimes = 1;
+
+        successFactorsTransporter.callSuccessFactorsEntity(null, anyString);
         result = getResponseContainer();
         minTimes = 1;
 
