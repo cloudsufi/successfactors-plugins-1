@@ -38,7 +38,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({SuccessFactorsTransporter.class, SuccessFactorsConnectorConfig.class, Gson.class})
+@PrepareForTest({SuccessFactorsConnectorConfig.class, Gson.class})
 public class SuccessFactorsInputFormatTest {
   public static final String SUCCESSFACTORS_PLUGIN_PROPERTIES = "successFactorsPluginProperties";
   public static final String ENCODED_ENTITY_METADATA_STRING = "encodedMetadataString";
@@ -57,7 +57,8 @@ public class SuccessFactorsInputFormatTest {
                                                               "selectOption",
                                                               "expandOption",
                                                               "additionalQueryParameters",
-                                                              null));
+                                                              null, null,
+                                                              null, null, null));
   }
 
   @Test

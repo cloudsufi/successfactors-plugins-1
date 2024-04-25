@@ -38,7 +38,8 @@ public class SuccessFactorsUrlContainerTest {
                                                               "selectOption",
                                                               "expandOption",
                                                               "",
-                                                              null));
+                                                              null, null,
+                                                              null, null, null));
   }
   @Test
   public void testGetTesterURL() {
@@ -78,7 +79,8 @@ public class SuccessFactorsUrlContainerTest {
                                                               "",
                                                               "",
                                                               "startDate=2023-01-01&endDate=2023-02-02",
-                                                              null));
+                                                              null, null,
+                                                              null, null, null));
     SuccessFactorsUrlContainer urlContainer = new SuccessFactorsUrlContainer(pluginConfig);
     String expectedUrl = "https://successfactors.com/EmpJob?startDate=2023-01-01&endDate=2023-02-02&%24top=1";
     URL actualUrl = urlContainer.getTesterURL();
