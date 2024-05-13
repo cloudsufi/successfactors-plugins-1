@@ -174,4 +174,102 @@ public class SuccessFactorsPluginConfigTest {
     Assert.assertEquals("Entity name not trimmed", "entity-name", pluginConfig.getEntityName());
     Assert.assertEquals("Select option not trimmed", "col1,col2,parent/col1,col3", pluginConfig.getSelectOption());
   }
+
+  @Test
+  public void testValidateRetryConfigurationWithDefaultValues() {
+    SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder
+      .setInitialRetryDuration(SuccessFactorsPluginConfig.DEFAULT_INITIAL_RETRY_DURATION_SECONDS)
+      .setMaxRetryDuration(SuccessFactorsPluginConfig.DEFAULT_MAX_RETRY_DURATION_SECONDS)
+      .setMaxRetryCount(SuccessFactorsPluginConfig.DEFAULT_MAX_RETRY_COUNT)
+      .setRetryMultiplier(SuccessFactorsPluginConfig.DEFAULT_RETRY_MULTIPLIER)
+      .build();
+    pluginConfig.validateRetryConfiguration(failureCollector);
+    Assert.assertEquals(0, failureCollector.getValidationFailures().size());
+  }
+
+  @Test
+  public void testValidateRetryConfigurationWithInvalidInitialRetryDuration() {
+    SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder
+      .setInitialRetryDuration(-1)
+      .setMaxRetryDuration(SuccessFactorsPluginConfig.DEFAULT_MAX_RETRY_DURATION_SECONDS)
+      .setMaxRetryCount(SuccessFactorsPluginConfig.DEFAULT_MAX_RETRY_COUNT)
+      .setRetryMultiplier(SuccessFactorsPluginConfig.DEFAULT_RETRY_MULTIPLIER)
+      .build();
+    pluginConfig.validateRetryConfiguration(failureCollector);
+    Assert.assertEquals(1, failureCollector.getValidationFailures().size());
+    Assert.assertEquals("Initial retry duration must be greater than 0.",
+                        failureCollector.getValidationFailures().get(0).getMessage());
+  }
+
+  @Test
+  public void testValidateRetryConfigurationWithInvalidMaxRetryDuration() {
+    SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder
+      .setInitialRetryDuration(SuccessFactorsPluginConfig.DEFAULT_INITIAL_RETRY_DURATION_SECONDS)
+      .setMaxRetryDuration(-1)
+      .setMaxRetryCount(SuccessFactorsPluginConfig.DEFAULT_MAX_RETRY_COUNT)
+      .setRetryMultiplier(SuccessFactorsPluginConfig.DEFAULT_RETRY_MULTIPLIER)
+      .build();
+    pluginConfig.validateRetryConfiguration(failureCollector);
+    Assert.assertEquals(2, failureCollector.getValidationFailures().size());
+    Assert.assertEquals("Max retry duration must be greater than 0.",
+                        failureCollector.getValidationFailures().get(0).getMessage());
+    Assert.assertEquals("Max retry duration must be greater than initial retry duration.",
+                        failureCollector.getValidationFailures().get(1).getMessage());
+  }
+
+  @Test
+  public void testValidateRetryConfigurationWithInvalidRetryMultiplier() {
+    SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder
+      .setInitialRetryDuration(SuccessFactorsPluginConfig.DEFAULT_INITIAL_RETRY_DURATION_SECONDS)
+      .setMaxRetryDuration(SuccessFactorsPluginConfig.DEFAULT_MAX_RETRY_DURATION_SECONDS)
+      .setMaxRetryCount(SuccessFactorsPluginConfig.DEFAULT_MAX_RETRY_COUNT)
+      .setRetryMultiplier(-1)
+      .build();
+    pluginConfig.validateRetryConfiguration(failureCollector);
+    Assert.assertEquals(1, failureCollector.getValidationFailures().size());
+    Assert.assertEquals("Retry multiplier must be strictly greater than 1.",
+                        failureCollector.getValidationFailures().get(0).getMessage());
+  }
+
+  @Test
+  public void testValidateRetryConfigurationWithInvalidRetryMultiplierAndMaxRetryCount() {
+    SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder
+      .setInitialRetryDuration(SuccessFactorsPluginConfig.DEFAULT_INITIAL_RETRY_DURATION_SECONDS)
+      .setMaxRetryDuration(SuccessFactorsPluginConfig.DEFAULT_MAX_RETRY_DURATION_SECONDS)
+      .setMaxRetryCount(1)
+      .setRetryMultiplier(-1)
+      .build();
+    pluginConfig.validateRetryConfiguration(failureCollector);
+    Assert.assertEquals(1, failureCollector.getValidationFailures().size());
+    Assert.assertEquals("Retry multiplier must be strictly greater than 1.",
+                        failureCollector.getValidationFailures().get(0).getMessage());
+  }
+
+  @Test
+  public void testValidateRetryConfigurationWithMultiplierOne() {
+    SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder
+      .setInitialRetryDuration(SuccessFactorsPluginConfig.DEFAULT_INITIAL_RETRY_DURATION_SECONDS)
+      .setMaxRetryDuration(SuccessFactorsPluginConfig.DEFAULT_MAX_RETRY_DURATION_SECONDS)
+      .setMaxRetryCount(SuccessFactorsPluginConfig.DEFAULT_MAX_RETRY_COUNT)
+      .setRetryMultiplier(1)
+      .build();
+    pluginConfig.validateRetryConfiguration(failureCollector);
+    Assert.assertEquals(1, failureCollector.getValidationFailures().size());
+    Assert.assertEquals("Retry multiplier must be strictly greater than 1.",
+                        failureCollector.getValidationFailures().get(0).getMessage());
+  }
+
+  @Test
+  public void testValidateRetryConfigurationWithMaxRetryLessThanInitialRetry() {
+    SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder
+      .setInitialRetryDuration(20)
+      .setMaxRetryDuration(10)
+      .setMaxRetryCount(1)
+      .setRetryMultiplier(2)
+      .build();
+    pluginConfig.validateRetryConfiguration(failureCollector);
+    Assert.assertEquals(1, failureCollector.getValidationFailures().size());
+    Assert.assertEquals("Max retry duration must be greater than initial retry duration.",
+                        failureCollector.getValidationFailures().get(0).getMessage());
+  }
 }

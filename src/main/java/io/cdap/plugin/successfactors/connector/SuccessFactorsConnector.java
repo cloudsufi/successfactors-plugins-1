@@ -151,7 +151,7 @@ public class SuccessFactorsConnector implements DirectConnector {
     URL dataURL = HttpUrl.parse(config.getBaseURL()).newBuilder().build().url();
     SuccessFactorsTransporter successFactorsHttpClient = new SuccessFactorsTransporter(config);
     SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient.callSuccessFactorsEntity
-      (dataURL, MediaType.APPLICATION_JSON, METADATA);
+      (dataURL, MediaType.APPLICATION_JSON);
     try (InputStream inputStream = responseContainer.getResponseStream()) {
       BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
       String result = reader.lines().collect(Collectors.joining(""));
@@ -225,7 +225,11 @@ public class SuccessFactorsConnector implements DirectConnector {
       addQueryParameter(TOP_OPTION, String.valueOf(top)).addQueryParameter(SELECT_OPTION, selectFields.toString())
       .build().url();
     SuccessFactorsTransporter successFactorsHttpClient = new SuccessFactorsTransporter(config);
-    SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient.callSuccessFactorsWithRetry(dataURL);
+    SuccessFactorsResponseContainer responseContainer =
+      successFactorsHttpClient.callSuccessFactorsWithRetry(
+        dataURL, MediaType.APPLICATION_JSON, SuccessFactorsPluginConfig.DEFAULT_INITIAL_RETRY_DURATION_SECONDS,
+        SuccessFactorsPluginConfig.DEFAULT_MAX_RETRY_DURATION_SECONDS,
+        SuccessFactorsPluginConfig.DEFAULT_RETRY_MULTIPLIER, SuccessFactorsPluginConfig.DEFAULT_MAX_RETRY_COUNT);
 
     ExceptionParser.checkAndThrowException("", responseContainer);
     return responseContainer.getResponseStream();
@@ -255,7 +259,7 @@ public class SuccessFactorsConnector implements DirectConnector {
       .addPathSegment(METADATACALL).build().url();
     SuccessFactorsTransporter successFactorsHttpClient = new SuccessFactorsTransporter(config);
     SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient
-      .callSuccessFactorsEntity(metadataURL, MediaType.APPLICATION_XML, METADATA);
+      .callSuccessFactorsEntity(metadataURL, MediaType.APPLICATION_XML);
     return responseContainer.getResponseStream();
     }
   }

@@ -89,7 +89,7 @@ public class SuccessFactorsConnectorTest {
     new Expectations(SuccessFactorsUrlContainer.class, SuccessFactorsTransporter.class,
                      SuccessFactorsSchemaGenerator.class) {
       {
-        successFactorsTransporter.callSuccessFactorsEntity(null, anyString, anyString);
+        successFactorsTransporter.callSuccessFactorsEntity(null, anyString);
         result = getSuccessfulResponseContainer();
         minTimes = 1;
       }
@@ -105,7 +105,7 @@ public class SuccessFactorsConnectorTest {
     new Expectations(SuccessFactorsUrlContainer.class, SuccessFactorsTransporter.class,
                      SuccessFactorsSchemaGenerator.class) {
       {
-        successFactorsTransporter.callSuccessFactorsEntity(null, anyString, anyString);
+        successFactorsTransporter.callSuccessFactorsEntity(null, anyString);
         result = getUnauthorisedResponseContainer();
         minTimes = 1;
       }
@@ -120,7 +120,7 @@ public class SuccessFactorsConnectorTest {
     new Expectations(SuccessFactorsUrlContainer.class, SuccessFactorsTransporter.class,
                      SuccessFactorsSchemaGenerator.class) {
       {
-        successFactorsTransporter.callSuccessFactorsEntity(null, anyString, anyString);
+        successFactorsTransporter.callSuccessFactorsEntity(null, anyString);
         result = getNotFoundResponseContainer();
         minTimes = 1;
       }
@@ -151,7 +151,7 @@ public class SuccessFactorsConnectorTest {
     MockFailureCollector collector = new MockFailureCollector();
     new Expectations(SuccessFactorsTransporter.class) {
       {
-        successFactorsTransporter.callSuccessFactorsEntity(null, anyString, anyString);
+        successFactorsTransporter.callSuccessFactorsEntity(null, anyString);
         result = getSuccessfulResponseContainer();
         minTimes = 1;
 
@@ -190,7 +190,7 @@ public class SuccessFactorsConnectorTest {
         result = getPluginSchema();
         minTimes = 1;
 
-        successFactorsTransporter.callSuccessFactorsEntity(null, anyString, anyString);
+        successFactorsTransporter.callSuccessFactorsEntity(null, anyString);
         result = getResponseContainer();
         minTimes = 1;
       }
@@ -231,7 +231,7 @@ public class SuccessFactorsConnectorTest {
         result = entities;
         minTimes = 1;
 
-        successFactorsTransporter.callSuccessFactorsEntity(null, anyString, anyString);
+        successFactorsTransporter.callSuccessFactorsEntity(null, anyString);
         result = getResponseContainer();
         minTimes = 1;
       }
@@ -258,7 +258,7 @@ public class SuccessFactorsConnectorTest {
     ConnectorContext context = new MockConnectorContext(new MockConnectorConfigurer());
     new Expectations(SuccessFactorsTransporter.class, SuccessFactorsTransporter.class, SuccessFactorsConnector.class) {
       {
-        successFactorsTransporter.callSuccessFactorsEntity(null, anyString, anyString);
+        successFactorsTransporter.callSuccessFactorsEntity(null, anyString);
         result = getResponseContainer();
         minTimes = 1;
       }
