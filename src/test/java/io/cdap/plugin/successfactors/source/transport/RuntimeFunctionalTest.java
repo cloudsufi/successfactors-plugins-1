@@ -104,8 +104,7 @@ public class RuntimeFunctionalTest {
     long availableRowCount = 3;
     List<SuccessFactorsInputSplit> partitionList = new SuccessFactorsPartitionBuilder().buildSplits(availableRowCount);
 
-    transporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(), pluginConfig.
-      getConnection().getPassword());
+    transporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     successFactorsService = new SuccessFactorsService(pluginConfig, transporter);
     prepareStubForMetadata(pluginConfig);
     edmData = successFactorsService.getSuccessFactorsServiceEdm(encodedMetadataString);
@@ -141,8 +140,7 @@ public class RuntimeFunctionalTest {
     exceptionRule.expect(SuccessFactorsServiceException.class);
     exceptionRule
       .expectMessage(ResourceConstants.ERR_METADATA_DECODE.getMsgForKeyWithCode(pluginConfig.getEntityName()));
-    transporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(), pluginConfig.
-      getConnection().getPassword());
+    transporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     successFactorsService = new SuccessFactorsService(pluginConfig, transporter);
     successFactorsService.getSuccessFactorsServiceEdm("encodedMetadataString");
   }
@@ -154,8 +152,7 @@ public class RuntimeFunctionalTest {
     prepareStubForMetadata(pluginConfig);
     long availableRowCount = 3;
     List<SuccessFactorsInputSplit> partitionList = new SuccessFactorsPartitionBuilder().buildSplits(availableRowCount);
-    transporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(),
-                                                pluginConfig.getConnection().getPassword());
+    transporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     successFactorsService = new SuccessFactorsService(pluginConfig, transporter);
     edmData = successFactorsService.getSuccessFactorsServiceEdm(encodedMetadataString);
     for (SuccessFactorsInputSplit inputSplit : partitionList) {

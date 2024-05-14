@@ -81,12 +81,11 @@ public class SuccessFactorsConnectorTest {
       .password("password");
 
     pluginConfig = pluginConfigBuilder.build();
+    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
   }
 
   @Test
   public void testValidateSuccessfulConnection() throws TransportException, SuccessFactorsServiceException {
-    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(),
-                                                              pluginConfig.getConnection().getPassword());
     new Expectations(SuccessFactorsUrlContainer.class, SuccessFactorsTransporter.class,
                      SuccessFactorsSchemaGenerator.class) {
       {
@@ -103,8 +102,6 @@ public class SuccessFactorsConnectorTest {
   public void testValidateUnauthorisedConnection() throws TransportException, SuccessFactorsServiceException {
     MockFailureCollector collector = new MockFailureCollector();
     ConnectorContext context = new MockConnectorContext(new MockConnectorConfigurer());
-    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(),
-                                                              pluginConfig.getConnection().getPassword());
     new Expectations(SuccessFactorsUrlContainer.class, SuccessFactorsTransporter.class,
                      SuccessFactorsSchemaGenerator.class) {
       {
@@ -120,8 +117,6 @@ public class SuccessFactorsConnectorTest {
   @Test
   public void testValidateNotFoundConnection() throws TransportException, SuccessFactorsServiceException {
     MockFailureCollector collector = new MockFailureCollector();
-    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(),
-                                                              pluginConfig.getConnection().getPassword());
     new Expectations(SuccessFactorsUrlContainer.class, SuccessFactorsTransporter.class,
                      SuccessFactorsSchemaGenerator.class) {
       {
@@ -154,8 +149,6 @@ public class SuccessFactorsConnectorTest {
   public void testGenerateSpec() throws TransportException, IOException {
     ConnectorContext context = new MockConnectorContext(new MockConnectorConfigurer());
     MockFailureCollector collector = new MockFailureCollector();
-    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(),
-                                                              pluginConfig.getConnection().getPassword());
     new Expectations(SuccessFactorsTransporter.class) {
       {
         successFactorsTransporter.callSuccessFactorsEntity(null, anyString, anyString);
@@ -190,8 +183,6 @@ public class SuccessFactorsConnectorTest {
     ConnectorContext context = new MockConnectorContext(new MockConnectorConfigurer());
     MockFailureCollector collector = new MockFailureCollector();
     successFactorsConnector = new SuccessFactorsConnector(pluginConfig.getConnection());
-    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(),
-                                                              pluginConfig.getConnection().getPassword());
     new Expectations(SuccessFactorsConnector.class, SuccessFactorsTransporter.class) {
       {
 
@@ -232,8 +223,6 @@ public class SuccessFactorsConnectorTest {
     ConnectorContext context = new MockConnectorContext(new MockConnectorConfigurer());
     List<String> entities = new ArrayList<>();
     entities.add("Achievement");
-    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(),
-                                                              pluginConfig.getConnection().getPassword());
     successFactorsConnector = new SuccessFactorsConnector(pluginConfig.getConnection());
 
     new Expectations(SuccessFactorsTransporter.class, SuccessFactorsTransporter.class, SuccessFactorsConnector.class) {
@@ -267,8 +256,6 @@ public class SuccessFactorsConnectorTest {
   @Test(expected = IOException.class)
   public void testSampleWithoutSampleData() throws IOException, TransportException {
     ConnectorContext context = new MockConnectorContext(new MockConnectorConfigurer());
-    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(),
-                                                              pluginConfig.getConnection().getPassword());
     new Expectations(SuccessFactorsTransporter.class, SuccessFactorsTransporter.class, SuccessFactorsConnector.class) {
       {
         successFactorsTransporter.callSuccessFactorsEntity(null, anyString, anyString);
@@ -291,8 +278,6 @@ public class SuccessFactorsConnectorTest {
   @Test
   public void testSampleWithSampleData() throws IOException, TransportException, EntityProviderException,
     SuccessFactorsServiceException, EdmException {
-    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection().getUsername(),
-                                                              pluginConfig.getConnection().getPassword());
     String entityName = "entity";
     List<StructuredRecord> records = new ArrayList<>();
     StructuredRecord structuredRecord = Mockito.mock(StructuredRecord.class);

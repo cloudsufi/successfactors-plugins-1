@@ -16,6 +16,11 @@ Properties
 
 **SAP SuccessFactors Base URL (M)**: SAP SuccessFactors Base URL.
 
+**Proxy URL:** Proxy URL. Must contain a protocol, address and port.
+
+**Username:** Proxy username.
+
+**Password:** Proxy password.
 
 Path of the connection
 ----------------------

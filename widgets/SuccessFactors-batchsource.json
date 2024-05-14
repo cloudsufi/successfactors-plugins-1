@@ -94,6 +94,26 @@
       ]
     },
     {
+      "label": "Proxy Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Proxy URL",
+          "name": "proxyUrl"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Username",
+          "name": "proxyUsername"
+        },
+        {
+          "widget-type": "password",
+          "label": "Password",
+          "name": "proxyPassword"
+        }
+      ]
+    },
+    {
       "label": "Advanced",
       "properties": [
         {
@@ -176,6 +196,18 @@
         {
           "type": "property",
           "name": "baseURL"
+        },
+        {
+          "type": "property",
+          "name": "proxyUrl"
+        },
+        {
+          "type": "property",
+          "name": "proxyUsername"
+        },
+        {
+          "type": "property",
+          "name": "proxyPassword"
         }
       ]
     },
@@ -188,6 +220,23 @@
         {
           "type": "property",
           "name": "connection"
+        }
+      ]
+    },
+    {
+      "name": "Proxy authentication",
+      "condition": {
+        "property": "proxyUrl",
+        "operator": "exists"
+      },
+      "show": [
+        {
+          "name": "proxyUsername",
+          "type": "property"
+        },
+        {
+          "name": "proxyPassword",
+          "type": "property"
         }
       ]
     }

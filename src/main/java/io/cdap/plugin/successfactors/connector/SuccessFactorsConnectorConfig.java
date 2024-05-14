@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import javax.annotation.Nullable;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -43,6 +45,9 @@ public class SuccessFactorsConnectorConfig extends PluginConfig {
   public static final String BASE_URL = "baseURL";
   public static final String UNAME = "username";
   public static final String PASSWORD = "password";
+  public static final String PROPERTY_PROXY_URL = "proxyUrl";
+  public static final String PROPERTY_PROXY_USERNAME = "proxyUsername";
+  public static final String PROPERTY_PROXY_PASSWORD = "proxyPassword";
   public static final String TEST = "TEST";
   private static final String COMMON_ACTION = ResourceConstants.ERR_MISSING_PARAM_OR_MACRO_ACTION.getMsgForKey();
   private static final String SAP_SUCCESSFACTORS_USERNAME = "SAP SuccessFactors Username";
@@ -65,10 +70,44 @@ public class SuccessFactorsConnectorConfig extends PluginConfig {
   @Description("SuccessFactors Base URL.")
   private final String baseURL;
 
-  public SuccessFactorsConnectorConfig(String username, String password, String baseURL) {
+  @Nullable
+  @Name(PROPERTY_PROXY_URL)
+  @Description("Proxy URL. Must contain a protocol, address and port.")
+  @Macro
+  private String proxyUrl;
+
+  @Nullable
+  @Name(PROPERTY_PROXY_USERNAME)
+  @Description("Proxy username.")
+  @Macro
+  private String proxyUsername;
+
+  @Nullable
+  @Name(PROPERTY_PROXY_PASSWORD)
+  @Description("Proxy password.")
+  @Macro
+  private String proxyPassword;
+
+  public SuccessFactorsConnectorConfig(String username, String password, String baseURL, String proxyUrl,
+                                       String proxyUsername, String proxyPassword) {
     this.username = username;
     this.password = password;
     this.baseURL = baseURL;
+    this.proxyUrl = proxyUrl;
+    this.proxyUsername = proxyUsername;
+    this.proxyPassword = proxyPassword;
+  }
+
+  public String getProxyUrl() {
+    return proxyUrl;
+  }
+
+  public String getProxyUsername() {
+    return proxyUsername;
+  }
+
+  public String getProxyPassword() {
+    return proxyPassword;
   }
 
   public String getUsername() {
@@ -109,7 +148,7 @@ public class SuccessFactorsConnectorConfig extends PluginConfig {
    * Method to validate the credential fields.
    */
   public void validateConnection(FailureCollector collector) {
-    SuccessFactorsTransporter successFactorsHttpClient = new SuccessFactorsTransporter(getUsername(), getPassword());
+    SuccessFactorsTransporter successFactorsHttpClient = new SuccessFactorsTransporter(this);
     URL testerURL = HttpUrl.parse(getBaseURL()).newBuilder().build().url();
     SuccessFactorsResponseContainer responseContainer = null;
     try {
@@ -117,7 +156,9 @@ public class SuccessFactorsConnectorConfig extends PluginConfig {
         successFactorsHttpClient.callSuccessFactorsEntity(testerURL, MediaType.APPLICATION_JSON, TEST);
     } catch (TransportException e) {
       LOG.error("Unable to fetch the response", e);
-      collector.addFailure("Unable to call SuccessFatorsEntity", "Please check the values");
+      collector.addFailure("Unable to call SuccessFactorsEntity",
+        "Please check the values for basic and proxy parameters if proxy exists.");
+      return;
     }
     if (responseContainer.getHttpStatusCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
       String errMsg = ResourceConstants.ERR_INVALID_CREDENTIAL.getMsgForKey();

@@ -135,12 +135,16 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
                                     String associateEntityName,
                                     @Nullable String username,
                                     @Nullable String password,
+                                    @Nullable String proxyUrl,
+                                    @Nullable String proxyPassword,
+                                    @Nullable String proxyUsername,
                                     @Nullable String filterOption,
                                     @Nullable String selectOption,
                                     @Nullable String expandOption,
                                     @Nullable String additionalQueryParameters,
                                     String paginationType) {
-    this.connection = new SuccessFactorsConnectorConfig(username, password, baseURL);
+    this.connection = new SuccessFactorsConnectorConfig(username, password, baseURL, proxyUrl, proxyPassword,
+      proxyUsername);
     this.referenceName = referenceName;
     this.entityName = entityName;
     this.associateEntityName = associateEntityName;
@@ -214,7 +218,10 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
    * @return boolean flag as per the check
    */
   public boolean isSchemaBuildRequired() {
-    return !(containsMacro(UNAME) || containsMacro(PASSWORD) || containsMacro(BASE_URL) || containsMacro(ENTITY_NAME));
+    return !(containsMacro(UNAME) || containsMacro(PASSWORD) || containsMacro(BASE_URL) || containsMacro(ENTITY_NAME)
+      || containsMacro(SuccessFactorsConnectorConfig.PROPERTY_PROXY_URL)
+      || containsMacro(SuccessFactorsConnectorConfig.PROPERTY_PROXY_USERNAME)
+      || containsMacro(SuccessFactorsConnectorConfig.PROPERTY_PROXY_PASSWORD));
   }
 
   /**
@@ -300,6 +307,9 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     private String expandOption;
     private String paginationType;
     private String additionalQueryParameters;
+    private String proxyUrl;
+    private String proxyUsername;
+    private String proxyPassword;
 
     public Builder referenceName(String referenceName) {
       this.referenceName = referenceName;
@@ -331,6 +341,19 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
       return this;
     }
 
+    public Builder proxyUrl(@Nullable String proxyUrl) {
+      this.proxyUrl = proxyUrl;
+      return this;
+    }
+    public Builder proxyUsername(@Nullable String proxyUsername) {
+      this.proxyUsername = proxyUsername;
+      return this;
+    }
+    public Builder proxyPassword(@Nullable String proxyPassword) {
+      this.proxyPassword = proxyPassword;
+      return this;
+    }
+
     public Builder filterOption(@Nullable String filterOption) {
       this.filterOption = filterOption;
       return this;
@@ -357,7 +380,8 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     }
 
     public SuccessFactorsPluginConfig build() {
-      return new SuccessFactorsPluginConfig(referenceName, baseURL, entityName, associateEntityName, username, password,
+      return new SuccessFactorsPluginConfig(referenceName, baseURL, entityName, associateEntityName, username,
+                                            password, proxyUrl, proxyUsername, proxyPassword,
                                             filterOption, selectOption, expandOption, additionalQueryParameters,
                                             paginationType);
     }

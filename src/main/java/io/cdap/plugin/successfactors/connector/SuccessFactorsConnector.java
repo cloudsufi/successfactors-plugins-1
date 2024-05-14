@@ -149,8 +149,7 @@ public class SuccessFactorsConnector implements DirectConnector {
 
   List<String> listEntities() throws TransportException, IOException {
     URL dataURL = HttpUrl.parse(config.getBaseURL()).newBuilder().build().url();
-    SuccessFactorsTransporter successFactorsHttpClient = new SuccessFactorsTransporter(config.getUsername(),
-      config.getPassword());
+    SuccessFactorsTransporter successFactorsHttpClient = new SuccessFactorsTransporter(config);
     SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient.callSuccessFactorsEntity
       (dataURL, MediaType.APPLICATION_JSON, METADATA);
     try (InputStream inputStream = responseContainer.getResponseStream()) {
@@ -225,8 +224,7 @@ public class SuccessFactorsConnector implements DirectConnector {
     URL dataURL = HttpUrl.parse(config.getBaseURL()).newBuilder().addPathSegment(entityName).
       addQueryParameter(TOP_OPTION, String.valueOf(top)).addQueryParameter(SELECT_OPTION, selectFields.toString())
       .build().url();
-    SuccessFactorsTransporter successFactorsHttpClient = new SuccessFactorsTransporter(config.getUsername(),
-      config.getPassword());
+    SuccessFactorsTransporter successFactorsHttpClient = new SuccessFactorsTransporter(config);
     SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient.callSuccessFactorsWithRetry(dataURL);
 
     ExceptionParser.checkAndThrowException("", responseContainer);
@@ -255,8 +253,7 @@ public class SuccessFactorsConnector implements DirectConnector {
   private InputStream getMetaDataStream(String entity) throws TransportException, IOException {
     URL metadataURL = HttpUrl.parse(config.getBaseURL()).newBuilder().addPathSegments(entity)
       .addPathSegment(METADATACALL).build().url();
-    SuccessFactorsTransporter successFactorsHttpClient = new SuccessFactorsTransporter(config.getUsername(),
-      config.getPassword());
+    SuccessFactorsTransporter successFactorsHttpClient = new SuccessFactorsTransporter(config);
     SuccessFactorsResponseContainer responseContainer = successFactorsHttpClient
       .callSuccessFactorsEntity(metadataURL, MediaType.APPLICATION_XML, METADATA);
     return responseContainer.getResponseStream();
