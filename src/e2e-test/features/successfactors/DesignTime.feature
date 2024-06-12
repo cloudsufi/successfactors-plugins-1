@@ -18,7 +18,7 @@
 @Regression
 Feature: SuccessFactors Source - Design time scenarios
 
-  @BATCH-TS-SCFA-DSGN-01
+  @BATCH-TS-SCFA-DSGN-01 @Required
   Scenario Outline: Verify user should be able to get output schema for a valid Entity name
     When Open Datafusion Project to configure pipeline
     And Select plugin: "SAP SuccessFactors" from the plugins list as: "Source"

@@ -94,7 +94,7 @@ Feature: SuccessFactors Source - Run time scenarios
     And Close the pipeline logs
     Then Validate record created in Sink application is equal to expected output file "TestOutputFileWithFilter"
 
-  @BATCH-TS-SCFA-RNTM-03 @BQ_SINK @FILE_PATH @BQ_SINK_CLEANUP
+  @BATCH-TS-SCFA-RNTM-03 @BQ_SINK @FILE_PATH @BQ_SINK_CLEANUP @Required
   Scenario: Verify user should be able to deploy and run the pipeline when plugin is configured with Server side Pagination Type
     When Open Datafusion Project to configure pipeline
     And Select plugin: "SAP SuccessFactors" from the plugins list as: "Source"
