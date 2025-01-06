@@ -20,7 +20,7 @@
 
   <groupId>io.cdap.plugin.successfactors</groupId>
   <artifactId>successfactors-plugins</artifactId>
-  <version>1.2.0-SNAPSHOT</version>
+  <version>1.3.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <properties>
@@ -674,7 +674,7 @@
         <dependency>
           <groupId>io.cdap.tests.e2e</groupId>
           <artifactId>cdap-e2e-framework</artifactId>
-          <version>0.3.0-SNAPSHOT</version>
+          <version>0.4.0-SNAPSHOT</version>
           <scope>test</scope>
         </dependency>
       </dependencies>
