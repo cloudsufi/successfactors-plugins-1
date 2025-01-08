@@ -15,6 +15,7 @@
  */
 package io.cdap.plugin.successfactors.source;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Metadata;
@@ -138,6 +139,9 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
         errorMsg = ResourceConstants.ERR_ODATA_SERVICE_CALL.getMsgForKeyWithCode(errorMsg);
         if (SuccessFactorsUtil.isNullOrEmpty(config.getConnection().getProxyUrl())) {
           failureCollector.addFailure(errorMsg, null).withConfigProperty(SuccessFactorsPluginConfig.BASE_URL);
+          if (!Strings.isNullOrEmpty(config.getConnection().getTokenURL())) {
+            failureCollector.addFailure(errorMsg, null).withConfigProperty(SuccessFactorsPluginConfig.TOKEN_URL);
+          }
         } else {
           failureCollector.addFailure(errorMsg,
               "Unable to connect to successFactors. Please check the basic and proxy connection parameters")
@@ -164,8 +168,21 @@ public class SuccessFactorsSource extends BatchSource<LongWritable, StructuredRe
     errMsg = ResourceConstants.ERR_ODATA_ENTITY_FAILURE.getMsgForKeyWithCode(errMsg);
     switch (ose.getErrorCode()) {
       case HttpURLConnection.HTTP_UNAUTHORIZED:
-        failureCollector.addFailure(errMsg, null).withConfigProperty(SuccessFactorsPluginConfig.UNAME);
-        failureCollector.addFailure(errMsg, null).withConfigProperty(SuccessFactorsPluginConfig.PASSWORD);
+        if (SuccessFactorsConnectorConfig.BASIC_AUTH.equals(config.getConnection().getAuthType())) {
+          failureCollector.addFailure(errMsg, null).withConfigProperty(SuccessFactorsPluginConfig.UNAME);
+          failureCollector.addFailure(errMsg, null).withConfigProperty(SuccessFactorsPluginConfig.PASSWORD);
+        } else {
+          failureCollector.addFailure(errMsg, null).withConfigProperty(SuccessFactorsConnectorConfig.COMPANY_ID);
+          failureCollector.addFailure(errMsg, null).withConfigProperty(SuccessFactorsConnectorConfig.CLIENT_ID);
+          if (SuccessFactorsConnectorConfig.ENTER_TOKEN.equals(config.getConnection().getAssertionTokenType())) {
+            failureCollector.addFailure(errMsg, null).
+              withConfigProperty(SuccessFactorsConnectorConfig.ASSERTION_TOKEN);
+          } else {
+            failureCollector.addFailure(errMsg, null).withConfigProperty(SuccessFactorsConnectorConfig.PRIVATE_KEY);
+            failureCollector.addFailure(errMsg, null).withConfigProperty(SuccessFactorsConnectorConfig.USER_ID);
+            failureCollector.addFailure(errMsg, null).withConfigProperty(SuccessFactorsConnectorConfig.TOKEN_URL);
+          }
+        }
         break;
       case HttpURLConnection.HTTP_FORBIDDEN:
       case ExceptionParser.NO_VERSION_FOUND:

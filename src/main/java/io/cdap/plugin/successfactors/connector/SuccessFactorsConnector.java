@@ -101,7 +101,7 @@ public class SuccessFactorsConnector implements DirectConnector {
   @Override
   public void test(ConnectorContext connectorContext) throws ValidationException {
     FailureCollector collector = connectorContext.getFailureCollector();
-    config.validateBasicCredentials(collector);
+    config.validateAuthCredentials(collector);
     config.validateConnection(collector);
   }
 

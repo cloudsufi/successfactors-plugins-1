@@ -17,6 +17,8 @@ package io.cdap.plugin.successfactors.connector;
 
 import io.cdap.cdap.api.data.format.StructuredRecord;
 import io.cdap.cdap.api.data.schema.Schema;
+import io.cdap.cdap.api.plugin.PluginConfig;
+import io.cdap.cdap.etl.api.FailureCollector;
 import io.cdap.cdap.etl.api.batch.BatchSource;
 import io.cdap.cdap.etl.api.batch.BatchSourceContext;
 import io.cdap.cdap.etl.api.connector.BrowseDetail;
@@ -78,6 +80,7 @@ public class SuccessFactorsConnectorTest {
       .baseURL("http://localhost")
       .entityName("entity-name")
       .username("username")
+      .authType("basicAuth")
       .password("password");
 
     pluginConfig = pluginConfigBuilder.build();
@@ -86,6 +89,7 @@ public class SuccessFactorsConnectorTest {
 
   @Test
   public void testValidateSuccessfulConnection() throws TransportException, SuccessFactorsServiceException {
+    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     new Expectations(SuccessFactorsUrlContainer.class, SuccessFactorsTransporter.class,
                      SuccessFactorsSchemaGenerator.class) {
       {
@@ -102,6 +106,7 @@ public class SuccessFactorsConnectorTest {
   public void testValidateUnauthorisedConnection() throws TransportException, SuccessFactorsServiceException {
     MockFailureCollector collector = new MockFailureCollector();
     ConnectorContext context = new MockConnectorContext(new MockConnectorConfigurer());
+    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     new Expectations(SuccessFactorsUrlContainer.class, SuccessFactorsTransporter.class,
                      SuccessFactorsSchemaGenerator.class) {
       {
@@ -117,6 +122,7 @@ public class SuccessFactorsConnectorTest {
   @Test
   public void testValidateNotFoundConnection() throws TransportException, SuccessFactorsServiceException {
     MockFailureCollector collector = new MockFailureCollector();
+    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     new Expectations(SuccessFactorsUrlContainer.class, SuccessFactorsTransporter.class,
                      SuccessFactorsSchemaGenerator.class) {
       {
@@ -149,6 +155,7 @@ public class SuccessFactorsConnectorTest {
   public void testGenerateSpec() throws TransportException, IOException {
     ConnectorContext context = new MockConnectorContext(new MockConnectorConfigurer());
     MockFailureCollector collector = new MockFailureCollector();
+    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     new Expectations(SuccessFactorsTransporter.class) {
       {
         successFactorsTransporter.callSuccessFactorsEntity(null, anyString);
@@ -183,6 +190,7 @@ public class SuccessFactorsConnectorTest {
     ConnectorContext context = new MockConnectorContext(new MockConnectorConfigurer());
     MockFailureCollector collector = new MockFailureCollector();
     successFactorsConnector = new SuccessFactorsConnector(pluginConfig.getConnection());
+    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     new Expectations(SuccessFactorsConnector.class, SuccessFactorsTransporter.class) {
       {
 
@@ -223,6 +231,7 @@ public class SuccessFactorsConnectorTest {
     ConnectorContext context = new MockConnectorContext(new MockConnectorConfigurer());
     List<String> entities = new ArrayList<>();
     entities.add("Achievement");
+    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     successFactorsConnector = new SuccessFactorsConnector(pluginConfig.getConnection());
 
     new Expectations(SuccessFactorsTransporter.class, SuccessFactorsTransporter.class, SuccessFactorsConnector.class) {
@@ -256,6 +265,7 @@ public class SuccessFactorsConnectorTest {
   @Test(expected = IOException.class)
   public void testSampleWithoutSampleData() throws IOException, TransportException {
     ConnectorContext context = new MockConnectorContext(new MockConnectorConfigurer());
+    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     new Expectations(SuccessFactorsTransporter.class, SuccessFactorsTransporter.class, SuccessFactorsConnector.class) {
       {
         successFactorsTransporter.callSuccessFactorsEntity(null, anyString);
@@ -276,8 +286,71 @@ public class SuccessFactorsConnectorTest {
   }
 
   @Test
+  public void testOAuthEnterTokenMissingFields() {
+    SuccessFactorsPluginConfig pluginConfig = new SuccessFactorsPluginConfig.Builder()
+      .referenceName("unit-test-ref-name")
+      .baseURL("http://localhost")
+      .entityName("entity-name")
+      .authType(SuccessFactorsConnectorConfig.OAUTH2)
+      .assertionTokenType(SuccessFactorsConnectorConfig.ENTER_TOKEN)
+      .setTokenURL("http://localhost/token")
+      .build();
+    ConnectorContext context = new MockConnectorContext(new MockConnectorConfigurer());
+    FailureCollector collector = context.getFailureCollector();
+    SuccessFactorsConnector connector = new SuccessFactorsConnector(pluginConfig.getConnection());
+    connector.test(context);
+    Assert.assertEquals(4, collector.getValidationFailures().size());
+    Assert.assertEquals("Required property 'clientId' is blank.",
+                        collector.getValidationFailures().get(0).getMessage());
+    Assert.assertEquals("Required property 'companyId' is blank.",
+                        collector.getValidationFailures().get(1).getMessage());
+    Assert.assertEquals("Required property 'assertionToken' is blank.",
+                        collector.getValidationFailures().get(2).getMessage());
+    Assert.assertEquals("Unable to call SuccessFactorsEntity", collector.getValidationFailures().get(3).getMessage());
+  }
+
+  @Test
+  public void testOAuthCreateTokenMissingFields() {
+    SuccessFactorsPluginConfig pluginConfig = new SuccessFactorsPluginConfig.Builder()
+      .referenceName("unit-test-ref-name")
+      .baseURL("http://localhost")
+      .entityName("entity-name")
+      .authType(SuccessFactorsConnectorConfig.OAUTH2)
+      .assertionTokenType(SuccessFactorsConnectorConfig.CREATE_TOKEN)
+      .setTokenURL("http://localhost/token")
+      .build();
+    ConnectorContext context = new MockConnectorContext(new MockConnectorConfigurer());
+    FailureCollector collector = context.getFailureCollector();
+    SuccessFactorsConnector connector = new SuccessFactorsConnector(pluginConfig.getConnection());
+    connector.test(context);
+    Assert.assertEquals(5, collector.getValidationFailures().size());
+    Assert.assertEquals("Required property 'clientId' is blank.",
+                        collector.getValidationFailures().get(0).getMessage());
+    Assert.assertEquals("Required property 'companyId' is blank.",
+                        collector.getValidationFailures().get(1).getMessage());
+    Assert.assertEquals("Required property 'privateKey' is blank.",
+                        collector.getValidationFailures().get(2).getMessage());
+    Assert.assertEquals("Required property 'userId' is blank.", collector.getValidationFailures().get(3).getMessage());
+    Assert.assertEquals("Unable to call SuccessFactorsEntity", collector.getValidationFailures().get(4).getMessage());
+  }
+
+ @Test
+ public void testDefaultValueForExpireTime() {
+   SuccessFactorsPluginConfig pluginConfig = new SuccessFactorsPluginConfig.Builder()
+     .referenceName("unit-test-ref-name")
+     .baseURL("http://localhost")
+     .entityName("entity-name")
+     .authType(SuccessFactorsConnectorConfig.OAUTH2)
+     .assertionTokenType(SuccessFactorsConnectorConfig.CREATE_TOKEN)
+     .setExpireInMinutes(null)
+     .build();
+   Assert.assertEquals(1440, pluginConfig.getConnection().getExpireInMinutes().intValue());
+ }
+
+  @Test
   public void testSampleWithSampleData() throws IOException, TransportException, EntityProviderException,
     SuccessFactorsServiceException, EdmException {
+    successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     String entityName = "entity";
     List<StructuredRecord> records = new ArrayList<>();
     StructuredRecord structuredRecord = Mockito.mock(StructuredRecord.class);

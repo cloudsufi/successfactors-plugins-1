@@ -19,6 +19,8 @@ import io.cdap.cdap.etl.api.validation.ValidationException;
 import io.cdap.cdap.etl.api.validation.ValidationFailure;
 import io.cdap.cdap.etl.mock.validation.MockFailureCollector;
 import io.cdap.plugin.successfactors.common.util.ResourceConstants;
+import io.cdap.plugin.successfactors.connector.SuccessFactorsConnectorConfig;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +45,7 @@ public class SuccessFactorsPluginConfigTest {
       .referenceName(REFERENCE_NAME)
       .baseURL(BASE_URL)
       .entityName(ENTITY_NAME)
+      .authType(SuccessFactorsConnectorConfig.BASIC_AUTH)
       .username(USER_NAME)
       .password(PASSWORD);
   }

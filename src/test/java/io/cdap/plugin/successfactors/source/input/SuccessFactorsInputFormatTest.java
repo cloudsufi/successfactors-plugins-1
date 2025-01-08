@@ -21,7 +21,6 @@ import io.cdap.plugin.successfactors.source.SuccessFactorsSource;
 import io.cdap.plugin.successfactors.source.config.SuccessFactorsPluginConfig;
 import io.cdap.plugin.successfactors.source.metadata.TestSuccessFactorsUtil;
 import io.cdap.plugin.successfactors.source.service.SuccessFactorsService;
-import io.cdap.plugin.successfactors.source.transport.SuccessFactorsTransporter;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.olingo.odata2.api.edm.Edm;
@@ -46,19 +45,15 @@ public class SuccessFactorsInputFormatTest {
 
   @Before
   public void initializeTests() {
-    pluginConfig = Mockito.spy(new SuccessFactorsPluginConfig("referenceName",
-                                                              "baseURL",
-                                                              "entityName",
-                                                              null,
-                                                              "username",
-                                                              "password", null, null,
-                                                              null,
-                                                              "filterOption",
-                                                              "selectOption",
-                                                              "expandOption",
-                                                              "additionalQueryParameters",
-                                                              null, null,
-                                                              null, null, null));
+    pluginConfig = Mockito.spy(SuccessFactorsPluginConfig.builder().referenceName("referenceName")
+                                 .baseURL("baseUrl")
+                                 .entityName("entityName")
+                                 .username("username")
+                                 .password("password")
+                                 .filterOption("filterOption")
+                                 .selectOption("selectOption")
+                                 .expandOption("expandOption")
+                                 .additionalQueryParameters("additionalQueryParameters").build());
   }
 
   @Test

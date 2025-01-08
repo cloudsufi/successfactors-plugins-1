@@ -16,12 +16,14 @@
 
 package io.cdap.plugin.successfactors.source.transport;
 
+import com.google.common.base.Strings;
 import dev.failsafe.Failsafe;
 import dev.failsafe.FailsafeException;
 import dev.failsafe.RetryPolicy;
 import io.cdap.cdap.api.retry.RetryableException;
 import io.cdap.plugin.successfactors.common.exception.TransportException;
 import io.cdap.plugin.successfactors.common.util.ResourceConstants;
+import io.cdap.plugin.successfactors.common.util.SuccessFactorsAccessToken;
 import io.cdap.plugin.successfactors.common.util.SuccessFactorsUtil;
 import io.cdap.plugin.successfactors.connector.SuccessFactorsConnectorConfig;
 import okhttp3.Authenticator;
@@ -53,12 +55,14 @@ public class SuccessFactorsTransporter {
   static final String SERVICE_VERSION = "dataserviceversion";
   private static final Logger LOG = LoggerFactory.getLogger(SuccessFactorsTransporter.class);
   private static final long CONNECTION_TIMEOUT = 300;
-
-  private SuccessFactorsConnectorConfig config;
+  private static final long WAIT_TIME = 5;
+  private static final long MAX_NUMBER_OF_RETRY_ATTEMPTS = 5;
+  private static String accessToken;
   private Response response;
+  private final SuccessFactorsConnectorConfig config;
 
-  public SuccessFactorsTransporter(SuccessFactorsConnectorConfig pluginConfig) {
-    this.config = pluginConfig;
+  public SuccessFactorsTransporter(SuccessFactorsConnectorConfig config) {
+    this.config = config;
   }
 
   /**
@@ -173,9 +177,44 @@ public class SuccessFactorsTransporter {
   private Response transport(URL endpoint, String mediaType) throws IOException, TransportException {
     OkHttpClient enhancedOkHttpClient =
       buildConfiguredClient(config.getProxyUrl(), config.getProxyUsername(), config.getProxyPassword());
-    Request req = buildRequest(endpoint, mediaType);
+    Request req;
 
+    if (SuccessFactorsConnectorConfig.BASIC_AUTH.equals(config.getAuthType())) {
+      req = buildRequest(endpoint, mediaType);
+    } else {
+      if (Strings.isNullOrEmpty(accessToken)) {
+        accessToken = getAccessToken();
+      }
+      req = buildRequestWithBearerToken(endpoint, mediaType, accessToken);
+      try {
+        Response response = enhancedOkHttpClient.newCall(req).execute();
+        // If the response code is 403 (Forbidden), attempt to refresh access token
+        if (response.code() == HttpURLConnection.HTTP_FORBIDDEN) {
+          LOG.info("refreshing access token");
+          accessToken = getAccessToken(); // Refresh access token
+          req = buildRequestWithBearerToken(endpoint, mediaType, accessToken);
+          response = enhancedOkHttpClient.newCall(req).execute();
+        }
+        return response;
+      } catch (IOException e) {
+        throw new IOException("Failed to execute the request", e);
+      }
+    }
     return enhancedOkHttpClient.newCall(req).execute();
+  }
+
+  private String getAccessToken() throws IOException {
+    SuccessFactorsAccessToken token = new SuccessFactorsAccessToken(config);
+
+    try {
+      if (config.getAssertionToken() == null) {
+        return token.getAccessToken(token.getAssertionToken());
+      } else {
+        return token.getAccessToken(config.getAssertionToken());
+      }
+    } catch (IOException e) {
+      throw new IOException("Unable to fetch access token", e);
+    }
   }
 
   /**
@@ -276,6 +315,15 @@ public class SuccessFactorsTransporter {
                         .concat(config.getPassword())
                         .getBytes(StandardCharsets.UTF_8)
       );
+  }
+
+  private Request buildRequestWithBearerToken(URL endpoint, String mediaType, String accessToken) {
+    return new Request.Builder()
+      .addHeader("Authorization", "Bearer " + accessToken)
+      .addHeader("Accept", mediaType)
+      .get()
+      .url(endpoint)
+      .build();
   }
 
   /**

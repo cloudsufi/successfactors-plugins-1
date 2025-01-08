@@ -89,6 +89,7 @@ public class RuntimeFunctionalTest {
       .entityName("Background_SpecialAssign")
       .username("test")
       .password("secret")
+      .authType("basicAuth")
       .paginationType("serverSide");
 
     String metadataString = TestSuccessFactorsUtil.convertInputStreamToString(TestSuccessFactorsUtil.readResource
