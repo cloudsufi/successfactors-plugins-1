@@ -8,20 +8,95 @@
       "label": "Credentials",
       "properties": [
         {
+          "widget-type": "radio-group",
+          "label": "Authentication Type",
+          "name": "authType",
+          "widget-attributes": {
+            "layout": "inline",
+            "default": "basicAuth",
+            "options": [
+              {
+                "id": "basicAuth",
+                "label": "Basic Authentication"
+              },
+              {
+                "id": "oAuth2",
+                "label": "OAuth 2.0"
+              }
+            ]
+          }
+        },
+        {
+          "name": "assertionTokenType",
+          "label": "Assertion Token Type",
+          "widget-type": "radio-group",
+          "widget-attributes": {
+            "layout": "inline",
+            "default": "enterToken",
+            "options": [
+              {
+                "id": "enterToken",
+                "label": "Enter Token"
+              },
+              {
+                "id": "createToken",
+                "label": "Create Token"
+              }
+            ]
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Token URL",
+          "name": "tokenURL",
+          "widget-attributes": {
+            "placeholder": "SAP SuccessFactors token url, for example, https://<hostname>/oauth/token"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Client ID",
+          "name": "clientId"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Private Key",
+          "name": "privateKey"
+        },
+        {
+          "widget-type": "number",
+          "name": "expireInMinutes",
+          "label": "Expire In (Minutes)",
+          "widget-attributes": {
+            "min": 1,
+            "step": 1,
+            "default": 1440
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "User ID",
+          "name": "userId"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Assertion Token",
+          "name": "assertionToken"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Company ID",
+          "name": "companyId"
+        },
+        {
           "widget-type": "textbox",
           "label": "SAP SuccessFactors Logon Username",
-          "name": "username",
-          "widget-attributes": {
-            "placeholder": ""
-          }
+          "name": "username"
         },
         {
           "widget-type": "password",
           "label": "SAP SuccessFactors Logon Password",
-          "name": "password",
-          "widget-attributes": {
-            "placeholder": ""
-          }
+          "name": "password"
         },
         {
           "widget-type": "textbox",
@@ -68,6 +143,80 @@
         },
         {
           "name": "proxyPassword",
+          "type": "property"
+        }
+      ]
+    },
+    {
+      "name": "basicAuth",
+      "condition": {
+        "expression": "authType == 'basicAuth' || authType == 'null'"
+      },
+      "show": [
+        {
+          "name": "username",
+          "type": "property"
+        },
+        {
+          "name": "password",
+          "type": "property"
+        }
+      ]
+    },
+    {
+      "name": "Authenticate with oAuth2",
+      "condition": {
+        "property": "authType",
+        "operator": "equal to",
+        "value": "oAuth2"
+      },
+      "show": [
+        {
+          "name": "assertionTokenType",
+          "type": "property"
+        },
+        {
+          "name": "clientId",
+          "type": "property"
+        },
+        {
+          "type": "property",
+          "name": "companyId"
+        },
+        {
+          "name": "tokenURL",
+          "type": "property"
+        }
+      ]
+    },
+    {
+      "name": "enterAssertionToken",
+      "condition": {
+        "expression": "authType == 'oAuth2' && assertionTokenType== 'enterToken'"
+      },
+      "show": [
+        {
+          "type": "property",
+          "name": "assertionToken"
+        }
+      ]
+    },
+    {
+      "name": "createAssertionToken",
+      "condition": {
+        "expression": "authType == 'oAuth2' && assertionTokenType == 'createToken'"
+      },
+      "show": [
+        {
+          "name": "privateKey",
+          "type": "property"
+        },
+        {
+          "name": "expireInMinutes",
+          "type": "property"
+        },
+        {
+          "name": "userId",
           "type": "property"
         }
       ]

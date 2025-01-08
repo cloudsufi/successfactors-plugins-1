@@ -41,6 +41,7 @@
     <junit.version>4.12</junit.version>
     <gcs.client.version>2.0.0</gcs.client.version>
     <okhttp3.version>4.9.1</okhttp3.version>
+    <httpclient.version>4.5.14</httpclient.version>
     <apache.olingo.v2>2.0.0</apache.olingo.v2>
     <wiremock.version>2.27.2</wiremock.version>
     <hydrator.version>2.7.0</hydrator.version>
@@ -339,7 +340,16 @@
       <artifactId>okhttp</artifactId>
       <version>${okhttp3.version}</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${httpclient.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opensaml</groupId>
+      <artifactId>opensaml</artifactId>
+      <version>2.6.4</version>
+    </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>

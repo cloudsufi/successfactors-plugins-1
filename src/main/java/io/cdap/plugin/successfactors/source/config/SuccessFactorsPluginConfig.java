@@ -40,6 +40,7 @@ import javax.annotation.Nullable;
  */
 public class SuccessFactorsPluginConfig extends PluginConfig {
   public static final String BASE_URL = "baseURL";
+  public static final String TOKEN_URL = "tokenURL";
   public static final String ENTITY_NAME = "entityName";
   public static final String UNAME = "username";
   public static final String PASSWORD = "password";
@@ -170,6 +171,16 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
                                     @Nullable String proxyUrl,
                                     @Nullable String proxyPassword,
                                     @Nullable String proxyUsername,
+                                    @Nullable String tokenURL,
+                                    @Nullable String clientId,
+                                    @Nullable String privateKey,
+                                    @Nullable Integer expireInMinutes,
+                                    @Nullable String userId,
+                                    @Nullable String samlUsername,
+                                    @Nullable String assertionToken,
+                                    @Nullable String companyId,
+                                    String authType,
+                                    String assertionTokenType,
                                     @Nullable String filterOption,
                                     @Nullable String selectOption,
                                     @Nullable String expandOption,
@@ -179,8 +190,9 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
                                     @Nullable Integer maxRetryDuration,
                                     @Nullable Integer retryMultiplier,
                                     @Nullable Integer maxRetryCount) {
-    this.connection = new SuccessFactorsConnectorConfig(username, password, baseURL, proxyUrl, proxyPassword,
-      proxyUsername);
+    this.connection = new SuccessFactorsConnectorConfig(username, password, tokenURL, clientId, privateKey,
+            expireInMinutes, userId, companyId, baseURL, authType, assertionTokenType, samlUsername, assertionToken,
+            proxyUrl, proxyUsername, proxyPassword);
     this.referenceName = referenceName;
     this.entityName = entityName;
     this.associateEntityName = associateEntityName;
@@ -194,6 +206,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     this.retryMultiplier = retryMultiplier;
     this.maxRetryCount = maxRetryCount;
   }
+
   @Nullable
   public SuccessFactorsConnectorConfig getConnection() {
     return connection;
@@ -277,7 +290,14 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     return !(containsMacro(UNAME) || containsMacro(PASSWORD) || containsMacro(BASE_URL) || containsMacro(ENTITY_NAME)
       || containsMacro(SuccessFactorsConnectorConfig.PROPERTY_PROXY_URL)
       || containsMacro(SuccessFactorsConnectorConfig.PROPERTY_PROXY_USERNAME)
-      || containsMacro(SuccessFactorsConnectorConfig.PROPERTY_PROXY_PASSWORD));
+      || containsMacro(SuccessFactorsConnectorConfig.PROPERTY_PROXY_PASSWORD)
+      || containsMacro(SuccessFactorsConnectorConfig.TOKEN_URL)
+      || containsMacro(SuccessFactorsConnectorConfig.CLIENT_ID)
+      || containsMacro(SuccessFactorsConnectorConfig.PRIVATE_KEY)
+      || containsMacro(SuccessFactorsConnectorConfig.EXPIRE_IN_MINUTES)
+      || containsMacro(SuccessFactorsConnectorConfig.USER_ID)
+      || containsMacro(SuccessFactorsConnectorConfig.COMPANY_ID)
+      || containsMacro(SuccessFactorsConnectorConfig.ASSERTION_TOKEN));
   }
 
   /**
@@ -311,7 +331,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
   private void validateMandatoryParameters(FailureCollector failureCollector) {
 
     IdUtils.validateReferenceName(getReferenceName(), failureCollector);
-    if (SuccessFactorsUtil.isNullOrEmpty(getEntityName()) && !containsMacro(ENTITY_NAME)) {
+    if (!containsMacro(ENTITY_NAME) && SuccessFactorsUtil.isNullOrEmpty(getEntityName())) {
       String errMsg = ResourceConstants.ERR_MISSING_PARAM_PREFIX.getMsgForKey(SAP_SUCCESSFACTORS_ENTITY_NAME);
       failureCollector.addFailure(errMsg, COMMON_ACTION).withConfigProperty(ENTITY_NAME);
     }
@@ -324,7 +344,7 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
    */
   private void validateBasicCredentials(FailureCollector failureCollector) {
     if (connection != null) {
-      connection.validateBasicCredentials(failureCollector);
+      connection.validateAuthCredentials(failureCollector);
     }
   }
 
@@ -335,14 +355,14 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
    * @param failureCollector {@code FailureCollector}
    */
   private void validateEntityParameter(FailureCollector failureCollector) {
-    if (SuccessFactorsUtil.isNotNullOrEmpty(getEntityName()) && !containsMacro(getEntityName())) {
+    if (!containsMacro(getEntityName()) && SuccessFactorsUtil.isNotNullOrEmpty(getEntityName())) {
       if (PATTERN.matcher(getEntityName()).find()) {
         failureCollector.addFailure(ResourceConstants.ERR_FEATURE_NOT_SUPPORTED.getMsgForKey(), null)
           .withConfigProperty(ENTITY_NAME);
       }
     }
     if (SuccessFactorsUtil.isNotNullOrEmpty(associateEntityName)) {
-      if (SuccessFactorsUtil.isNullOrEmpty(getExpandOption()) && !containsMacro(EXPAND_OPTION)) {
+      if (!containsMacro(EXPAND_OPTION) && SuccessFactorsUtil.isNullOrEmpty(getExpandOption())) {
         failureCollector.addFailure(ResourceConstants.ERR_INVALID_ENTITY_CALL.getMsgForKey(), null)
           .withConfigProperty(ASSOCIATED_ENTITY_NAME);
       }
@@ -401,6 +421,16 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     private String expandOption;
     private String paginationType;
     private String additionalQueryParameters;
+    private String tokenURL;
+    private String clientId;
+    private String privateKey;
+    private Integer expireInMinutes;
+    private String userId;
+    private String samlUsername;
+    private String assertionToken;
+    private String companyId;
+    private String authType;
+    private String assertionTokenType;
     private String proxyUrl;
     private String proxyUsername;
     private String proxyPassword;
@@ -467,8 +497,48 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
       return this;
     }
 
+    public Builder authType(@Nullable String authType) {
+      this.authType = Strings.isNullOrEmpty(authType) ? SuccessFactorsConnectorConfig.BASIC_AUTH : authType;
+      return this;
+    }
+
+    public Builder setTokenURL(@Nullable String tokenURL) {
+      this.tokenURL = tokenURL;
+      return this;
+    }
+
+    public Builder setClientId(@Nullable String clientId) {
+      this.clientId = clientId;
+      return this;
+    }
+
+    public Builder setPrivateKey(@Nullable String privateKey) {
+      this.privateKey = privateKey;
+      return this;
+    }
+
+    public Builder setExpireInMinutes(@Nullable Integer expireInMinutes) {
+      this.expireInMinutes = expireInMinutes;
+      return this;
+    }
+
+    public Builder setUserId(@Nullable String userId) {
+      this.userId = userId;
+      return this;
+    }
+
     public Builder paginationType(@Nullable String paginationType) {
       this.paginationType = paginationType;
+      return this;
+    }
+
+    public Builder assertionTokenType(@Nullable String assertionTokenType) {
+      this.assertionTokenType = assertionTokenType;
+      return this;
+    }
+
+    public Builder assertionToken(@Nullable String assertionToken) {
+      this.assertionToken = assertionToken;
       return this;
     }
 
@@ -495,11 +565,12 @@ public class SuccessFactorsPluginConfig extends PluginConfig {
     }
 
     public SuccessFactorsPluginConfig build() {
-      return new SuccessFactorsPluginConfig(referenceName, baseURL, entityName, associateEntityName, username,
-                                            password, proxyUrl, proxyUsername, proxyPassword,
-                                            filterOption, selectOption, expandOption, additionalQueryParameters,
-                                            paginationType, initialRetryDuration, maxRetryDuration,
-                                            retryMultiplier, maxRetryCount);
+      return new SuccessFactorsPluginConfig(referenceName, baseURL, entityName, associateEntityName, username, password,
+              proxyUrl, proxyUsername, proxyPassword,
+              tokenURL, clientId, privateKey, expireInMinutes, userId, samlUsername, assertionToken,
+              companyId, authType, assertionTokenType, filterOption, selectOption,
+              expandOption, additionalQueryParameters, paginationType,
+              initialRetryDuration, maxRetryDuration, retryMultiplier, maxRetryCount);
     }
   }
 }

@@ -127,6 +127,7 @@ public class SuccessFactorsTransporterTest {
       .entityName("Entity")
       .username("test")
       .password("secret")
+      .authType("basicAuth")
       .expandOption("Products/Supplier");
     pluginConfig = pluginConfigBuilder.build();
     successFactorsURL = new SuccessFactorsUrlContainer(pluginConfig);
@@ -154,6 +155,38 @@ public class SuccessFactorsTransporterTest {
     Assert.assertEquals("HTTP response body is not same.",
                         expectedBody,
                         TestSuccessFactorsUtil.convertInputStreamToString(response.getResponseStream()));
+    Assert.assertEquals("HTTP status is not same", "OK", response.getHttpStatusMsg());
+  }
+
+  @Test
+  public void testCallSuccessFactorsWithOauth2() throws TransportException {
+    pluginConfigBuilder = SuccessFactorsPluginConfig.builder()
+      .baseURL("https://localhost:" + wireMockRule.httpsPort())
+      .entityName("Entity")
+      .username("test")
+      .password("secret")
+      .authType("oAuth2")
+      .expandOption("Products/Supplier");
+    pluginConfig = pluginConfigBuilder.build();
+    String expectedBody = "{\"d\": [{\"ID\": 0,\"Name\": \"Bread\"}}]}";
+    WireMock.stubFor(WireMock.get("/Entity?%24expand=Products%2FSupplier&%24top=1")
+      .withBasicAuth(pluginConfig.getConnection().getUsername(),
+        pluginConfig.getConnection().getPassword())
+      .willReturn(WireMock.ok()
+        .withHeader(SuccessFactorsTransporter.SERVICE_VERSION, "2.0")
+        .withBody(expectedBody)));
+    SuccessFactorsResponseContainer response = transporter
+      .callSuccessFactors(successFactorsURL.getTesterURL(), MediaType.APPLICATION_JSON, SuccessFactorsService.TEST);
+
+    Assert.assertEquals("SuccessFactors Service data version is not same.",
+      "2.0",
+      response.getDataServiceVersion());
+    Assert.assertEquals("HTTP status code is not same.",
+      HttpURLConnection.HTTP_OK,
+      response.getHttpStatusCode());
+    Assert.assertEquals("HTTP response body is not same.",
+      expectedBody,
+      TestSuccessFactorsUtil.convertInputStreamToString(response.getResponseStream()));
     Assert.assertEquals("HTTP status is not same", "OK", response.getHttpStatusMsg());
   }
 

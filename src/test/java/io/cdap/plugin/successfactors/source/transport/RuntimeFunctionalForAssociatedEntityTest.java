@@ -73,6 +73,7 @@ public class RuntimeFunctionalForAssociatedEntityTest {
       .filterOption("picklistId eq 'hrRanking'")
       .username("test")
       .password("secret")
+      .authType("basicAuth")
       .paginationType("serverSide");
 
     String metadataString = TestSuccessFactorsUtil.convertInputStreamToString(TestSuccessFactorsUtil.readResource

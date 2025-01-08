@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 public enum ResourceConstants {
 
   ERR_MISSING_PARAM_PREFIX(null, "err.missing.param.prefix"),
+  ERR_INVALID_EXPIRE_TIME(null, "err.invalid.expire.time.prefix"),
   ERR_MISSING_PARAM_OR_MACRO_ACTION(null, "err.missing.param.or.macro.action"),
   ERR_INVALID_BASE_URL(null, "err.invalid.base.url"),
   ERR_FEATURE_NOT_SUPPORTED("CDF_SAP_ODATA_01500", "err.feature.not.supported"),

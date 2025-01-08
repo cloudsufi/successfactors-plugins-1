@@ -81,19 +81,13 @@ public class SuccessFactorsSourceTest {
       .entityName("entity name")
       .username("username")
       .password("password")
-      .selectOption("col1,col2,   \n  parent/col1,\r       col3     ");
+      .authType("basicAuth");
   }
 
   @Test
   public void testConfigurePipelineWithInvalidUrl() throws Exception {
-    pluginConfigBuilder = SuccessFactorsPluginConfig.builder()
-      .referenceName("unit-test-ref-name")
-      .baseURL("base_url")
-      .entityName("entity name")
-      .username("username")
-      .password("password")
-      .selectOption("col1,col2,   \n  parent/col1,\r       col3     ");
-    SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder.build();
+    SuccessFactorsPluginConfig pluginConfig = pluginConfigBuilder.baseURL("base_url")
+      .selectOption("col1,col2,   \n  parent/col1,\r       col3     ").build();
     successFactorsSource = new SuccessFactorsSource(pluginConfig);
     Map<String, Object> plugins = new HashMap<>();
     MockPipelineConfigurer mockPipelineConfigurer = new MockPipelineConfigurer(null, plugins);
@@ -108,15 +102,9 @@ public class SuccessFactorsSourceTest {
 
   @Test
   public void testConfigurePipelineWithInvalidReferenceName() {
-    pluginConfigBuilder = SuccessFactorsPluginConfig.builder()
-      .referenceName("")
-      .baseURL("http://localhost")
-      .entityName("entity name")
-      .username("username")
-      .password("password")
-      .selectOption("col1,col2,   \n  parent/col1,\r       col3     ");
     try {
-      pluginConfig = pluginConfigBuilder.build();
+      pluginConfig = pluginConfigBuilder.referenceName("")
+        .selectOption("col1,col2,   \n  parent/col1,\r       col3     ").build();
       successFactorsSource = new SuccessFactorsSource(pluginConfig);
       Map<String, Object> plugins = new HashMap<>();
       MockPipelineConfigurer mockPipelineConfigurer = new MockPipelineConfigurer(null, plugins);
@@ -153,13 +141,6 @@ public class SuccessFactorsSourceTest {
   @Test
   public void testConfigurePipelineWSchemaNotNull() throws SuccessFactorsServiceException, TransportException,
     IOException {
-    pluginConfigBuilder = SuccessFactorsPluginConfig.builder()
-      .referenceName("unit-test-ref-name")
-      .baseURL("http://localhost")
-      .entityName("entity-name")
-      .username("username")
-      .password("password");
-
     pluginConfig = pluginConfigBuilder.build();
     successFactorsTransporter = new SuccessFactorsTransporter(pluginConfig.getConnection());
     successFactorsUrlContainer = new SuccessFactorsUrlContainer(pluginConfig);
@@ -270,6 +251,9 @@ public class SuccessFactorsSourceTest {
 
   @Test
   public void testPrepareRun() throws Exception {
+    pluginConfig = pluginConfigBuilder.paginationType("serverSide")
+      .selectOption("col1,col2,   \n  parent/col1,\r       col3     ")
+      .filterOption("$topeq2").build();
     successFactorsService = new SuccessFactorsService(pluginConfig, null);
     successFactorsPartitionBuilder = new SuccessFactorsPartitionBuilder();
     pluginConfigBuilder = SuccessFactorsPluginConfig.builder()
@@ -317,14 +301,8 @@ public class SuccessFactorsSourceTest {
   @Test
   public void testPrepareRunUnauthorizedError() throws Exception {
     successFactorsService = new SuccessFactorsService(pluginConfig, null);
-    pluginConfigBuilder = SuccessFactorsPluginConfig.builder()
-      .referenceName("")
-      .baseURL("")
-      .entityName("entity name")
-      .username("username")
-      .password("password");
-
-    pluginConfig = pluginConfigBuilder.build();
+    pluginConfig = pluginConfigBuilder.referenceName("")
+      .baseURL("").build();
     successFactorsSource = new SuccessFactorsSource(pluginConfig);
 
     new Expectations(SuccessFactorsService.class) {
@@ -350,14 +328,8 @@ public class SuccessFactorsSourceTest {
   @Test
   public void testPrepareRunForbiddenError() throws Exception {
     successFactorsService = new SuccessFactorsService(pluginConfig, null);
-    pluginConfigBuilder = SuccessFactorsPluginConfig.builder()
-      .referenceName("")
-      .baseURL("")
-      .entityName("entity name")
-      .username("username")
-      .password("password");
-
-    pluginConfig = pluginConfigBuilder.build();
+    pluginConfig = pluginConfigBuilder.referenceName("")
+      .baseURL("").build();
     successFactorsSource = new SuccessFactorsSource(pluginConfig);
 
     new Expectations(SuccessFactorsService.class) {
@@ -383,14 +355,8 @@ public class SuccessFactorsSourceTest {
   @Test
   public void testPrepareRunNotFoundError() throws Exception {
     successFactorsService = new SuccessFactorsService(pluginConfig, null);
-    pluginConfigBuilder = SuccessFactorsPluginConfig.builder()
-      .referenceName("")
-      .baseURL("")
-      .entityName("entity name")
-      .username("username")
-      .password("password");
-
-    pluginConfig = pluginConfigBuilder.build();
+    pluginConfig = pluginConfigBuilder.referenceName("")
+      .baseURL("").build();
     successFactorsSource = new SuccessFactorsSource(pluginConfig);
 
     new Expectations(SuccessFactorsService.class) {
@@ -416,14 +382,8 @@ public class SuccessFactorsSourceTest {
   @Test
   public void testPrepareRunBadRequestError() throws Exception {
     successFactorsService = new SuccessFactorsService(pluginConfig, null);
-    pluginConfigBuilder = SuccessFactorsPluginConfig.builder()
-      .referenceName("")
-      .baseURL("")
-      .entityName("entity name")
-      .username("username")
-      .password("password");
-
-    pluginConfig = pluginConfigBuilder.build();
+    pluginConfig = pluginConfigBuilder.referenceName("")
+      .baseURL("").build();
     successFactorsSource = new SuccessFactorsSource(pluginConfig);
 
     new Expectations(SuccessFactorsService.class) {
@@ -449,14 +409,7 @@ public class SuccessFactorsSourceTest {
   @Test
   public void testPrepareRunInvalidVersionError() throws Exception {
     successFactorsService = new SuccessFactorsService(pluginConfig, null);
-    pluginConfigBuilder = SuccessFactorsPluginConfig.builder()
-      .referenceName("")
-      .baseURL("")
-      .entityName("entity name")
-      .username("username")
-      .password("password");
-
-    pluginConfig = pluginConfigBuilder.build();
+    pluginConfig = pluginConfigBuilder.referenceName("").baseURL("").build();
     successFactorsSource = new SuccessFactorsSource(pluginConfig);
 
     new Expectations(SuccessFactorsService.class) {

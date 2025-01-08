@@ -27,20 +27,18 @@ public class SuccessFactorsUrlContainerTest {
   public SuccessFactorsPluginConfig pluginConfig;
   @Before
   public void initializeTests() {
-    pluginConfig = Mockito.spy(new SuccessFactorsPluginConfig("referenceName",
-                                                              "https://baseUrl",
-                                                              "entityName",
-                                                              "associatedEntity",
-                                                              "username",
-                                                              "password", null, null,
-                                                              null,
-                                                              "filterOption",
-                                                              "selectOption",
-                                                              "expandOption",
-                                                              "",
-                                                              null, null,
-                                                              null, null, null));
+    pluginConfig = Mockito.spy(SuccessFactorsPluginConfig.builder().referenceName("referenceName")
+                                 .baseURL("https://baseUrl")
+                                 .entityName("entityName")
+                                 .associateEntityName("associatedEntity")
+                                 .username("username")
+                                 .password("password")
+                                 .filterOption("filterOption")
+                                 .selectOption("selectOption")
+                                 .expandOption("expandOption")
+                                 .build());
   }
+
   @Test
   public void testGetTesterURL() {
     SuccessFactorsUrlContainer urlContainer = new SuccessFactorsUrlContainer(pluginConfig);
@@ -68,19 +66,15 @@ public class SuccessFactorsUrlContainerTest {
 
   @Test
   public void testGetURLWithAdditionalQueryParameters() {
-    pluginConfig = Mockito.spy(new SuccessFactorsPluginConfig("referenceName",
-                                                              "https://successfactors.com",
-                                                              "EmpJob",
-                                                              "associatedEntity",
-                                                              "username",
-                                                              "password", null, null,
-                                                              null,
-                                                              "",
-                                                              "",
-                                                              "",
-                                                              "startDate=2023-01-01&endDate=2023-02-02",
-                                                              null, null,
-                                                              null, null, null));
+    pluginConfig = Mockito.spy(SuccessFactorsPluginConfig.builder()
+                                 .referenceName("referenceName")
+                                 .baseURL("https://successfactors.com")
+                                 .entityName("EmpJob")
+                                 .associateEntityName("associatedEntity")
+                                 .username("username")
+                                 .password("password")
+                                 .additionalQueryParameters("startDate=2023-01-01&endDate=2023-02-02")
+                                 .build());
     SuccessFactorsUrlContainer urlContainer = new SuccessFactorsUrlContainer(pluginConfig);
     String expectedUrl = "https://successfactors.com/EmpJob?startDate=2023-01-01&endDate=2023-02-02&%24top=1";
     URL actualUrl = urlContainer.getTesterURL();
